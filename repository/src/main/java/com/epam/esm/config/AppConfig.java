@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.*;
 import org.springframework.core.env.Environment;
 
+import javax.sql.DataSource;
 import java.util.Properties;
 
 @Configuration
@@ -32,8 +33,10 @@ public class AppConfig {
     }
 
     @Bean
-    public ConnectionPool connectionPool(){
-        ConnectionPool.size = env.getProperty(size, Integer.class, DEFAULT_POOL_SIZE);
-        return ConnectionPool.getInstance();
+    public DataSource connectionPool(){
+        ConnectionPool connectionPool = new ConnectionPool();
+        connectionPool.setSize(env.getProperty(size, Integer.class, DEFAULT_POOL_SIZE));
+        connectionPool.setConnectionProperties(connectionProperties());
+        return connectionPool;
     }
 }
