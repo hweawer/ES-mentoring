@@ -6,7 +6,8 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.jdbc.datasource.AbstractDriverBasedDataSource;
 
 import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
+import java.io.Closeable;
+import java.io.IOException;
 import java.lang.reflect.Proxy;
 import java.sql.Connection;
 import java.sql.Driver;
@@ -19,9 +20,10 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.LinkedBlockingQueue;
 
-public final class ConnectionPool extends AbstractDriverBasedDataSource {
+public final class ConnectionPool extends AbstractDriverBasedDataSource implements Closeable {
     private static Logger logger = LogManager.getLogger(ConnectionPool.class);
 
+    private static final String CLOSE_METHOD = "close";
     private static final String RELEASE_METHOD = "release";
     private static final String COMPARE_METHOD = "compareTo";
 
@@ -92,7 +94,7 @@ public final class ConnectionPool extends AbstractDriverBasedDataSource {
         ProxyConnection proxyConnection = (ProxyConnection) Proxy.newProxyInstance(connection.getClass().getClassLoader(),
                 new Class[]{ProxyConnection.class},
                 (proxy, method, args) -> {
-                    if (RELEASE_METHOD.equals(method.getName())) {
+                    if (CLOSE_METHOD.equals(method.getName())) {
                         boolean isReleased = releaseConnection((ProxyConnection) proxy);
                         String log = isReleased ? "Proxy connection was returned to connection pool" :
                                 "There was a trouble while returning connection to pool.";
@@ -102,21 +104,21 @@ public final class ConnectionPool extends AbstractDriverBasedDataSource {
                     else if (COMPARE_METHOD.equals(method.getName())){
                         return proxy.hashCode() - args[0].hashCode();
                     }
+                    else if (RELEASE_METHOD.equals(method.getName())){
+                        connection.close();
+                        return null;
+                    }
                     return method.invoke(connection, args);
                 });
         logger.debug("Proxy connection " + proxyConnection + " was created.");
         return proxyConnection;
     }
 
-    @PreDestroy
-    public void destroy() throws SQLException{
+    @Override
+    public void close() throws IOException {
         logger.info("Connection pool is going to be destroyed...");
-        for (ProxyConnection proxyConnection : availableConnections) {
-            proxyConnection.close();
-        }
-        for (ProxyConnection usedConnection : usedConnections) {
-            usedConnection.close();
-        }
+        availableConnections.forEach(ProxyConnection::release);
+        usedConnections.forEach(ProxyConnection::release);
         deregisterDriver();
     }
 

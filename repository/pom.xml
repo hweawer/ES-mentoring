@@ -12,6 +12,11 @@
     <artifactId>repository</artifactId>
 
     <dependencies>
+        <dependency>
+            <groupId>com.epam.esm</groupId>
+            <artifactId>domain</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
         <!-- https://mvnrepository.com/artifact/org.postgresql/postgresql -->
         <dependency>
             <groupId>org.postgresql</groupId>
