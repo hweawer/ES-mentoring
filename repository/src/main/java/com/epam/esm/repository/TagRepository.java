@@ -4,6 +4,8 @@ import com.epam.esm.entity.Tag;
 import com.epam.esm.repository.specification.Specification;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Repository;
+import org.springframework.web.context.annotation.RequestScope;
 
 import java.util.HashMap;
 import java.util.List;
@@ -12,6 +14,8 @@ import java.util.Objects;
 
 import static com.epam.esm.config.DbColumns.*;
 
+@Repository
+@RequestScope
 public class TagRepository extends AbstractRepository<Tag> {
     private static final String DELETE_TAG = "DELETE FROM " + tagsTable + " WHERE " + tagId + "=?;";
 

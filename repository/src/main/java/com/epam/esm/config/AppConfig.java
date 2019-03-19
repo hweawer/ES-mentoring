@@ -4,6 +4,7 @@ import com.epam.esm.pool.ConnectionPool;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.*;
 import org.springframework.core.env.Environment;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 import javax.sql.DataSource;
 import java.util.Properties;
@@ -12,8 +13,7 @@ import java.util.Properties;
 @ComponentScan(value = "com.epam.esm")
 @PropertySource(value = "classpath:database.properties")
 public class AppConfig {
-    @Autowired
-    private Environment env;
+    private final Environment env;
 
     private static final String DEFAULT_URL = "jdbc:postgresql://localhost:5432/postgres?currentSchema=jes_test";
     private static final Integer DEFAULT_POOL_SIZE = 30;
@@ -24,6 +24,11 @@ public class AppConfig {
     private static final String password = "password";
     private static final String schema = "schema";
     private static final String size = "size";
+
+    @Autowired
+    public AppConfig(Environment env) {
+        this.env = env;
+    }
 
     @Bean
     public Properties connectionProperties(){
@@ -41,5 +46,11 @@ public class AppConfig {
         connectionPool.setSize(env.getProperty(size, Integer.class, DEFAULT_POOL_SIZE));
         connectionPool.setConnectionProperties(connectionProperties());
         return connectionPool;
+    }
+
+    @Bean
+    @Scope("prototype")
+    public JdbcTemplate jdbcTemplate(DataSource dataSource){
+        return new JdbcTemplate(dataSource);
     }
 }

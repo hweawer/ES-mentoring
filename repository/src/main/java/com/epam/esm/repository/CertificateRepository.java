@@ -1,10 +1,13 @@
 package com.epam.esm.repository;
 
 import com.epam.esm.entity.GiftCertificate;
+import com.epam.esm.repository.mapper.CertificateRowMapper;
 import com.epam.esm.repository.specification.Specification;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Repository;
+import org.springframework.web.context.annotation.RequestScope;
 
 import java.sql.Types;
 import java.util.HashMap;
@@ -14,14 +17,16 @@ import java.util.Objects;
 
 import static com.epam.esm.config.DbColumns.*;
 
+@Repository
+@RequestScope
 public class CertificateRepository extends AbstractRepository<GiftCertificate> {
     private static final String DELETE_CERTIFICATE = "DELETE FROM " + certificateTable + " WHERE " + certificateId + "=?;";
     private static final String UPDATE_CERTIFICATE = "UPDATE " + certificateTable + " SET " +
             certificateName + "=?, " +
             certificateDescription + "=?, " +
             certificatePrice + "=?, " +
-            creationDate + "=?, " +
-            modificationDate + "=?, " +
+            certificateCreationDate + "=?, " +
+            certificateModificationDate + "=?, " +
             certificateDuration + " =?" +
             " WHERE " + certificateId + "=?";
 
@@ -42,9 +47,9 @@ public class CertificateRepository extends AbstractRepository<GiftCertificate> {
                 Objects.requireNonNull(certificate.getDescription(), "CREATE CERTIFICATE: Certificate description is null"));
         parameters.put(certificatePrice,
                 Objects.requireNonNull(certificate.getPrice(), "CREATE CERTIFICATE: Certificate price is null"));
-        parameters.put(creationDate,
+        parameters.put(certificateCreationDate,
                 Objects.requireNonNull(certificate.getCreationDate(), "CREATE CERTIFICATE: Creation date is null"));
-        parameters.put(modificationDate, certificate.getModificationDate());
+        parameters.put(certificateModificationDate, certificate.getModificationDate());
         parameters.put(certificateDuration,
                 Objects.requireNonNull(certificate.getDuration(), "CREATE CERTIFICATE: Certificate duration is null"));
         Long id = certificate.getId();
@@ -78,11 +83,12 @@ public class CertificateRepository extends AbstractRepository<GiftCertificate> {
 
     @Override
     public List<GiftCertificate> queryFromDatabase(Specification<GiftCertificate> specification) {
-        return null;
+        String sql = specification.toSqlClauses();
+        return jdbcTemplate.query(sql, new CertificateRowMapper());
     }
 
     @Override
     public List<GiftCertificate> queryFromCollection(Specification<GiftCertificate> specification) {
-        return null;
+        throw new UnsupportedOperationException();
     }
 }
