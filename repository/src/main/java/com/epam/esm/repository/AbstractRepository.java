@@ -1,5 +1,6 @@
 package com.epam.esm.repository;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 
@@ -8,6 +9,7 @@ import java.sql.Types;
 public abstract class AbstractRepository<T> implements Repository<T> {
     protected String rootTable;
     protected String generatedIdColumn;
+    @Autowired
     protected JdbcTemplate jdbcTemplate;
     protected SimpleJdbcInsert simpleJdbcInsert;
 

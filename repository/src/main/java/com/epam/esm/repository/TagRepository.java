@@ -1,43 +1,45 @@
 package com.epam.esm.repository;
 
+import com.epam.esm.config.DbColumns;
 import com.epam.esm.entity.Tag;
 import com.epam.esm.repository.specification.Specification;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
-import org.springframework.web.context.annotation.RequestScope;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.epam.esm.config.DbColumns.*;
 
 @Repository
-@RequestScope
 public class TagRepository extends AbstractRepository<Tag> {
-    private static final String DELETE_TAG = "DELETE FROM " + tagsTable + " WHERE " + tagId + "=?;";
+    private static final Logger logger = LogManager.getLogger();
 
     public TagRepository(JdbcTemplate jdbcTemplate) {
-        super(jdbcTemplate, tagsTable, tagId);
+        super(jdbcTemplate, tagsTable, id);
     }
 
     @Override
-    public Long create(Tag tag) {
+    public Tag create(Tag tag) {
         Objects.requireNonNull(tag, "TAG CREATE: Tag is null");
         Objects.requireNonNull(tag.getName(), "TAG CREATE: Tag name is null;");
         Map<String, Object> parameters = new HashMap<>();
-        parameters.put(tagName, tag.getName());
+        parameters.put(name, tag.getName());
         Long id = tag.getId();
         if (id != null){
-            parameters.put(tagId, id);
+            parameters.put(DbColumns.id, id);
         }
-        return simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
+        Long insertedId = simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
+        tag.setId(insertedId);
+        return tag;
     }
 
     @Override
     public Integer remove(Tag tag) {
+        String DELETE_TAG = "DELETE FROM " + tagsTable + " WHERE " + tagId + "=?;";
         Objects.requireNonNull(tag, "TAG REMOVE: Tag is null");
         Long id = tag.getId();
         Objects.requireNonNull(id, "TAG REMOVE: Tag id is null");
@@ -50,13 +52,16 @@ public class TagRepository extends AbstractRepository<Tag> {
     }
 
     @Override
-    public List<Tag> queryFromDatabase(Specification<Tag> specification) {
+    public List<Tag> queryFromDatabase(Specification specification) {
         String sql = specification.toSqlClauses();
         return jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(Tag.class));
     }
 
     @Override
-    public List<Tag> queryFromCollection(Specification<Tag> specification) {
-        throw new UnsupportedOperationException("Unsupported operation: query from collection.");
+    public List<Tag> queryFromDatabase(Collection<Specification> specification) {
+        String sql = specification.stream()
+                .map(Specification::toSqlClauses)
+                .collect(Collectors.joining(" ")) + ";";
+        return jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(Tag.class));
     }
 }

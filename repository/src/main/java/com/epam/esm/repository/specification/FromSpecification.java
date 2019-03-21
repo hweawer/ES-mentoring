@@ -7,7 +7,7 @@ import java.util.LinkedList;
 import java.util.Objects;
 import java.util.Queue;
 
-public class FromSpecification<T> implements Specification<T> {
+public class FromSpecification implements Specification {
     private static Logger logger = LogManager.getLogger();
 
     private String table;
@@ -32,6 +32,11 @@ public class FromSpecification<T> implements Specification<T> {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     * <code>SELECT * FROM certificates</code>
+     * @return SQL FROM query based on table
+     */
     @Override
     public String toSqlClauses() {
         StringBuilder statement = new StringBuilder("SELECT ");
@@ -45,11 +50,6 @@ public class FromSpecification<T> implements Specification<T> {
         statement.append("FROM ").append(Objects.requireNonNull(table));
         logger.debug("SQL FROM: " + statement);
         return statement.toString();
-    }
-
-    @Override
-    public boolean specification(T t) {
-        throw new UnsupportedOperationException();
     }
 
     public void setColumns(Queue<String> columns) {

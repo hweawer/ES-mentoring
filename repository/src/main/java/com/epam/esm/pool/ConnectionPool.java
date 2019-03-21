@@ -1,6 +1,6 @@
 package com.epam.esm.pool;
 
-import com.epam.esm.config.AppConfig;
+import com.epam.esm.config.RepositoryConfig;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.jdbc.datasource.AbstractDriverBasedDataSource;
@@ -17,6 +17,7 @@ import java.util.Enumeration;
 import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -39,7 +40,7 @@ public final class ConnectionPool extends AbstractDriverBasedDataSource implemen
     @PostConstruct
     private void init() {
         availableConnections = new LinkedBlockingQueue<>(size);
-        usedConnections = new ConcurrentSkipListSet<>();
+        usedConnections = new ConcurrentHashMap<ProxyConnection, Boolean>().newKeySet();
         logger.info("Connection pool was initialized.");
     }
 
@@ -89,7 +90,7 @@ public final class ConnectionPool extends AbstractDriverBasedDataSource implemen
 
     private ProxyConnection createConnection(Properties connectionProperties) throws SQLException{
         Connection connection = DriverManager.getConnection(
-                (String) connectionProperties.get(AppConfig.url),
+                (String) connectionProperties.get(RepositoryConfig.url),
                 connectionProperties);
         ProxyConnection proxyConnection = (ProxyConnection) Proxy.newProxyInstance(connection.getClass().getClassLoader(),
                 new Class[]{ProxyConnection.class},

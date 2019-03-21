@@ -4,7 +4,7 @@ import com.epam.esm.repository.specification.Specification;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class OrderBySpecification<T> implements Specification<T> {
+public class OrderBySpecification implements Specification {
     private static Logger logger = LogManager.getLogger();
     private String column;
     private boolean asc = true;
@@ -13,17 +13,17 @@ public class OrderBySpecification<T> implements Specification<T> {
         this.column = column;
     }
 
+    /**
+     * {@inheritDoc}''
+     * <code>ORDER BY name</code>
+     * @return Returns SQL ORDER BY based on column
+     */
     @Override
     public String toSqlClauses() {
         String statement = "ORDER BY " + column;
         if (!asc) statement += " DESC";
         logger.debug("SQL ORDER BY: " + statement);
         return statement;
-    }
-
-    @Override
-    public boolean specification(T t) {
-        throw new UnsupportedOperationException();
     }
 
     public String getColumn() {

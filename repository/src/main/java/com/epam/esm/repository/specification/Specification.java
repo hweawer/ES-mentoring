@@ -1,11 +1,12 @@
 package com.epam.esm.repository.specification;
 
-import java.util.function.Predicate;
-
-public interface Specification<T> {
+/**
+ * API that provides access to the search criteria
+ */
+public interface Specification {
+    /**
+     * Creates SQL query for criteria
+     * @return SQL query
+     */
     String toSqlClauses();
-    boolean specification(T t);
-    default Predicate<T> toPredicate(){
-        return this::specification;
-    }
 }

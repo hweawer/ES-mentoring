@@ -1,33 +1,25 @@
 package com.epam.esm.repository.specification;
 
-import java.util.LinkedList;
+import java.util.ArrayDeque;
+import java.util.Collection;
 import java.util.Queue;
-import java.util.stream.Collectors;
 
-public class SpecificationBuilder<T> implements Specification<T>{
-    private final Queue<Specification<T>> specifications;
+public class SpecificationBuilder {
+    private final Queue<Specification> specifications;
 
     public SpecificationBuilder(){
-        specifications = new LinkedList<>();
+        specifications = new ArrayDeque<>();
     }
 
-    public SpecificationBuilder(Queue<Specification<T>> specifications){
+    public SpecificationBuilder(Queue<Specification> specifications){
         this.specifications = specifications;
     }
 
-    @Override
-    public String toSqlClauses() {
-        return specifications.stream()
-                .map(Specification::toSqlClauses)
-                .collect(Collectors.joining(" ")) + ";";
+    public Collection<Specification> getSpecifications() {
+        return specifications;
     }
 
-    @Override
-    public boolean specification(T t) {
-        throw new UnsupportedOperationException();
-    }
-
-    public boolean addSpecification(Specification<T> specification) {
+    public boolean addSpecification(Specification specification) {
         return specifications.add(specification);
     }
 }

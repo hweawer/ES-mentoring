@@ -1,66 +1,70 @@
 package com.epam.esm.repository;
 
+import com.epam.esm.config.DbColumns;
 import com.epam.esm.entity.GiftCertificate;
-import com.epam.esm.repository.mapper.CertificateRowMapper;
+import com.epam.esm.entity.Tag;
 import com.epam.esm.repository.specification.Specification;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import org.springframework.web.context.annotation.RequestScope;
 
 import java.sql.Types;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.epam.esm.config.DbColumns.*;
 
 @Repository
-@RequestScope
 public class CertificateRepository extends AbstractRepository<GiftCertificate> {
-    private static final String DELETE_CERTIFICATE = "DELETE FROM " + certificateTable + " WHERE " + certificateId + "=?;";
-    private static final String UPDATE_CERTIFICATE = "UPDATE " + certificateTable + " SET " +
-            certificateName + "=?, " +
-            certificateDescription + "=?, " +
-            certificatePrice + "=?, " +
-            certificateCreationDate + "=?, " +
-            certificateModificationDate + "=?, " +
-            certificateDuration + " =?" +
-            " WHERE " + certificateId + "=?";
-
     private static final Logger logger = LogManager.getLogger(CertificateRepository.class);
 
     public CertificateRepository(JdbcTemplate jdbcTemplate) {
-        super(jdbcTemplate, certificateTable, certificateId);
+        super(jdbcTemplate, certificateTable, id);
     }
 
     @Override
-    public Long create(GiftCertificate certificate) {
+    public GiftCertificate create(GiftCertificate certificate) {
         logger.debug("CREATE CERTIFICATE: " + certificate);
         Objects.requireNonNull(certificate, "CERTIFICATE CREATE: Certificate is null");
         Map<String, Object> parameters = new HashMap<>();
-        parameters.put(certificateName,
+        parameters.put(name,
                 Objects.requireNonNull(certificate.getName(), "CREATE CERTIFICATE: Certificate name is null"));
-        parameters.put(certificateDescription,
+        parameters.put(description,
                 Objects.requireNonNull(certificate.getDescription(), "CREATE CERTIFICATE: Certificate description is null"));
-        parameters.put(certificatePrice,
+        parameters.put(price,
                 Objects.requireNonNull(certificate.getPrice(), "CREATE CERTIFICATE: Certificate price is null"));
-        parameters.put(certificateCreationDate,
+        parameters.put(creationDate,
                 Objects.requireNonNull(certificate.getCreationDate(), "CREATE CERTIFICATE: Creation date is null"));
-        parameters.put(certificateModificationDate, certificate.getModificationDate());
-        parameters.put(certificateDuration,
+        parameters.put(modificationDate, certificate.getModificationDate());
+        parameters.put(duration,
                 Objects.requireNonNull(certificate.getDuration(), "CREATE CERTIFICATE: Certificate duration is null"));
         Long id = certificate.getId();
         if (id != null){
-            parameters.put(certificateId, id);
+            parameters.put(DbColumns.id, id);
         }
-        return simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
+        Long insertedId = simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
+        certificate.setId(insertedId);
+
+        Set<Tag> tags = certificate.getTagSet();
+        if(tags != null){
+            SimpleJdbcInsert relationInsert = new SimpleJdbcInsert(jdbcTemplate)
+                    .withTableName(relationTable);
+            Map<String, Object> relationParameters = new HashMap<>();
+            tags.forEach(tag -> {
+                relationParameters.put(relationCertificateId, insertedId);
+                relationParameters.put(relationTagId, tag.getId());
+                relationInsert.execute(relationParameters);
+            });
+        }
+        return certificate;
     }
 
     @Override
     public Integer remove(GiftCertificate certificate) {
+        String DELETE_CERTIFICATE = "DELETE FROM " + certificateTable + " WHERE " + certificateId + "=?;";
         Objects.requireNonNull(certificate, "CERTIFICATE REMOVE: Certificate is null");
         Long id = certificate.getId();
         Objects.requireNonNull(id, "CERTIFICATE REMOVE: Certificate id is null");
@@ -69,6 +73,14 @@ public class CertificateRepository extends AbstractRepository<GiftCertificate> {
 
     @Override
     public Integer update(GiftCertificate certificate) {
+        String UPDATE_CERTIFICATE = "UPDATE " + certificateTable + " SET " +
+                certificateName + "=?, " +
+                certificateDescription + "=?, " +
+                certificatePrice + "=?, " +
+                certificateCreationDate + "=?, " +
+                certificateModificationDate + "=?, " +
+                certificateDuration + " =?" +
+                " WHERE " + certificateId + "=?";
         logger.debug("UPDATE CERTIFICATE: " + certificate);
         Object[] params = { certificate.getName(),
                 certificate.getDescription(),
@@ -82,13 +94,16 @@ public class CertificateRepository extends AbstractRepository<GiftCertificate> {
     }
 
     @Override
-    public List<GiftCertificate> queryFromDatabase(Specification<GiftCertificate> specification) {
+    public List<GiftCertificate> queryFromDatabase(Specification specification) {
         String sql = specification.toSqlClauses();
-        return jdbcTemplate.query(sql, new CertificateRowMapper());
+        return jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(GiftCertificate.class));
     }
 
     @Override
-    public List<GiftCertificate> queryFromCollection(Specification<GiftCertificate> specification) {
-        throw new UnsupportedOperationException();
+    public List<GiftCertificate> queryFromDatabase(Collection<Specification> specification) {
+        String sql = specification.stream()
+                .map(Specification::toSqlClauses)
+                .collect(Collectors.joining(" ")) + ";";
+        return jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(GiftCertificate.class));
     }
 }

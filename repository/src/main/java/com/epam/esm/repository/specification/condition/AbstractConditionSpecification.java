@@ -2,16 +2,16 @@ package com.epam.esm.repository.specification.condition;
 
 import com.epam.esm.repository.specification.Specification;
 
-public abstract class ConditionSpecification<T> implements Specification<T> {
-    String key;
-    Object value;
+public abstract class AbstractConditionSpecification implements Specification {
+    protected Object key;
+    protected Object value;
 
-    ConditionSpecification(String key, Object value){
+    AbstractConditionSpecification(Object key, Object value){
         this.key = key;
         this.value = value;
     }
 
-    public String getKey() {
+    public Object getKey() {
         return key;
     }
 
@@ -25,10 +25,5 @@ public abstract class ConditionSpecification<T> implements Specification<T> {
 
     public void setValue(Object value) {
         this.value = value;
-    }
-
-    @Override
-    public boolean specification(T t) {
-        throw new UnsupportedOperationException();
     }
 }
