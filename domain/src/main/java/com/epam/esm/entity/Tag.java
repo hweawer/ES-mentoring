@@ -1,10 +1,16 @@
 package com.epam.esm.entity;
 
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import java.io.Serializable;
 import java.util.Objects;
 
 public class Tag implements Serializable {
+    @NotNull
     private Long id;
+
+    @NotNull
+    @Pattern(regexp = "\\p{L}{3,12}")
     private String name;
 
     public Tag(){}
