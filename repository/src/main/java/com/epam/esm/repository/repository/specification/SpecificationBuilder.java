@@ -1,15 +1,21 @@
 package com.epam.esm.repository.repository.specification;
 
+import com.epam.esm.repository.repository.SqlQuery;
+
+import java.util.ArrayList;
+import java.util.List;
+
 public class SpecificationBuilder implements Specification {
     private final StringBuilder sql;
+    private List<Object> params = new ArrayList<>();
 
     public SpecificationBuilder(){
         sql = new StringBuilder();
     }
 
     @Override
-    public String toSqlClauses() {
-        return sql.toString();
+    public SqlQuery toSqlClauses() {
+        return new SqlQuery(sql.toString(), params.toArray(Object[]::new));
     }
 
     public SpecificationBuilder select() {
@@ -47,23 +53,27 @@ public class SpecificationBuilder implements Specification {
         return this;
     }
 
-    public SpecificationBuilder equal(String column) {
+    public SpecificationBuilder equal(String column, String arg) {
         sql.append(column).append("=?");
+        params.add(arg);
         return this;
     }
 
-    public SpecificationBuilder more(String column) {
+    public SpecificationBuilder more(String column, Number arg) {
         sql.append(column).append(">?");
+        params.add(arg);
         return this;
     }
 
-    public SpecificationBuilder less(String column) {
+    public SpecificationBuilder less(String column, Number arg) {
         sql.append(column).append("<?");
+        params.add(arg);
         return this;
     }
 
-    public SpecificationBuilder like(String column) {
+    public SpecificationBuilder like(String column, String arg) {
         sql.append(column).append(" LIKE ?");
+        params.add(arg);
         return this;
     }
 

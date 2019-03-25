@@ -1,6 +1,7 @@
 package com.epam.esm.repository.repository;
 
 import com.epam.esm.entity.Tag;
+import com.epam.esm.repository.config.TagTable;
 import com.epam.esm.repository.repository.specification.Specification;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -11,8 +12,6 @@ import org.springframework.stereotype.Repository;
 
 import java.util.*;
 
-import static com.epam.esm.repository.config.TagTable.*;
-
 @Repository
 public class TagRepository extends AbstractRepository<Tag> {
     private static final Logger logger = LogManager.getLogger();
@@ -21,7 +20,7 @@ public class TagRepository extends AbstractRepository<Tag> {
 
     @Autowired
     public TagRepository(JdbcTemplate jdbcTemplate, BeanPropertyRowMapper<Tag> tagMapper) {
-        super(jdbcTemplate, tableName, id);
+        super(jdbcTemplate, TagTable.tableName, TagTable.id);
         this.tagMapper = tagMapper;
     }
 
@@ -30,7 +29,7 @@ public class TagRepository extends AbstractRepository<Tag> {
         Objects.requireNonNull(tag, "TAG CREATE: Tag is null");
         Objects.requireNonNull(tag.getName(), "TAG CREATE: Tag name is null;");
         Map<String, Object> parameters = new HashMap<>();
-        parameters.put(name, tag.getName());
+        parameters.put(TagTable.name, tag.getName());
         Long insertedId = simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
         tag.setId(insertedId);
         logger.debug("Tag entity: " + tag + " was created.");
@@ -38,8 +37,8 @@ public class TagRepository extends AbstractRepository<Tag> {
     }
 
     @Override
-    public Integer remove(Long id) {
-        String DELETE_TAG = "DELETE FROM " + tableName + " WHERE " + tagId + "=?;";
+    public Integer delete(Long id) {
+        final String DELETE_TAG = "DELETE FROM " + TagTable.tableName + " WHERE " + TagTable.id + "=?;";
         return remove(DELETE_TAG, id);
     }
 
@@ -50,13 +49,19 @@ public class TagRepository extends AbstractRepository<Tag> {
 
     @Override
     public List<Tag> queryFromDatabase(Specification specification) {
-        String sql = specification.toSqlClauses();
-        return jdbcTemplate.query(sql, tagMapper);
+        SqlQuery sqlQuery = specification.toSqlClauses();
+        return jdbcTemplate.query(sqlQuery.getSql(), sqlQuery.getParams(), tagMapper);
     }
 
     @Override
-    public List<Tag> queryFromDatabase(Specification specification, Object[] args) {
-        String sql = specification.toSqlClauses();
-        return jdbcTemplate.query(sql, args, tagMapper);
+    public List<Tag> findAll() {
+        final String SELECT_ALL = "SELECT * FROM " + TagTable.tableName;
+        return jdbcTemplate.query(SELECT_ALL, tagMapper);
+    }
+
+    @Override
+    public List<Tag> findById(Long id) {
+        final String SELECT_BY_ID = "SELECT * FROM " + TagTable.tableName + " WHERE " + TagTable.id + "=?";
+        return jdbcTemplate.query(SELECT_BY_ID, new Object[]{id}, tagMapper);
     }
 }

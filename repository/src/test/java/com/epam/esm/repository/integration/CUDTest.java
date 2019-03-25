@@ -82,25 +82,25 @@ public class CUDTest {
 
     @Test
     public void deleteTag(){
-        int rows = tagRepository.remove(5L);
+        int rows = tagRepository.delete(5L);
         Assert.assertEquals(1, rows);
     }
 
     @Test
     public void deleteTagNegative(){
-        int rows = tagRepository.remove(16L);
+        int rows = tagRepository.delete(16L);
         Assert.assertEquals(0, rows);
     }
 
     @Test
     public void deleteCertificate(){
-        int affectedRows = certificateRepository.remove(2L);
+        int affectedRows = certificateRepository.delete(2L);
         Assert.assertEquals(1, affectedRows);
     }
 
     @Test
     public void deleteCertificateNegative(){
-        int affectedRows = certificateRepository.remove(220L);
+        int affectedRows = certificateRepository.delete(220L);
         Assert.assertEquals(0, affectedRows);
     }
 }

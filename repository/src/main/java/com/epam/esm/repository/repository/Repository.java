@@ -6,8 +6,9 @@ import java.util.List;
 
 public interface Repository<T> {
     T create(T t);
-    Integer remove(Long id);
+    Integer delete(Long id);
     Integer update(T t);
     List<T> queryFromDatabase(Specification specification);
-    List<T> queryFromDatabase(Specification specification, Object[] args);
+    List<T> findAll();
+    List<T> findById(Long id);
 }

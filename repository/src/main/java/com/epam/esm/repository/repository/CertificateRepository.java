@@ -14,10 +14,10 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static com.epam.esm.repository.config.CertificateTable.*;
 import static com.epam.esm.repository.config.CertificateTagTable.*;
+import static java.util.stream.Collectors.*;
 
 @Repository
 public class CertificateRepository extends AbstractRepository<GiftCertificate> {
@@ -60,23 +60,23 @@ public class CertificateRepository extends AbstractRepository<GiftCertificate> {
     }
 
     @Override
-    public Integer remove(Long id) {
-        String DELETE_CERTIFICATE = "DELETE FROM " + CertificateTable.tableName
-                + " WHERE " + certificateId + "=?;";
+    public Integer delete(Long id) {
+        final String DELETE_CERTIFICATE = "DELETE FROM " + CertificateTable.tableName
+                + " WHERE " + CertificateTable.id + "=?;";
         return remove(DELETE_CERTIFICATE, id);
     }
 
     @Override
     public Integer update(GiftCertificate certificate) {
         Objects.requireNonNull(certificate, "CERTIFICATE REMOVE: Certificate is null");
-        String UPDATE_CERTIFICATE = "UPDATE " + CertificateTable.tableName + " SET " +
-                name + "=?, " +
-                description + "=?, " +
-                price + "=?, " +
-                creationDate + "=?, " +
-                modificationDate + "=?, " +
-                duration + " =?" +
-                " WHERE " + id + "=?";
+        final String UPDATE_CERTIFICATE = "UPDATE " + CertificateTable.tableName + " SET " +
+                CertificateTable.name + "=?, " +
+                CertificateTable.description + "=?, " +
+                CertificateTable.price + "=?, " +
+                CertificateTable.creationDate + "=?, " +
+                CertificateTable.modificationDate + "=?, " +
+                CertificateTable.duration + " =?" +
+                " WHERE " + CertificateTable.id + "=?";
         logger.debug("UPDATE CERTIFICATE: " + certificate);
         Object[] params = { certificate.getName(),
                 certificate.getDescription(),
@@ -90,25 +90,24 @@ public class CertificateRepository extends AbstractRepository<GiftCertificate> {
     }
 
     private void manageUpdateRelation(GiftCertificate certificate){
-        String SELECT_RELATION = "SELECT " + relationTagId + " FROM " + CertificateTagTable.tableName
-                + " WHERE " + relationCertificateId + "=?";
+        final String SELECT_RELATION = "SELECT " + CertificateTagTable.relationTagId + " FROM " + CertificateTagTable.tableName
+                + " WHERE " + CertificateTagTable.relationCertificateId + "=?";
         List<Long> relations = jdbcTemplate.queryForList(SELECT_RELATION,
                 new Object[]{certificate.getId()},
                 Long.class);
         List<Long> tagIds = certificate.getTags().stream()
                 .map(Tag::getId)
-                .collect(Collectors.toList());
+                .collect(toList());
         List<Long> deleteIds = relations.stream()
                 .filter(id -> !tagIds.contains(id))
-                .collect(Collectors.toList());
+                .collect(toList());
         List<Long> insertIds = tagIds.stream()
                 .filter(id -> !relations.contains(id))
-                .collect(Collectors.toList());
-        String DELETE_RELATION = "DELETE FROM "
+                .collect(toList());
+        final String DELETE_RELATION = "DELETE FROM "
                 + CertificateTagTable.tableName
-                + " WHERE " + relationCertificateId
-                + "=? AND " + relationTagId
-                + "=?";
+                + " WHERE " + relationCertificateId + "=?"
+                + " AND "+ relationTagId + "=?";
         deleteIds.forEach(id -> jdbcTemplate.update(DELETE_RELATION, new Object[]{certificate.getId(), id}));
         Map<String, Object> relationParameters = new HashMap<>();
         insertIds.forEach(id -> {
@@ -122,13 +121,19 @@ public class CertificateRepository extends AbstractRepository<GiftCertificate> {
 
     @Override
     public List<GiftCertificate> queryFromDatabase(Specification specification) {
-        String sql = specification.toSqlClauses();
-        return jdbcTemplate.query(sql, giftMapper);
+        SqlQuery sqlQuery = specification.toSqlClauses();
+        return jdbcTemplate.query(sqlQuery.getSql(), sqlQuery.getParams(), giftMapper);
     }
 
     @Override
-    public List<GiftCertificate> queryFromDatabase(Specification specification, Object[] args) {
-        String sql = specification.toSqlClauses();
-        return jdbcTemplate.query(sql, args, giftMapper);
+    public List<GiftCertificate> findAll() {
+        final String SELECT_ALL = "SELECT * FROM " + CertificateTable.tableName;
+        return jdbcTemplate.query(SELECT_ALL, giftMapper);
+    }
+
+    @Override
+    public List<GiftCertificate> findById(Long id) {
+        final String SELECT_BY_ID = "SELECT * FROM " + CertificateTable.tableName + " WHERE " + CertificateTable.id + "=?";
+        return jdbcTemplate.query(SELECT_BY_ID, new Object[]{id}, giftMapper);
     }
 }

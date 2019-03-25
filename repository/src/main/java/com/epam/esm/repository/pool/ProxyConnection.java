@@ -7,8 +7,8 @@ import java.sql.Connection;
  */
 public interface ProxyConnection extends Connection {
     /**
-     * Method that physically closes the connection.
-     * Method close is proxied and only returns connection to the pool.
+     * Method to close the connection physically.
+     * {@link ProxyConnection#close()} Method to return the connection to the pool.
      */
     void forceClose();
 }

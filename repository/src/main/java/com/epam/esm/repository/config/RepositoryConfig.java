@@ -43,7 +43,7 @@ public class RepositoryConfig {
     }
 
     @Bean
-    public DataSource connectionPool(){
+    public DataSource connectionPool() {
         ConnectionPool connectionPool = new ConnectionPool();
         connectionPool.setSize(env.getProperty(size, Integer.class, DEFAULT_POOL_SIZE));
         connectionPool.setConnectionProperties(connectionProperties());
