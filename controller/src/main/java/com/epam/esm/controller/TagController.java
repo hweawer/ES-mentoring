@@ -38,15 +38,15 @@ public class TagController {
         }
     }
 
-//    @GetMapping
-//    public TagDTO findByName(@RequestParam(value="name") String name){
-//        try {
-//            logger.debug("findByName tag");
-//            return tagService.findByName(name);
-//        } catch (ServiceException e) {
-//            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Can't find tag", e);
-//        }
-//    }
+    @GetMapping(value = "/name/{name}")
+    public TagDTO findByName(@PathVariable("name") String name){
+        try {
+            logger.debug("findByName tag");
+            return tagService.findByName(name);
+        } catch (ServiceException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Can't find tag", e);
+        }
+    }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
