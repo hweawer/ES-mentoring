@@ -14,6 +14,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
 import java.util.*;
+import java.util.stream.Stream;
 
 import static com.epam.esm.repository.config.CertificateTable.*;
 import static com.epam.esm.repository.config.CertificateTagTable.*;
@@ -26,7 +27,8 @@ public class CertificateRepository extends AbstractRepository<GiftCertificate> {
 
     private final BeanPropertyRowMapper<GiftCertificate> giftMapper;
     @Autowired
-    public CertificateRepository(JdbcTemplate jdbcTemplate, BeanPropertyRowMapper<GiftCertificate> giftMapper, BeanPropertyRowMapper<Tag> tagMapper) {
+    public CertificateRepository(JdbcTemplate jdbcTemplate,
+                                 BeanPropertyRowMapper<GiftCertificate> giftMapper) {
         super(jdbcTemplate, CertificateTable.tableName, CertificateTable.id);
         this.giftMapper = giftMapper;
     }
@@ -44,19 +46,17 @@ public class CertificateRepository extends AbstractRepository<GiftCertificate> {
                 duration, certificate.getDuration()
         );
 
-        Long insertedId = simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
-        certificate.setId(insertedId);
+        Long insertedCertificateId = simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
+        certificate.setId(insertedCertificateId);
 
         Set<Tag> tags = certificate.getTags();
-        tags.forEach(tag -> {
-            SimpleJdbcInsert relationInsert = new SimpleJdbcInsert(jdbcTemplate)
-                    .withTableName(CertificateTagTable.tableName);
-            Map<String, Object> relationParameters = Map.of(
-                    relationCertificateId, insertedId,
-                    relationTagId, tag.getId()
-            );
-            relationInsert.execute(relationParameters);
-        });
+        tags.forEach(tag -> new SimpleJdbcInsert(jdbcTemplate)
+                    .withTableName(CertificateTagTable.tableName)
+                    .execute(Map.of(
+                        relationCertificateId, insertedCertificateId,
+                        relationTagId, tag.getId()
+                        ))
+        );
         return certificate;
     }
 
@@ -102,17 +102,19 @@ public class CertificateRepository extends AbstractRepository<GiftCertificate> {
         List<Long> deleteIds = currentAssignedTagIds.stream()
                 .filter(not(targetAssignedTagIds::contains))
                 .collect(toList());
-        List<Long> insertIds = targetAssignedTagIds.stream()
+        List<Long> insertedCertificateIds = targetAssignedTagIds.stream()
                 .filter(not(currentAssignedTagIds::contains))
                 .collect(toList());
         String deleteRelation = "DELETE FROM "
                 + CertificateTagTable.tableName
                 + " WHERE " + relationCertificateId + " IN (";
-        String params = deleteIds.stream().map(id -> "?").collect(joining(",", "", ")"));
+        String params = Stream.generate(() -> "?")
+                .limit(deleteIds.size())
+                .collect(joining(",", "", ")"));
         deleteRelation += params;
         jdbcTemplate.update(deleteRelation, deleteIds.toArray(Object[]::new));
         Map<String, Object> relationParameters = new HashMap<>();
-        insertIds.forEach(id -> {
+        insertedCertificateIds.forEach(id -> {
             SimpleJdbcInsert relationInsert = new SimpleJdbcInsert(jdbcTemplate)
                     .withTableName(CertificateTagTable.tableName);
             relationParameters.put(relationCertificateId, certificate.getId());
