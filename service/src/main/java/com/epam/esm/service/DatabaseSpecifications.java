@@ -1,5 +1,6 @@
 package com.epam.esm.service;
 
+import com.epam.esm.entity.GiftCertificate;
 import com.epam.esm.repository.config.CertificateTable;
 import com.epam.esm.repository.config.CertificateTagTable;
 import com.epam.esm.repository.config.TagTable;
@@ -7,31 +8,21 @@ import com.epam.esm.repository.repository.specification.Specification;
 import com.epam.esm.repository.repository.specification.SpecificationBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.stereotype.Component;
 
-@Component
 public final class DatabaseSpecifications {
     private static Logger logger = LogManager.getLogger();
 
-    public static Specification findAllGifts(){
-        SpecificationBuilder builder = new SpecificationBuilder();
-        builder.select()
-                .from(CertificateTable.tableName);
-        logger.debug("SQL findAllGifts : " + builder.toSqlClauses());
-        return builder;
-    }
-
-    public static Specification findTagByName(){
+    public static Specification findTagByName(String name){
         SpecificationBuilder builder = new SpecificationBuilder();
         builder.select()
                 .from(TagTable.tableName)
                 .where()
-                .equal(TagTable.name);
+                .equal(TagTable.name, name);
         logger.debug("SQL findTagByName : " + builder.toSqlClauses());
         return builder;
     }
 
-    public static Specification tagsByCertificate(){
+    public static Specification tagsByCertificate(GiftCertificate certificate){
         SpecificationBuilder builder = new SpecificationBuilder();
         builder.select()
                 .from(CertificateTable.tableName)
@@ -42,28 +33,8 @@ public final class DatabaseSpecifications {
                         CertificateTagTable.relationCertificateTableId,
                         TagTable.tagId)
                 .where()
-                .equal(CertificateTable.certificateId);
+                .equal(CertificateTable.certificateId, certificate.getId());
         logger.debug("SQL tagsByCertificate : " + builder.toSqlClauses());
-        return builder;
-    }
-
-    public static Specification findTagById(){
-        SpecificationBuilder builder = new SpecificationBuilder();
-        builder.select()
-                .from(TagTable.tableName)
-                .where()
-                .equal(TagTable.id);
-        logger.debug("SQL findTagById : " + builder.toSqlClauses());
-        return builder;
-    }
-
-    public static Specification findCertificateById(){
-        SpecificationBuilder builder = new SpecificationBuilder();
-        builder.select()
-                .from(CertificateTable.tableName)
-                .where()
-                .equal(CertificateTable.id);
-        logger.debug("SQL findCertificateById : " + builder.toSqlClauses());
         return builder;
     }
 
@@ -85,28 +56,20 @@ public final class DatabaseSpecifications {
         return builder;
     }
 
-    public static Specification certificatesByNamePart(){
-        return byLike(CertificateTable.name);
+    public static Specification certificatesByNamePart(String pattern){
+        return byLike(CertificateTable.name, pattern);
     }
 
-    public static Specification certificatesByDescriptionPart(){
-        return byLike(CertificateTable.description);
+    public static Specification certificatesByDescriptionPart(String pattern){
+        return byLike(CertificateTable.description, pattern);
     }
 
-    public static Specification findAllTags(){
-        SpecificationBuilder builder = new SpecificationBuilder();
-        builder.select()
-                .from(TagTable.tableName);
-        logger.debug("SQL findAllTags : " + builder.toSqlClauses());
-        return builder;
-    }
-
-    private static Specification byLike(String column) {
+    private static Specification byLike(String column, String pattern) {
         SpecificationBuilder builder = new SpecificationBuilder();
         builder.select()
                 .from(CertificateTable.tableName)
                 .where()
-                .equal(column);
+                .like(column, pattern);
         logger.debug("SQL byLike : " + builder.toSqlClauses());
         return builder;
     }

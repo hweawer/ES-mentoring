@@ -17,6 +17,7 @@ import java.util.*;
 
 import static com.epam.esm.repository.config.CertificateTable.*;
 import static com.epam.esm.repository.config.CertificateTagTable.*;
+import static java.util.function.Predicate.not;
 import static java.util.stream.Collectors.*;
 
 @Repository
@@ -34,28 +35,28 @@ public class CertificateRepository extends AbstractRepository<GiftCertificate> {
     public GiftCertificate create(GiftCertificate certificate) {
         Objects.requireNonNull(certificate, "CERTIFICATE CREATE: Certificate is null");
         logger.debug("CREATE CERTIFICATE: " + certificate);
-        Map<String, Object> parameters = new HashMap<>();
-        parameters.put(name, certificate.getName());
-        parameters.put(description, certificate.getDescription());
-        parameters.put(price, certificate.getPrice());
-        parameters.put(creationDate, certificate.getCreationDate());
-        parameters.put(modificationDate, certificate.getModificationDate());
-        parameters.put(duration, certificate.getDuration());
+        Map<String, Object> parameters = Map.of(
+                name, certificate.getName(),
+                description, certificate.getDescription(),
+                price, certificate.getPrice(),
+                creationDate, certificate.getCreationDate(),
+                modificationDate, certificate.getModificationDate(),
+                duration, certificate.getDuration()
+        );
 
         Long insertedId = simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
         certificate.setId(insertedId);
 
         Set<Tag> tags = certificate.getTags();
-        if(!tags.isEmpty()){
-            Map<String, Object> relationParameters = new HashMap<>();
-            tags.forEach(tag -> {
-                SimpleJdbcInsert relationInsert = new SimpleJdbcInsert(jdbcTemplate)
-                        .withTableName(CertificateTagTable.tableName);
-                relationParameters.put(relationCertificateId, insertedId);
-                relationParameters.put(relationTagId, tag.getId());
-                relationInsert.execute(relationParameters);
-            });
-        }
+        tags.forEach(tag -> {
+            SimpleJdbcInsert relationInsert = new SimpleJdbcInsert(jdbcTemplate)
+                    .withTableName(CertificateTagTable.tableName);
+            Map<String, Object> relationParameters = Map.of(
+                    relationCertificateId, insertedId,
+                    relationTagId, tag.getId()
+            );
+            relationInsert.execute(relationParameters);
+        });
         return certificate;
     }
 
@@ -85,30 +86,31 @@ public class CertificateRepository extends AbstractRepository<GiftCertificate> {
                 certificate.getModificationDate(),
                 certificate.getDuration(),
                 certificate.getId()};
-        manageUpdateRelation(certificate);
+        updateCertificateTagRelation(certificate);
         return jdbcTemplate.update(UPDATE_CERTIFICATE, params);
     }
 
-    private void manageUpdateRelation(GiftCertificate certificate){
+    private void updateCertificateTagRelation(GiftCertificate certificate){
         final String SELECT_RELATION = "SELECT " + CertificateTagTable.relationTagId + " FROM " + CertificateTagTable.tableName
                 + " WHERE " + CertificateTagTable.relationCertificateId + "=?";
-        List<Long> relations = jdbcTemplate.queryForList(SELECT_RELATION,
+        List<Long> currentAssignedTagIds = jdbcTemplate.queryForList(SELECT_RELATION,
                 new Object[]{certificate.getId()},
                 Long.class);
-        List<Long> tagIds = certificate.getTags().stream()
+        List<Long> targetAssignedTagIds = certificate.getTags().stream()
                 .map(Tag::getId)
                 .collect(toList());
-        List<Long> deleteIds = relations.stream()
-                .filter(id -> !tagIds.contains(id))
+        List<Long> deleteIds = currentAssignedTagIds.stream()
+                .filter(not(targetAssignedTagIds::contains))
                 .collect(toList());
-        List<Long> insertIds = tagIds.stream()
-                .filter(id -> !relations.contains(id))
+        List<Long> insertIds = targetAssignedTagIds.stream()
+                .filter(not(currentAssignedTagIds::contains))
                 .collect(toList());
-        final String DELETE_RELATION = "DELETE FROM "
+        String deleteRelation = "DELETE FROM "
                 + CertificateTagTable.tableName
-                + " WHERE " + relationCertificateId + "=?"
-                + " AND "+ relationTagId + "=?";
-        deleteIds.forEach(id -> jdbcTemplate.update(DELETE_RELATION, new Object[]{certificate.getId(), id}));
+                + " WHERE " + relationCertificateId + " IN (";
+        String params = deleteIds.stream().map(id -> "?").collect(joining(",", "", ")"));
+        deleteRelation += params;
+        jdbcTemplate.update(deleteRelation, deleteIds.toArray(Object[]::new));
         Map<String, Object> relationParameters = new HashMap<>();
         insertIds.forEach(id -> {
             SimpleJdbcInsert relationInsert = new SimpleJdbcInsert(jdbcTemplate)

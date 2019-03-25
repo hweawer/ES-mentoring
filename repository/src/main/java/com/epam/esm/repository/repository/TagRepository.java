@@ -28,9 +28,7 @@ public class TagRepository extends AbstractRepository<Tag> {
     public Tag create(Tag tag) {
         Objects.requireNonNull(tag, "TAG CREATE: Tag is null");
         Objects.requireNonNull(tag.getName(), "TAG CREATE: Tag name is null;");
-        Map<String, Object> parameters = new HashMap<>();
-        parameters.put(TagTable.name, tag.getName());
-        Long insertedId = simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
+        Long insertedId = simpleJdbcInsert.executeAndReturnKey(Map.of(TagTable.name, tag.getName())).longValue();
         tag.setId(insertedId);
         logger.debug("Tag entity: " + tag + " was created.");
         return tag;
