@@ -60,11 +60,9 @@ public class CertificateRepository extends AbstractRepository<GiftCertificate> {
     }
 
     @Override
-    public Integer remove(GiftCertificate certificate) {
-        Objects.requireNonNull(certificate, "CERTIFICATE REMOVE: Certificate is null");
-        logger.debug("CREATE DELETE: " + certificate);
-        String DELETE_CERTIFICATE = "DELETE FROM " + CertificateTable.tableName + " WHERE " + certificateId + "=?;";
-        Long id = certificate.getId();
+    public Integer remove(Long id) {
+        String DELETE_CERTIFICATE = "DELETE FROM " + CertificateTable.tableName
+                + " WHERE " + certificateId + "=?;";
         return remove(DELETE_CERTIFICATE, id);
     }
 

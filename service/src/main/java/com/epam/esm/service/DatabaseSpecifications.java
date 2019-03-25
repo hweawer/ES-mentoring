@@ -1,10 +1,10 @@
-package com.epam.esm.service.application;
+package com.epam.esm.service;
 
-import com.epam.esm.config.CertificateTable;
-import com.epam.esm.config.CertificateTagTable;
-import com.epam.esm.config.TagTable;
-import com.epam.esm.repository.specification.Specification;
-import com.epam.esm.repository.specification.SpecificationBuilder;
+import com.epam.esm.repository.config.CertificateTable;
+import com.epam.esm.repository.config.CertificateTagTable;
+import com.epam.esm.repository.config.TagTable;
+import com.epam.esm.repository.repository.specification.Specification;
+import com.epam.esm.repository.repository.specification.SpecificationBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
@@ -21,13 +21,13 @@ public final class DatabaseSpecifications {
         return builder;
     }
 
-    public static Specification tagByName(){
+    public static Specification findTagByName(){
         SpecificationBuilder builder = new SpecificationBuilder();
         builder.select()
                 .from(TagTable.tableName)
                 .where()
                 .equal(TagTable.name);
-        logger.debug("SQL tagByName : " + builder.toSqlClauses());
+        logger.debug("SQL findTagByName : " + builder.toSqlClauses());
         return builder;
     }
 

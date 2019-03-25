@@ -1,8 +1,8 @@
-ALTER SEQUENCE jes_test.certificetes_id_seq RESTART WITH 1;
-UPDATE jes_test.certificates SET id=nextval('jes_test.certificetes_id_seq');
+ALTER SEQUENCE jes_test.certificates_id_seq RESTART WITH 1;
+UPDATE jes_test.certificates SET id=nextval('jes_test.certificates_id_seq');
 
-ALTER SEQUENCE jes_test.tags_tag_id_seq RESTART WITH 1;
-UPDATE jes_test.tags SET id=nextval('jes_test.tags_tag_id_seq');
+ALTER SEQUENCE jes_test.tags_id_seq RESTART WITH 1;
+UPDATE jes_test.tags SET id=nextval('jes_test.tags_id_seq');
 
 INSERT INTO jes_test.tags(name) values ('TAG1');
 INSERT INTO jes_test.tags(name) values ('TAG2');

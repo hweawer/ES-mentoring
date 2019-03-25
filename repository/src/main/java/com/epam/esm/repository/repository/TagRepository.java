@@ -38,12 +38,9 @@ public class TagRepository extends AbstractRepository<Tag> {
     }
 
     @Override
-    public Integer remove(Tag tag) {
-        Objects.requireNonNull(tag, "TAG REMOVE: Tag is null");
+    public Integer remove(Long id) {
         String DELETE_TAG = "DELETE FROM " + tableName + " WHERE " + tagId + "=?;";
-        Integer affectedRows = remove(DELETE_TAG, tag.getId());
-        logger.debug("Tag entity: " + tag + " was deleted.");
-        return affectedRows;
+        return remove(DELETE_TAG, id);
     }
 
     @Override
