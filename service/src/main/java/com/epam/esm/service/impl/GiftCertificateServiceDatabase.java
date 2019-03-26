@@ -165,6 +165,86 @@ public class GiftCertificateServiceDatabase implements GiftCertificateService {
                 .collect(toList());
     }
 
+    @Override
+    public List<GiftCertificateDTO> findByNamePart(String part) {
+        List<GiftCertificate> certificates =
+                certificateRepository.queryFromDatabase(certificatesByNamePart("%"+part+"%"));
+        certificates.forEach(this::eager);
+        return certificates.stream()
+                .map(certificate -> modelMapper.map(certificate, GiftCertificateDTO.class))
+                .collect(toList());
+    }
+
+    @Override
+    public List<GiftCertificateDTO> findByDescriptionPart(String part) {
+        List<GiftCertificate> certificates =
+                certificateRepository.queryFromDatabase(certificatesByDescriptionPart("%"+part+"%"));
+        certificates.forEach(this::eager);
+        return certificates.stream()
+                .map(certificate -> modelMapper.map(certificate, GiftCertificateDTO.class))
+                .collect(toList());
+    }
+
+    @Override
+    public List<GiftCertificateDTO> findByNamePartSortedByName(String part, boolean asc) {
+        List<GiftCertificate> certificates =
+                certificateRepository.queryFromDatabase(certificatesByNamePartSortedByName("%"+part+"%", asc));
+        certificates.forEach(this::eager);
+        return certificates.stream()
+                .map(certificate -> modelMapper.map(certificate, GiftCertificateDTO.class))
+                .collect(toList());
+    }
+
+    @Override
+    public List<GiftCertificateDTO> findByNamePartSortedByDate(String part, boolean asc) {
+        List<GiftCertificate> certificates =
+                certificateRepository.queryFromDatabase(certificatesByNamePartSortedByDate("%"+part+"%", asc));
+        certificates.forEach(this::eager);
+        return certificates.stream()
+                .map(certificate -> modelMapper.map(certificate, GiftCertificateDTO.class))
+                .collect(toList());
+    }
+
+    @Override
+    public List<GiftCertificateDTO> findByDescriptionPartSortedByDate(String part, boolean asc) {
+        List<GiftCertificate> certificates =
+                certificateRepository.queryFromDatabase(certificatesByDescriptionPartSortedByDate("%"+part+"%", asc));
+        certificates.forEach(this::eager);
+        return certificates.stream()
+                .map(certificate -> modelMapper.map(certificate, GiftCertificateDTO.class))
+                .collect(toList());
+    }
+
+    @Override
+    public List<GiftCertificateDTO> findByDescriptionPartSortedByName(String part, boolean asc) {
+        List<GiftCertificate> certificates =
+                certificateRepository.queryFromDatabase(certificatesByDescriptionPartSortedByName("%"+part+"%", asc));
+        certificates.forEach(this::eager);
+        return certificates.stream()
+                .map(certificate -> modelMapper.map(certificate, GiftCertificateDTO.class))
+                .collect(toList());
+    }
+
+    @Override
+    public List<GiftCertificateDTO> findByTagByNamePartSortedByName(String tag, String part, boolean asc) {
+        return null;
+    }
+
+    @Override
+    public List<GiftCertificateDTO> findByTagByNamePartSortedByDate(String tag, String part, boolean asc) {
+        return null;
+    }
+
+    @Override
+    public List<GiftCertificateDTO> findByTagByDescriptionPartSortedByName(String tag, String part, boolean asc) {
+        return null;
+    }
+
+    @Override
+    public List<GiftCertificateDTO> findByTagByDescriptionPartSortedByDate(String tag, String part, boolean asc) {
+        return null;
+    }
+
     private void eager(GiftCertificate certificate) {
         Set<Tag> tags = new HashSet<>(tagRepository.queryFromDatabase(findTagsByCertificate(certificate)));
         certificate.setTags(tags);

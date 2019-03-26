@@ -55,6 +55,68 @@ public class CertificateController {
         return certificateService.findByTagSortedByName(name, asc);
     }
 
+    @GetMapping(value = "/name/{part}")
+    public List<GiftCertificateDTO> findByNamePart(@PathVariable("part") String part){
+        return certificateService.findByNamePart(part);
+    }
+
+    @GetMapping(value = "/name/{part}/sort/name/{asc}")
+    public List<GiftCertificateDTO> findByNamePartSortedByName(@PathVariable("part") String part,
+                                                   @PathVariable("asc") Boolean asc){
+        return certificateService.findByNamePartSortedByName(part, asc);
+    }
+
+    @GetMapping(value = "/name/{part}/sort/date/{asc}")
+    public List<GiftCertificateDTO> findByNamePart(@PathVariable("part") String part,
+                                                   @PathVariable("asc") Boolean asc){
+        return certificateService.findByNamePartSortedByDate(part, asc);
+    }
+
+    @GetMapping(value = "/tag/{name}/name/{part}/sort/date/{asc}")
+    public List<GiftCertificateDTO> findByTagByNamePartSortedByDate(@PathVariable("name") String name,
+                                                        @PathVariable("part") String part,
+                                                        @PathVariable("asc") Boolean asc){
+        return certificateService.findByTagByNamePartSortedByDate(name, part, asc);
+    }
+
+    @GetMapping(value = "/tag/{name}/name/{part}/sort/name/{asc}")
+    public List<GiftCertificateDTO> findByTagByNamePartSortedByName(@PathVariable("name") String name,
+                                                        @PathVariable("part") String part,
+                                                        @PathVariable("asc") Boolean asc){
+        return certificateService.findByTagByNamePartSortedByName(name, part, asc);
+    }
+
+    @GetMapping(value = "/tag/{name}/description/{part}/sort/name/{asc}")
+    public List<GiftCertificateDTO> findByTagByDescriptionPartSortedByName(@PathVariable("name") String name,
+                                                                    @PathVariable("part") String part,
+                                                                    @PathVariable("asc") Boolean asc){
+        return certificateService.findByTagByDescriptionPartSortedByName(name, part, asc);
+    }
+
+    @GetMapping(value = "/tag/{name}/description/{part}/sort/date/{asc}")
+    public List<GiftCertificateDTO> findByTagByDescriptionPartSortedByDate(@PathVariable("name") String name,
+                                                                           @PathVariable("part") String part,
+                                                                           @PathVariable("asc") Boolean asc){
+        return certificateService.findByTagByDescriptionPartSortedByDate(name, part, asc);
+    }
+
+    @GetMapping(value = "/description/{part}")
+    public List<GiftCertificateDTO> findByDescriptionPart(@PathVariable("part") String part){
+        return certificateService.findByDescriptionPart(part);
+    }
+
+    @GetMapping(value = "/description/{part}/sort/date/{asc}")
+    public List<GiftCertificateDTO> findByDescriptionPartSortedByDate(@PathVariable("part") String part,
+                                                          @PathVariable("asc") Boolean asc){
+        return certificateService.findByDescriptionPartSortedByDate(part, asc);
+    }
+
+    @GetMapping(value = "/description/{part}/sort/name/{asc}")
+    public List<GiftCertificateDTO> findByDescriptionPartSortedByName(@PathVariable("part") String part,
+                                                                      @PathVariable("asc") Boolean asc){
+        return certificateService.findByDescriptionPartSortedByName(part, asc);
+    }
+
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public GiftCertificateDTO create(@Valid @RequestBody GiftCertificateDTO certificateDTO){
