@@ -13,7 +13,7 @@ import javax.validation.Valid;
 import java.util.List;
 
 @RestController
-@RequestMapping("/certificates")
+@RequestMapping(value = "/certificates", consumes = "application/json")
 public class CertificateController {
     private static Logger logger = LogManager.getLogger();
 
@@ -30,12 +30,7 @@ public class CertificateController {
 
     @GetMapping(value = "/{id}")
     public GiftCertificateDTO findById(@PathVariable("id") Long id){
-        try {
-            logger.debug("findById certificate");
-            return certificateService.findById(id);
-        } catch (EntityNotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Can't find tag", e);
-        }
+        return certificateService.findById(id);
     }
 
     @PostMapping

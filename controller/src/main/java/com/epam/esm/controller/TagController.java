@@ -13,7 +13,7 @@ import javax.validation.Valid;
 import java.util.List;
 
 @RestController
-@RequestMapping("/tags")
+@RequestMapping(value = "/tags", consumes = "application/json")
 public class TagController {
     private static Logger logger = LogManager.getLogger();
     private final TagService tagService;
