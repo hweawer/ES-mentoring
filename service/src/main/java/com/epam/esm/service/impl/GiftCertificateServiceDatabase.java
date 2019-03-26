@@ -77,8 +77,7 @@ public class GiftCertificateServiceDatabase implements GiftCertificateService {
         certificates.forEach(certificate -> {
             Set<Tag> tags = new HashSet<>(tagRepository.queryFromDatabase(findTagsByCertificate(certificate)));
             certificate.setTags(tags);
-        }
-        );
+        });
         return certificates.stream()
                 .map(certificate -> modelMapper.map(certificate, GiftCertificateDTO.class))
                 .collect(toList());
@@ -89,6 +88,9 @@ public class GiftCertificateServiceDatabase implements GiftCertificateService {
     public Integer update(GiftCertificateDTO certificateDTO) {
         logger.debug("CERTIFICATE SERVICE: update");
         GiftCertificate certificate = modelMapper.map(certificateDTO, GiftCertificate.class);
+        certificate.setModificationDate(LocalDate.now());
+        Set<Tag> tags = new HashSet<>(tagRepository.queryFromDatabase(findTagsByCertificate(certificate)));
+        certificate.setTags(tags);
         return certificateRepository.update(certificate);
     }
 

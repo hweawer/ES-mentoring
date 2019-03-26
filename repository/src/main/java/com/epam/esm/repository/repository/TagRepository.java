@@ -1,6 +1,7 @@
 package com.epam.esm.repository.repository;
 
 import com.epam.esm.entity.Tag;
+import com.epam.esm.repository.config.RepositoryConfig;
 import com.epam.esm.repository.config.TagTable;
 import com.epam.esm.repository.repository.specification.Specification;
 import org.apache.logging.log4j.LogManager;
@@ -20,7 +21,7 @@ public class TagRepository extends AbstractRepository<Tag> {
 
     @Autowired
     public TagRepository(JdbcTemplate jdbcTemplate, BeanPropertyRowMapper<Tag> tagMapper) {
-        super(jdbcTemplate, TagTable.tableName, TagTable.id);
+        super(jdbcTemplate, TagTable.tableName, TagTable.id, RepositoryConfig.schemaInUse);
         this.tagMapper = tagMapper;
     }
 

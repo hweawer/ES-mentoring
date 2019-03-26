@@ -41,8 +41,14 @@ public class CertificateController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public GiftCertificateDTO create(@Valid @RequestBody GiftCertificateDTO certificateDTO){
-        logger.debug("create tag");
         return certificateService.create(certificateDTO);
+    }
+
+    @PutMapping(value = "/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public void update(@Valid @RequestBody GiftCertificateDTO certificateDTO, @PathVariable("id") Long id){
+        certificateDTO.setId(id);
+        certificateService.update(certificateDTO);
     }
 
     @DeleteMapping(value = "/{id}")
@@ -50,5 +56,7 @@ public class CertificateController {
     public void delete(@PathVariable("id") Long id) {
         certificateService.delete(id);
     }
+
+
 
 }

@@ -4,6 +4,7 @@ import com.epam.esm.repository.config.CertificateTable;
 import com.epam.esm.repository.config.CertificateTagTable;
 import com.epam.esm.entity.GiftCertificate;
 import com.epam.esm.entity.Tag;
+import com.epam.esm.repository.config.RepositoryConfig;
 import com.epam.esm.repository.repository.specification.Specification;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -29,7 +30,7 @@ public class CertificateRepository extends AbstractRepository<GiftCertificate> {
     @Autowired
     public CertificateRepository(JdbcTemplate jdbcTemplate,
                                  BeanPropertyRowMapper<GiftCertificate> giftMapper) {
-        super(jdbcTemplate, CertificateTable.tableName, CertificateTable.id);
+        super(jdbcTemplate, CertificateTable.tableName, CertificateTable.id, RepositoryConfig.schemaInUse);
         this.giftMapper = giftMapper;
     }
 
@@ -42,7 +43,6 @@ public class CertificateRepository extends AbstractRepository<GiftCertificate> {
                 description, certificate.getDescription(),
                 price, certificate.getPrice(),
                 creationDate, certificate.getCreationDate(),
-                modificationDate, certificate.getModificationDate(),
                 duration, certificate.getDuration()
         );
 
@@ -52,6 +52,7 @@ public class CertificateRepository extends AbstractRepository<GiftCertificate> {
         Set<Tag> tags = certificate.getTags();
         tags.forEach(tag -> new SimpleJdbcInsert(jdbcTemplate)
                     .withTableName(CertificateTagTable.tableName)
+                    .withSchemaName(RepositoryConfig.schemaInUse)
                     .execute(Map.of(
                         relationCertificateId, insertedCertificateId,
                         relationTagId, tag.getId()
@@ -74,7 +75,6 @@ public class CertificateRepository extends AbstractRepository<GiftCertificate> {
                 CertificateTable.name + "=?, " +
                 CertificateTable.description + "=?, " +
                 CertificateTable.price + "=?, " +
-                CertificateTable.creationDate + "=?, " +
                 CertificateTable.modificationDate + "=?, " +
                 CertificateTable.duration + " =?" +
                 " WHERE " + CertificateTable.id + "=?";
@@ -82,7 +82,6 @@ public class CertificateRepository extends AbstractRepository<GiftCertificate> {
         Object[] params = { certificate.getName(),
                 certificate.getDescription(),
                 certificate.getPrice(),
-                certificate.getCreationDate(),
                 certificate.getModificationDate(),
                 certificate.getDuration(),
                 certificate.getId()};
@@ -105,18 +104,21 @@ public class CertificateRepository extends AbstractRepository<GiftCertificate> {
         List<Long> insertedCertificateIds = targetAssignedTagIds.stream()
                 .filter(not(currentAssignedTagIds::contains))
                 .collect(toList());
-        String deleteRelation = "DELETE FROM "
-                + CertificateTagTable.tableName
-                + " WHERE " + relationCertificateId + " IN (";
-        String params = Stream.generate(() -> "?")
-                .limit(deleteIds.size())
-                .collect(joining(",", "", ")"));
-        deleteRelation += params;
-        jdbcTemplate.update(deleteRelation, deleteIds.toArray(Object[]::new));
+        if(!deleteIds.isEmpty()) {
+            String deleteRelation = "DELETE FROM "
+                    + CertificateTagTable.tableName
+                    + " WHERE " + relationCertificateId + " IN (";
+            String params = Stream.generate(() -> "?")
+                    .limit(deleteIds.size())
+                    .collect(joining(",", "", ")"));
+            deleteRelation += params;
+            jdbcTemplate.update(deleteRelation, deleteIds.toArray(Object[]::new));
+        }
         Map<String, Object> relationParameters = new HashMap<>();
         insertedCertificateIds.forEach(id -> {
             SimpleJdbcInsert relationInsert = new SimpleJdbcInsert(jdbcTemplate)
-                    .withTableName(CertificateTagTable.tableName);
+                    .withTableName(CertificateTagTable.tableName)
+                    .withSchemaName(RepositoryConfig.schemaInUse);
             relationParameters.put(relationCertificateId, certificate.getId());
             relationParameters.put(relationTagId, id);
             relationInsert.execute(relationParameters);

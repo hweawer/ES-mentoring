@@ -1,6 +1,5 @@
 package com.epam.esm.entity;
 
-import javax.validation.constraints.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -9,30 +8,12 @@ import java.util.Objects;
 import java.util.Set;
 
 public class GiftCertificate implements Serializable {
-    @NotNull
     private Long id;
-
-    @NotNull
-    @Pattern(regexp = "\\p{L}{3,12}")
     private String name;
-
-    @NotBlank
-    @Size(min = 3)
     private String description;
-
-    @NotNull
-    @PositiveOrZero
-    @Digits(integer=11, fraction=2)
     private BigDecimal price;
-
-    @NotNull
-    @Past
     private LocalDate creationDate;
     private LocalDate modificationDate;
-
-    @NotNull
-    @Min(value = 5)
-    @Max(value = 365)
     private Short duration;
     private Set<Tag> tags = new HashSet<>();
 
