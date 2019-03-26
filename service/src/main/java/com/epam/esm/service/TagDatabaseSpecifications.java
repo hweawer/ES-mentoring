@@ -22,7 +22,7 @@ public final class TagDatabaseSpecifications {
         return builder;
     }
 
-    public static Specification tagsByCertificate(GiftCertificate certificate){
+    public static Specification findTagsByCertificate(GiftCertificate certificate){
         SpecificationBuilder builder = new SpecificationBuilder();
         builder.select()
                 .from(CertificateTable.tableName)
@@ -30,11 +30,11 @@ public final class TagDatabaseSpecifications {
                         CertificateTable.certificateId,
                         CertificateTagTable.relationCertificateId)
                 .innerJoin(TagTable.tableName,
-                        CertificateTagTable.relationCertificateTableId,
+                        CertificateTagTable.relationTagId,
                         TagTable.tagId)
                 .where()
                 .equal(CertificateTable.certificateId, certificate.getId());
-        logger.debug("SQL tagsByCertificate : " + builder.toSqlClauses());
+        logger.debug("SQL findTagsByCertificate : " + builder.toSqlClauses());
         return builder;
     }
 }

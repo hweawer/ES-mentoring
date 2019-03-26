@@ -4,6 +4,7 @@ import com.epam.esm.entity.GiftCertificate;
 import com.epam.esm.entity.Tag;
 import com.epam.esm.repository.repository.Repository;
 import com.epam.esm.service.GiftCertificateService;
+import com.epam.esm.service.TagDatabaseSpecifications;
 import com.epam.esm.service.dto.GiftCertificateDTO;
 import com.epam.esm.service.exception.EntityNotFoundException;
 import org.apache.logging.log4j.LogManager;
@@ -12,6 +13,8 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -36,7 +39,7 @@ public class GiftCertificateServiceDatabase implements GiftCertificateService {
     @Transactional
     @Override
     public GiftCertificateDTO create(GiftCertificateDTO certificateDTO) {
-        logger.debug("TAG SERVICE: create");
+        logger.debug("CERTIFICATE SERVICE: create");
         GiftCertificate certificate = modelMapper.map(certificateDTO, GiftCertificate.class);
         Set<Tag> tags = certificate.getTags();
         Set<Tag> notPresentTags = tags.stream()
@@ -52,30 +55,39 @@ public class GiftCertificateServiceDatabase implements GiftCertificateService {
                         findTagByName(tag.getName())).get(0))
                 .forEach(certificateTags::add);
         certificate.setTags(certificateTags);
+        certificate.setCreationDate(LocalDate.now());
         GiftCertificate created = certificateRepository.create(certificate);
+        List<Tag> createdCertificateTags = tagRepository.queryFromDatabase(findTagsByCertificate(created));
+        created.setTags(new HashSet<>(createdCertificateTags));
         return modelMapper.map(created, GiftCertificateDTO.class);
     }
 
     @Transactional
     @Override
     public Integer delete(Long id) {
-        logger.debug("TAG SERVICE: delete");
+        logger.debug("CERTIFICATE SERVICE: delete");
         return certificateRepository.delete(id);
     }
 
     @Transactional(readOnly = true)
     @Override
     public List<GiftCertificateDTO> findAll() {
-        List<GiftCertificate> tags = certificateRepository.findAll();
-        return tags.stream()
-                .map(tag -> modelMapper.map(tag, GiftCertificateDTO.class))
+        logger.debug("CERTIFICATE SERVICE: findAll");
+        List<GiftCertificate> certificates = certificateRepository.findAll();
+        certificates.forEach(certificate -> {
+            Set<Tag> tags = new HashSet<>(tagRepository.queryFromDatabase(findTagsByCertificate(certificate)));
+            certificate.setTags(tags);
+        }
+        );
+        return certificates.stream()
+                .map(certificate -> modelMapper.map(certificate, GiftCertificateDTO.class))
                 .collect(toList());
     }
 
     @Transactional
     @Override
     public Integer update(GiftCertificateDTO certificateDTO) {
-        logger.debug("TAG SERVICE: create");
+        logger.debug("CERTIFICATE SERVICE: update");
         GiftCertificate certificate = modelMapper.map(certificateDTO, GiftCertificate.class);
         return certificateRepository.update(certificate);
     }
@@ -83,10 +95,14 @@ public class GiftCertificateServiceDatabase implements GiftCertificateService {
     @Transactional(readOnly = true)
     @Override
     public GiftCertificateDTO findById(Long id) throws EntityNotFoundException {
+        logger.debug("CERTIFICATE SERVICE: findById");
         List<GiftCertificate> selected = certificateRepository.findById(id);
         if (selected.isEmpty()){
             throw new EntityNotFoundException("No tag with such id.");
         }
-        return modelMapper.map(selected.get(0), GiftCertificateDTO.class);
+        GiftCertificate certificate = selected.get(0);
+        Set<Tag> tags = new HashSet<>(tagRepository.queryFromDatabase(findTagsByCertificate(certificate)));
+        certificate.setTags(tags);
+        return modelMapper.map(certificate, GiftCertificateDTO.class);
     }
 }

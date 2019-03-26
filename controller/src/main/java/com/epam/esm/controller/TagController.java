@@ -1,15 +1,15 @@
 package com.epam.esm.controller;
 
-import com.epam.esm.entity.Tag;
 import com.epam.esm.service.TagService;
 import com.epam.esm.service.dto.TagDTO;
-import com.epam.esm.service.exception.ServiceException;
+import com.epam.esm.service.exception.EntityNotFoundException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -33,7 +33,7 @@ public class TagController {
         try {
             logger.debug("findById tag");
             return tagService.findById(id);
-        } catch (ServiceException e) {
+        } catch (EntityNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Can't find tag", e);
         }
     }
@@ -43,26 +43,22 @@ public class TagController {
         try {
             logger.debug("findByName tag");
             return tagService.findByName(name);
-        } catch (ServiceException e) {
+        } catch (EntityNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Can't find tag", e);
         }
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public TagDTO create(@RequestBody TagDTO tagDTO){
-        try {
-            logger.debug("create tag");
-            return tagService.create(tagDTO);
-        } catch (ServiceException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Can't create tag", e);
-        }
+    public TagDTO create(@Valid @RequestBody TagDTO tagDTO){
+        logger.debug("create tag");
+        return tagService.create(tagDTO);
     }
 
     @DeleteMapping(value = "/{id}")
     @ResponseStatus(HttpStatus.OK)
     public void delete(@PathVariable("id") Long id) {
-        tagService.remove(id);
+        tagService.delete(id);
     }
 
 }

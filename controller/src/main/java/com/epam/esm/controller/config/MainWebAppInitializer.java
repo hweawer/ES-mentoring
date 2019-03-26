@@ -7,12 +7,11 @@ import org.springframework.web.context.support.GenericWebApplicationContext;
 import org.springframework.web.servlet.DispatcherServlet;
 
 import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
 import javax.servlet.ServletRegistration;
 
 public class MainWebAppInitializer implements WebApplicationInitializer {
     @Override
-    public void onStartup(final ServletContext sc) throws ServletException {
+    public void onStartup(final ServletContext sc) {
 
         AnnotationConfigWebApplicationContext root =
                 new AnnotationConfigWebApplicationContext();
