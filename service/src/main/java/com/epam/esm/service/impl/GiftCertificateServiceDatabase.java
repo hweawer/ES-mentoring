@@ -4,8 +4,8 @@ import com.epam.esm.entity.GiftCertificate;
 import com.epam.esm.entity.Tag;
 import com.epam.esm.repository.repository.Repository;
 import com.epam.esm.service.GiftCertificateService;
-import com.epam.esm.service.TagDatabaseSpecifications;
 import com.epam.esm.service.dto.GiftCertificateDTO;
+import com.epam.esm.service.dto.TagDTO;
 import com.epam.esm.service.exception.EntityNotFoundException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -18,6 +18,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static com.epam.esm.service.CertificateDatabaseSpecification.*;
 import static com.epam.esm.service.TagDatabaseSpecifications.*;
 import static java.util.stream.Collectors.*;
 import static java.util.stream.Collectors.toList;
@@ -74,10 +75,7 @@ public class GiftCertificateServiceDatabase implements GiftCertificateService {
     public List<GiftCertificateDTO> findAll() {
         logger.debug("CERTIFICATE SERVICE: findAll");
         List<GiftCertificate> certificates = certificateRepository.findAll();
-        certificates.forEach(certificate -> {
-            Set<Tag> tags = new HashSet<>(tagRepository.queryFromDatabase(findTagsByCertificate(certificate)));
-            certificate.setTags(tags);
-        });
+        certificates.forEach(this::eager);
         return certificates.stream()
                 .map(certificate -> modelMapper.map(certificate, GiftCertificateDTO.class))
                 .collect(toList());
@@ -105,8 +103,70 @@ public class GiftCertificateServiceDatabase implements GiftCertificateService {
             throw new EntityNotFoundException("No tag with such id.");
         }
         GiftCertificate certificate = selected.get(0);
+        eager(certificate);
+        return modelMapper.map(certificate, GiftCertificateDTO.class);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public List<GiftCertificateDTO> findByTag(String name) {
+        logger.debug("CERTIFICATE SERVICE: findByTagSortedByName");
+        List<GiftCertificate> certificates =
+                certificateRepository.queryFromDatabase(certificatesByTag(name));
+        certificates.forEach(this::eager);
+        return certificates.stream()
+                .map(certificate -> modelMapper.map(certificate, GiftCertificateDTO.class))
+                .collect(toList());
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public List<GiftCertificateDTO> findSortedByName(boolean asc) {
+        logger.debug("CERTIFICATE SERVICE: findSortedByName");
+        List<GiftCertificate> certificates = certificateRepository.queryFromDatabase(certificatesSortedByName(asc));
+        certificates.forEach(this::eager);
+        return certificates.stream()
+                .map(certificate -> modelMapper.map(certificate, GiftCertificateDTO.class))
+                .collect(toList());
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public List<GiftCertificateDTO> findSortedByDate(boolean asc) {
+        logger.debug("CERTIFICATE SERVICE: findSortedByDate");
+        List<GiftCertificate> certificates = certificateRepository.queryFromDatabase(certificatesSortedByDate(asc));
+        certificates.forEach(this::eager);
+        return certificates.stream()
+                .map(certificate -> modelMapper.map(certificate, GiftCertificateDTO.class))
+                .collect(toList());
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public List<GiftCertificateDTO> findByTagSortedByName(String name, boolean asc) {
+        logger.debug("CERTIFICATE SERVICE: findByTagSortedByName");
+        List<GiftCertificate> certificates =
+                certificateRepository.queryFromDatabase(certificatesByTagSortedByName(name, asc));
+        certificates.forEach(this::eager);
+        return certificates.stream()
+                .map(certificate -> modelMapper.map(certificate, GiftCertificateDTO.class))
+                .collect(toList());
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public List<GiftCertificateDTO> findByTagSortedByDate(String name, boolean asc) {
+        logger.debug("CERTIFICATE SERVICE: findByTagSortedByDate");
+        List<GiftCertificate> certificates =
+                certificateRepository.queryFromDatabase(certificatesByTagSortedByDate(name, asc));
+        certificates.forEach(this::eager);
+        return certificates.stream()
+                .map(certificate -> modelMapper.map(certificate, GiftCertificateDTO.class))
+                .collect(toList());
+    }
+
+    private void eager(GiftCertificate certificate) {
         Set<Tag> tags = new HashSet<>(tagRepository.queryFromDatabase(findTagsByCertificate(certificate)));
         certificate.setTags(tags);
-        return modelMapper.map(certificate, GiftCertificateDTO.class);
     }
 }

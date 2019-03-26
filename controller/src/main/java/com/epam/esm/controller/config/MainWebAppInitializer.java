@@ -19,8 +19,10 @@ public class MainWebAppInitializer implements WebApplicationInitializer {
         root.scan("com.epam.esm");
         sc.addListener(new ContextLoaderListener(root));
 
+        DispatcherServlet dispatcherServlet = new DispatcherServlet(new GenericWebApplicationContext());
+        dispatcherServlet.setThrowExceptionIfNoHandlerFound(true);
         ServletRegistration.Dynamic appServlet =
-                sc.addServlet("mvc", new DispatcherServlet(new GenericWebApplicationContext()));
+                sc.addServlet("mvc", dispatcherServlet);
         appServlet.setLoadOnStartup(1);
         appServlet.addMapping("/");
     }

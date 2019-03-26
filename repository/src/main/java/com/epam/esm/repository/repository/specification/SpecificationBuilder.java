@@ -23,6 +23,13 @@ public class SpecificationBuilder implements Specification {
         return this;
     }
 
+    public SpecificationBuilder select(String... columns) {
+        sql.append("SELECT ");
+        String columnsArg = String.join(", ", columns);
+        sql.append(columnsArg);
+        return this;
+    }
+
     public SpecificationBuilder from(String tableName) {
         sql.append(" FROM ").append(tableName);
         return this;
@@ -87,6 +94,11 @@ public class SpecificationBuilder implements Specification {
                 .append(joinTable)
                 .append(" ON ")
                 .append(fromColumn).append(" = ").append(joinColumn);
+        return this;
+    }
+
+    public SpecificationBuilder desc(){
+        sql.append(" DESC ");
         return this;
     }
 

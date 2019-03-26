@@ -2,12 +2,8 @@ package com.epam.esm.controller;
 
 import com.epam.esm.service.GiftCertificateService;
 import com.epam.esm.service.dto.GiftCertificateDTO;
-import com.epam.esm.service.exception.EntityNotFoundException;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -15,7 +11,6 @@ import java.util.List;
 @RestController
 @RequestMapping(value = "/certificates", consumes = "application/json")
 public class CertificateController {
-    private static Logger logger = LogManager.getLogger();
 
     private final GiftCertificateService certificateService;
 
@@ -31,6 +26,33 @@ public class CertificateController {
     @GetMapping(value = "/{id}")
     public GiftCertificateDTO findById(@PathVariable("id") Long id){
         return certificateService.findById(id);
+    }
+
+    @GetMapping(value = "/sort/name/{asc}")
+    public List<GiftCertificateDTO> findSortedByName(@PathVariable("asc") Boolean asc){
+        return certificateService.findSortedByName(asc);
+    }
+
+    @GetMapping(value = "/sort/date/{asc}")
+    public List<GiftCertificateDTO> findSortedByDate(@PathVariable("asc") Boolean asc){
+        return certificateService.findSortedByDate(asc);
+    }
+
+    @GetMapping(value = "/tag/{name}")
+    public List<GiftCertificateDTO> findByTag(@PathVariable("name") String name){
+        return certificateService.findByTag(name);
+    }
+
+    @GetMapping(value = "/tag/{name}/sort/date/{asc}")
+    public List<GiftCertificateDTO> findByTagSortedByDate(@PathVariable("name") String name,
+                                                          @PathVariable("asc") Boolean asc){
+        return certificateService.findByTagSortedByDate(name, asc);
+    }
+
+    @GetMapping(value = "/tag/{name}/sort/name/{asc}")
+    public List<GiftCertificateDTO> findByTagSortedByName(@PathVariable("name") String name,
+                                                          @PathVariable("asc") Boolean asc){
+        return certificateService.findByTagSortedByName(name, asc);
     }
 
     @PostMapping

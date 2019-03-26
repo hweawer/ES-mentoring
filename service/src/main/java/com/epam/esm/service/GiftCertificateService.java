@@ -11,4 +11,10 @@ public interface GiftCertificateService {
     List<GiftCertificateDTO> findAll();
     Integer update(GiftCertificateDTO t);
     GiftCertificateDTO findById(Long id) throws EntityNotFoundException;
+    List<GiftCertificateDTO> findByTag(String name);
+    List<GiftCertificateDTO> findSortedByName(boolean asc);
+    List<GiftCertificateDTO> findSortedByDate(boolean asc);
+    List<GiftCertificateDTO> findByTagSortedByName(String name, boolean asc);
+    List<GiftCertificateDTO> findByTagSortedByDate(String name, boolean asc);
+
 }
