@@ -1,4 +1,7 @@
 package com.epam.esm.controller.exception;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +27,9 @@ import java.util.Objects;
 @RestControllerAdvice
 public class RestResponseEntityExceptionHandler
         extends ResponseEntityExceptionHandler {
+
+    @Autowired
+    private MessageSource messageSource;
 
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(
@@ -130,7 +136,7 @@ public class RestResponseEntityExceptionHandler
     @ExceptionHandler({ Exception.class })
     public ResponseEntity<Object> handleAll(Exception ex, WebRequest request) {
         ApiError apiError = new ApiError(
-                HttpStatus.INTERNAL_SERVER_ERROR, ex.getLocalizedMessage(), "error occurred");
+                HttpStatus.INTERNAL_SERVER_ERROR, messageSource.getMessage(ex.getLocalizedMessage(), null, LocaleContextHolder.getLocale()), "error occurred");
         return new ResponseEntity<>(
                 apiError, new HttpHeaders(), apiError.getStatus());
     }

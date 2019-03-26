@@ -59,7 +59,7 @@ public class TagServiceDatabase implements TagService {
     public TagDTO findById(Long id) throws EntityNotFoundException {
         List<Tag> selected = tagRepository.findById(id);
         if (selected.isEmpty()){
-            throw new EntityNotFoundException("No tag with such id.");
+            throw new EntityNotFoundException("tag.not.found.by.name");
         }
         return modelMapper.map(selected.get(0), TagDTO.class);
     }

@@ -227,22 +227,42 @@ public class GiftCertificateServiceDatabase implements GiftCertificateService {
 
     @Override
     public List<GiftCertificateDTO> findByTagByNamePartSortedByName(String tag, String part, boolean asc) {
-        return null;
+        List<GiftCertificate> certificates =
+                certificateRepository.queryFromDatabase(certificatesByTagByNamePartSortedByName(tag,"%"+part+"%", asc));
+        certificates.forEach(this::eager);
+        return certificates.stream()
+                .map(certificate -> modelMapper.map(certificate, GiftCertificateDTO.class))
+                .collect(toList());
     }
 
     @Override
     public List<GiftCertificateDTO> findByTagByNamePartSortedByDate(String tag, String part, boolean asc) {
-        return null;
+        List<GiftCertificate> certificates =
+                certificateRepository.queryFromDatabase(certificatesByTagByNamePartSortedByDate(tag,"%"+part+"%", asc));
+        certificates.forEach(this::eager);
+        return certificates.stream()
+                .map(certificate -> modelMapper.map(certificate, GiftCertificateDTO.class))
+                .collect(toList());
     }
 
     @Override
     public List<GiftCertificateDTO> findByTagByDescriptionPartSortedByName(String tag, String part, boolean asc) {
-        return null;
+        List<GiftCertificate> certificates =
+                certificateRepository.queryFromDatabase(certificatesByTagByDescriptionPartSortedByName(tag,"%"+part+"%", asc));
+        certificates.forEach(this::eager);
+        return certificates.stream()
+                .map(certificate -> modelMapper.map(certificate, GiftCertificateDTO.class))
+                .collect(toList());
     }
 
     @Override
     public List<GiftCertificateDTO> findByTagByDescriptionPartSortedByDate(String tag, String part, boolean asc) {
-        return null;
+        List<GiftCertificate> certificates =
+                certificateRepository.queryFromDatabase(certificatesByTagByDescriptionPartSortedByDate(tag,"%"+part+"%", asc));
+        certificates.forEach(this::eager);
+        return certificates.stream()
+                .map(certificate -> modelMapper.map(certificate, GiftCertificateDTO.class))
+                .collect(toList());
     }
 
     private void eager(GiftCertificate certificate) {
