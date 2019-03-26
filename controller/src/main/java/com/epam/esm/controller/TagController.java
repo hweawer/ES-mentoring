@@ -22,12 +22,12 @@ public class TagController {
         return tagService.findAll();
     }
 
-    @GetMapping(value = "/{id}")
+    @GetMapping(value = "/{id:[0-9]+}")
     public TagDTO findById(@PathVariable("id") Long id){
         return tagService.findById(id);
     }
 
-    @GetMapping(value = "/name/{name}")
+    @GetMapping(value = "/{name:[a-zA-Z]+}")
     public TagDTO findByName(@PathVariable("name") String name){
         return tagService.findByName(name);
     }

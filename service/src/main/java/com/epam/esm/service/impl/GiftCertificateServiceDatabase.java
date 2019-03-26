@@ -2,11 +2,14 @@ package com.epam.esm.service.impl;
 
 import com.epam.esm.entity.GiftCertificate;
 import com.epam.esm.entity.Tag;
+import com.epam.esm.repository.config.CertificateTable;
 import com.epam.esm.repository.repository.Repository;
+import com.epam.esm.repository.repository.specification.SpecificationBuilder;
 import com.epam.esm.service.GiftCertificateService;
 import com.epam.esm.service.dto.GiftCertificateDTO;
 import com.epam.esm.service.dto.TagDTO;
 import com.epam.esm.service.exception.EntityNotFoundException;
+import com.epam.esm.service.util.Order;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.modelmapper.ModelMapper;
@@ -14,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -108,157 +112,50 @@ public class GiftCertificateServiceDatabase implements GiftCertificateService {
     }
 
     @Transactional(readOnly = true)
-    @Override
-    public List<GiftCertificateDTO> findByTag(String name) {
-        logger.debug("CERTIFICATE SERVICE: findByTagSortedByName");
-        List<GiftCertificate> certificates =
-                certificateRepository.queryFromDatabase(certificatesByTag(name));
-        certificates.forEach(this::eager);
-        return certificates.stream()
-                .map(certificate -> modelMapper.map(certificate, GiftCertificateDTO.class))
-                .collect(toList());
-    }
-
-    @Transactional(readOnly = true)
-    @Override
-    public List<GiftCertificateDTO> findSortedByName(boolean asc) {
-        logger.debug("CERTIFICATE SERVICE: findSortedByName");
-        List<GiftCertificate> certificates = certificateRepository.queryFromDatabase(certificatesSortedByName(asc));
-        certificates.forEach(this::eager);
-        return certificates.stream()
-                .map(certificate -> modelMapper.map(certificate, GiftCertificateDTO.class))
-                .collect(toList());
-    }
-
-    @Transactional(readOnly = true)
-    @Override
-    public List<GiftCertificateDTO> findSortedByDate(boolean asc) {
-        logger.debug("CERTIFICATE SERVICE: findSortedByDate");
-        List<GiftCertificate> certificates = certificateRepository.queryFromDatabase(certificatesSortedByDate(asc));
-        certificates.forEach(this::eager);
-        return certificates.stream()
-                .map(certificate -> modelMapper.map(certificate, GiftCertificateDTO.class))
-                .collect(toList());
-    }
-
-    @Transactional(readOnly = true)
-    @Override
-    public List<GiftCertificateDTO> findByTagSortedByName(String name, boolean asc) {
-        logger.debug("CERTIFICATE SERVICE: findByTagSortedByName");
-        List<GiftCertificate> certificates =
-                certificateRepository.queryFromDatabase(certificatesByTagSortedByName(name, asc));
-        certificates.forEach(this::eager);
-        return certificates.stream()
-                .map(certificate -> modelMapper.map(certificate, GiftCertificateDTO.class))
-                .collect(toList());
-    }
-
-    @Transactional(readOnly = true)
-    @Override
-    public List<GiftCertificateDTO> findByTagSortedByDate(String name, boolean asc) {
-        logger.debug("CERTIFICATE SERVICE: findByTagSortedByDate");
-        List<GiftCertificate> certificates =
-                certificateRepository.queryFromDatabase(certificatesByTagSortedByDate(name, asc));
-        certificates.forEach(this::eager);
-        return certificates.stream()
-                .map(certificate -> modelMapper.map(certificate, GiftCertificateDTO.class))
-                .collect(toList());
-    }
-
-    @Override
-    public List<GiftCertificateDTO> findByNamePart(String part) {
-        List<GiftCertificate> certificates =
-                certificateRepository.queryFromDatabase(certificatesByNamePart("%"+part+"%"));
-        certificates.forEach(this::eager);
-        return certificates.stream()
-                .map(certificate -> modelMapper.map(certificate, GiftCertificateDTO.class))
-                .collect(toList());
-    }
-
-    @Override
-    public List<GiftCertificateDTO> findByDescriptionPart(String part) {
-        List<GiftCertificate> certificates =
-                certificateRepository.queryFromDatabase(certificatesByDescriptionPart("%"+part+"%"));
-        certificates.forEach(this::eager);
-        return certificates.stream()
-                .map(certificate -> modelMapper.map(certificate, GiftCertificateDTO.class))
-                .collect(toList());
-    }
-
-    @Override
-    public List<GiftCertificateDTO> findByNamePartSortedByName(String part, boolean asc) {
-        List<GiftCertificate> certificates =
-                certificateRepository.queryFromDatabase(certificatesByNamePartSortedByName("%"+part+"%", asc));
-        certificates.forEach(this::eager);
-        return certificates.stream()
-                .map(certificate -> modelMapper.map(certificate, GiftCertificateDTO.class))
-                .collect(toList());
-    }
-
-    @Override
-    public List<GiftCertificateDTO> findByNamePartSortedByDate(String part, boolean asc) {
-        List<GiftCertificate> certificates =
-                certificateRepository.queryFromDatabase(certificatesByNamePartSortedByDate("%"+part+"%", asc));
-        certificates.forEach(this::eager);
-        return certificates.stream()
-                .map(certificate -> modelMapper.map(certificate, GiftCertificateDTO.class))
-                .collect(toList());
-    }
-
-    @Override
-    public List<GiftCertificateDTO> findByDescriptionPartSortedByDate(String part, boolean asc) {
-        List<GiftCertificate> certificates =
-                certificateRepository.queryFromDatabase(certificatesByDescriptionPartSortedByDate("%"+part+"%", asc));
-        certificates.forEach(this::eager);
-        return certificates.stream()
-                .map(certificate -> modelMapper.map(certificate, GiftCertificateDTO.class))
-                .collect(toList());
-    }
-
-    @Override
-    public List<GiftCertificateDTO> findByDescriptionPartSortedByName(String part, boolean asc) {
-        List<GiftCertificate> certificates =
-                certificateRepository.queryFromDatabase(certificatesByDescriptionPartSortedByName("%"+part+"%", asc));
-        certificates.forEach(this::eager);
-        return certificates.stream()
-                .map(certificate -> modelMapper.map(certificate, GiftCertificateDTO.class))
-                .collect(toList());
-    }
-
-    @Override
-    public List<GiftCertificateDTO> findByTagByNamePartSortedByName(String tag, String part, boolean asc) {
-        List<GiftCertificate> certificates =
-                certificateRepository.queryFromDatabase(certificatesByTagByNamePartSortedByName(tag,"%"+part+"%", asc));
-        certificates.forEach(this::eager);
-        return certificates.stream()
-                .map(certificate -> modelMapper.map(certificate, GiftCertificateDTO.class))
-                .collect(toList());
-    }
-
-    @Override
-    public List<GiftCertificateDTO> findByTagByNamePartSortedByDate(String tag, String part, boolean asc) {
-        List<GiftCertificate> certificates =
-                certificateRepository.queryFromDatabase(certificatesByTagByNamePartSortedByDate(tag,"%"+part+"%", asc));
-        certificates.forEach(this::eager);
-        return certificates.stream()
-                .map(certificate -> modelMapper.map(certificate, GiftCertificateDTO.class))
-                .collect(toList());
-    }
-
-    @Override
-    public List<GiftCertificateDTO> findByTagByDescriptionPartSortedByName(String tag, String part, boolean asc) {
-        List<GiftCertificate> certificates =
-                certificateRepository.queryFromDatabase(certificatesByTagByDescriptionPartSortedByName(tag,"%"+part+"%", asc));
-        certificates.forEach(this::eager);
-        return certificates.stream()
-                .map(certificate -> modelMapper.map(certificate, GiftCertificateDTO.class))
-                .collect(toList());
-    }
-
-    @Override
-    public List<GiftCertificateDTO> findByTagByDescriptionPartSortedByDate(String tag, String part, boolean asc) {
-        List<GiftCertificate> certificates =
-                certificateRepository.queryFromDatabase(certificatesByTagByDescriptionPartSortedByDate(tag,"%"+part+"%", asc));
+    public List<GiftCertificateDTO> findByClause(String tag,
+                                                 String regexColumn,
+                                                 String part,
+                                                 String orderColumn,
+                                                 Order order){
+        SpecificationBuilder builder = new SpecificationBuilder();
+        selectFromCertificate(builder);
+        List<GiftCertificate> certificates;
+        if(tag != null){
+            innerJoinTags(builder);
+            builder.where();
+            whereTag(builder, tag);
+        }
+        if (part != null){
+            switch (regexColumn){
+                case "name":
+                    if(tag != null){
+                        builder.and();
+                    } else {
+                        builder.where();
+                    }
+                    findByNamePart(builder, "%" + part + "%");
+                    break;
+                case "description":
+                    if(tag != null){
+                        builder.and();
+                    } else {
+                        builder.where();
+                    }
+                    findByDescriptionPart(builder, "%" + part + "%");
+                    break;
+            }
+        }
+        if(order != null){
+            switch (orderColumn){
+                case "name":
+                    orderByName(builder, order);
+                    break;
+                case "date":
+                    orderByDate(builder, order);
+                    break;
+            }
+        }
+        certificates = certificateRepository.queryFromDatabase(builder);
         certificates.forEach(this::eager);
         return certificates.stream()
                 .map(certificate -> modelMapper.map(certificate, GiftCertificateDTO.class))
