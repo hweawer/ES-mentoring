@@ -1,6 +1,0 @@
-com\epam\esm\controller\config\MainWebAppInitializer.class
-com\epam\esm\controller\config\WebConfig.class
-com\epam\esm\controller\exception\ApiError.class
-com\epam\esm\controller\CertificateController.class
-com\epam\esm\controller\exception\RestResponseEntityExceptionHandler.class
-com\epam\esm\controller\TagController.class
