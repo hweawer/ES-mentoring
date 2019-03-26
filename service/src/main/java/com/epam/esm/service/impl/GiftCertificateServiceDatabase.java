@@ -89,7 +89,9 @@ public class GiftCertificateServiceDatabase implements GiftCertificateService {
         logger.debug("CERTIFICATE SERVICE: update");
         GiftCertificate certificate = modelMapper.map(certificateDTO, GiftCertificate.class);
         certificate.setModificationDate(LocalDate.now());
-        Set<Tag> tags = new HashSet<>(tagRepository.queryFromDatabase(findTagsByCertificate(certificate)));
+        Set<Tag> tags = certificateDTO.getTags().stream()
+                .map(tag -> tagRepository.queryFromDatabase(findTagByName(tag.getName())).get(0))
+                .collect(toSet());
         certificate.setTags(tags);
         return certificateRepository.update(certificate);
     }

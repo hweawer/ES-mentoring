@@ -101,17 +101,20 @@ public class CertificateRepository extends AbstractRepository<GiftCertificate> {
         List<Long> deleteIds = currentAssignedTagIds.stream()
                 .filter(not(targetAssignedTagIds::contains))
                 .collect(toList());
+        logger.debug("DELETE IDS :" + deleteIds);
         List<Long> insertedCertificateIds = targetAssignedTagIds.stream()
                 .filter(not(currentAssignedTagIds::contains))
                 .collect(toList());
         if(!deleteIds.isEmpty()) {
             String deleteRelation = "DELETE FROM "
                     + CertificateTagTable.tableName
-                    + " WHERE " + relationCertificateId + " IN (";
+                    + " WHERE " + relationCertificateId + "=?"
+                    + " AND " + relationTagId + " IN (";
             String params = Stream.generate(() -> "?")
                     .limit(deleteIds.size())
                     .collect(joining(",", "", ")"));
             deleteRelation += params;
+            deleteIds.add(0, certificate.getId());
             jdbcTemplate.update(deleteRelation, deleteIds.toArray(Object[]::new));
         }
         Map<String, Object> relationParameters = new HashMap<>();
