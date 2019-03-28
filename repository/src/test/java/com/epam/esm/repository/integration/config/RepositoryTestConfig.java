@@ -8,7 +8,7 @@ import org.springframework.core.env.Environment;
 import java.util.Properties;
 
 @Configuration
-@PropertySource(value = "classpath:init.sql")
+@PropertySource(value = "classpath:db.properties")
 public class RepositoryTestConfig {
     private final Environment env;
 

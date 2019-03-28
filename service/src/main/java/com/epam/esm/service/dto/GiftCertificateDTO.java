@@ -4,6 +4,8 @@ import javax.validation.Valid;
 import javax.validation.constraints.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 public class GiftCertificateDTO {
@@ -34,7 +36,7 @@ public class GiftCertificateDTO {
     private Short duration;
 
     @Valid
-    private Set<TagDTO> tags;
+    private Set<TagDTO> tags = new HashSet<>();
 
     public GiftCertificateDTO(){}
 
@@ -100,6 +102,26 @@ public class GiftCertificateDTO {
 
     public void setTags(Set<TagDTO> tags) {
         this.tags = tags;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof GiftCertificateDTO)) return false;
+        GiftCertificateDTO that = (GiftCertificateDTO) o;
+        return Objects.equals(id, that.id) &&
+                name.equals(that.name) &&
+                description.equals(that.description) &&
+                price.equals(that.price) &&
+                creationDate.equals(that.creationDate) &&
+                Objects.equals(modificationDate, that.modificationDate) &&
+                duration.equals(that.duration) &&
+                tags.equals(that.tags);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, description, price, creationDate, modificationDate, duration, tags);
     }
 
     @Override
