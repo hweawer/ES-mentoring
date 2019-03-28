@@ -3,7 +3,10 @@ package com.epam.esm.controller;
 import com.epam.esm.service.TagService;
 import com.epam.esm.service.dto.TagDTO;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.UriComponents;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -22,24 +25,26 @@ public class TagController {
         return tagService.findAll();
     }
 
-    @GetMapping(value = "/{id:[0-9]+}")
+    @GetMapping(value = "/{id:\\d+}")
     public TagDTO findById(@PathVariable("id") Long id){
         return tagService.findById(id);
     }
 
-    @GetMapping(value = "/{name:[a-zA-Z]+}")
+    @GetMapping(value = "/{name:^[\\p{L}0-9]{3,12}}")
     public TagDTO findByName(@PathVariable("name") String name){
         return tagService.findByName(name);
     }
 
+    //todo: check if header is present & status
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public TagDTO create(@Valid @RequestBody TagDTO tagDTO){
-        return tagService.create(tagDTO);
+    public ResponseEntity<TagDTO> create(@Valid @RequestBody TagDTO tagDTO, UriComponentsBuilder builder){
+        TagDTO created = tagService.create(tagDTO);
+        UriComponents uri = builder.path("/tags/{id}").buildAndExpand(created.getId());
+        return ResponseEntity.created(uri.toUri()).body(created);
     }
 
     @DeleteMapping(value = "/{id}")
-    @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable("id") Long id) {
         tagService.delete(id);
     }

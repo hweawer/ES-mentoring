@@ -15,7 +15,6 @@ public class MainWebAppInitializer implements WebApplicationInitializer {
 
         AnnotationConfigWebApplicationContext root =
                 new AnnotationConfigWebApplicationContext();
-
         root.scan("com.epam.esm");
         sc.addListener(new ContextLoaderListener(root));
 

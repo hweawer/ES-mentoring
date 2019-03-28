@@ -34,6 +34,7 @@ public class CertificateRepository extends AbstractRepository<GiftCertificate> {
         this.giftMapper = giftMapper;
     }
 
+    //todo: on conflict
     @Override
     public GiftCertificate create(GiftCertificate certificate) {
         Objects.requireNonNull(certificate, "CERTIFICATE CREATE: Certificate is null");
@@ -65,7 +66,7 @@ public class CertificateRepository extends AbstractRepository<GiftCertificate> {
     public Integer delete(Long id) {
         final String DELETE_CERTIFICATE = "DELETE FROM " + CertificateTable.tableName
                 + " WHERE " + CertificateTable.id + "=?;";
-        return remove(DELETE_CERTIFICATE, id);
+        return delete(DELETE_CERTIFICATE, id);
     }
 
     @Override
@@ -98,27 +99,24 @@ public class CertificateRepository extends AbstractRepository<GiftCertificate> {
         List<Long> targetAssignedTagIds = certificate.getTags().stream()
                 .map(Tag::getId)
                 .collect(toList());
-        List<Long> deleteIds = currentAssignedTagIds.stream()
+        List<Long> removedTagIds = currentAssignedTagIds.stream()
                 .filter(not(targetAssignedTagIds::contains))
                 .collect(toList());
-        logger.debug("DELETE IDS :" + deleteIds);
-        List<Long> insertedCertificateIds = targetAssignedTagIds.stream()
+        List<Long> addedTagIds = targetAssignedTagIds.stream()
                 .filter(not(currentAssignedTagIds::contains))
                 .collect(toList());
-        if(!deleteIds.isEmpty()) {
+        if(!removedTagIds.isEmpty()) {
             String deleteRelation = "DELETE FROM "
                     + CertificateTagTable.tableName
                     + " WHERE " + relationCertificateId + "=?"
-                    + " AND " + relationTagId + " IN (";
-            String params = Stream.generate(() -> "?")
-                    .limit(deleteIds.size())
-                    .collect(joining(",", "", ")"));
-            deleteRelation += params;
-            deleteIds.add(0, certificate.getId());
-            jdbcTemplate.update(deleteRelation, deleteIds.toArray(Object[]::new));
+                    + " AND " + relationTagId + " IN " + generatePlaceholders(removedTagIds.size());
+            List<Long> params = new ArrayList<>();
+            params.add(certificate.getId());
+            params.addAll(removedTagIds);
+            jdbcTemplate.update(deleteRelation, params.toArray(Object[]::new));
         }
         Map<String, Object> relationParameters = new HashMap<>();
-        insertedCertificateIds.forEach(id -> {
+        addedTagIds.forEach(id -> {
             SimpleJdbcInsert relationInsert = new SimpleJdbcInsert(jdbcTemplate)
                     .withTableName(CertificateTagTable.tableName)
                     .withSchemaName(RepositoryConfig.schemaInUse);
@@ -126,6 +124,12 @@ public class CertificateRepository extends AbstractRepository<GiftCertificate> {
             relationParameters.put(relationTagId, id);
             relationInsert.execute(relationParameters);
         });
+    }
+
+    private String generatePlaceholders(Integer size){
+        return Stream.generate(() -> "?")
+                .limit(size)
+                .collect(joining(",", "(", ")"));
     }
 
     @Override

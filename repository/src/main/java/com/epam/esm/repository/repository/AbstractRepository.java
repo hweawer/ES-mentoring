@@ -1,13 +1,11 @@
 package com.epam.esm.repository.repository;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 
 import java.sql.Types;
 
 public abstract class AbstractRepository<T> implements Repository<T> {
-    @Autowired
     protected JdbcTemplate jdbcTemplate;
     protected SimpleJdbcInsert simpleJdbcInsert;
 
@@ -27,9 +25,7 @@ public abstract class AbstractRepository<T> implements Repository<T> {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    protected int remove(String sql, Long id){
-        Object[] param = {id};
-        int[] types = {Types.BIGINT};
-        return jdbcTemplate.update(sql, param, types);
+    protected int delete(String sql, Long id){
+        return jdbcTemplate.update(sql, id);
     }
 }

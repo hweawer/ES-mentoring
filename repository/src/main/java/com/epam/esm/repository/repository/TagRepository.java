@@ -1,6 +1,7 @@
 package com.epam.esm.repository.repository;
 
 import com.epam.esm.entity.Tag;
+import com.epam.esm.repository.config.CertificateTable;
 import com.epam.esm.repository.config.RepositoryConfig;
 import com.epam.esm.repository.config.TagTable;
 import com.epam.esm.repository.repository.specification.Specification;
@@ -9,8 +10,14 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.PreparedStatementCreator;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.*;
 
 @Repository
@@ -28,8 +35,9 @@ public class TagRepository extends AbstractRepository<Tag> {
     @Override
     public Tag create(Tag tag) {
         Objects.requireNonNull(tag, "TAG CREATE: Tag is null");
-        Objects.requireNonNull(tag.getName(), "TAG CREATE: Tag name is null;");
-        Long insertedId = simpleJdbcInsert.executeAndReturnKey(Map.of(TagTable.name, tag.getName())).longValue();
+        final String INSERT_TAG = "INSERT INTO " + TagTable.tableName + "(" + TagTable.name + ")"
+                + " VALUES(?) ON CONFLICT (" + TagTable.id + ") DO NOTHING RETURNING " + TagTable.id;
+        Long insertedId = jdbcTemplate.queryForObject(INSERT_TAG, new Object[]{tag.getName()}, Long.class);
         tag.setId(insertedId);
         logger.debug("Tag entity: " + tag + " was created.");
         return tag;
@@ -38,7 +46,7 @@ public class TagRepository extends AbstractRepository<Tag> {
     @Override
     public Integer delete(Long id) {
         final String DELETE_TAG = "DELETE FROM " + TagTable.tableName + " WHERE " + TagTable.id + "=?;";
-        return remove(DELETE_TAG, id);
+        return delete(DELETE_TAG, id);
     }
 
     @Override

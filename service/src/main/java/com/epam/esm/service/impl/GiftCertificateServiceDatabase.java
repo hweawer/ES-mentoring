@@ -3,13 +3,13 @@ package com.epam.esm.service.impl;
 import com.epam.esm.entity.GiftCertificate;
 import com.epam.esm.entity.Tag;
 import com.epam.esm.repository.config.CertificateTable;
+import com.epam.esm.repository.config.CertificateTagTable;
+import com.epam.esm.repository.config.TagTable;
 import com.epam.esm.repository.repository.Repository;
 import com.epam.esm.repository.repository.specification.SpecificationBuilder;
 import com.epam.esm.service.GiftCertificateService;
 import com.epam.esm.service.dto.GiftCertificateDTO;
-import com.epam.esm.service.dto.TagDTO;
 import com.epam.esm.service.exception.EntityNotFoundException;
-import com.epam.esm.service.util.Order;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.modelmapper.ModelMapper;
@@ -17,12 +17,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
-import static com.epam.esm.service.CertificateDatabaseSpecification.*;
 import static com.epam.esm.service.TagDatabaseSpecifications.*;
 import static java.util.stream.Collectors.*;
 import static java.util.stream.Collectors.toList;
@@ -33,6 +32,12 @@ public class GiftCertificateServiceDatabase implements GiftCertificateService {
     private Repository<GiftCertificate> certificateRepository;
     private Repository<Tag> tagRepository;
     private final ModelMapper modelMapper;
+
+    private static final Map<String, String> FILTER_COLUMN_TO_TABLE_COLUMN = Map.of(
+            "name", CertificateTable.name,
+            "description", CertificateTable.description,
+            "date", CertificateTable.creationDate
+    );
 
     public GiftCertificateServiceDatabase(Repository<GiftCertificate> certificateRepository,
                                           Repository<Tag> tagRepository, ModelMapper modelMapper) {
@@ -69,25 +74,14 @@ public class GiftCertificateServiceDatabase implements GiftCertificateService {
 
     @Transactional
     @Override
-    public Integer delete(Long id) {
+    public void delete(Long id) {
         logger.debug("CERTIFICATE SERVICE: delete");
-        return certificateRepository.delete(id);
-    }
-
-    @Transactional(readOnly = true)
-    @Override
-    public List<GiftCertificateDTO> findAll() {
-        logger.debug("CERTIFICATE SERVICE: findAll");
-        List<GiftCertificate> certificates = certificateRepository.findAll();
-        certificates.forEach(this::eager);
-        return certificates.stream()
-                .map(certificate -> modelMapper.map(certificate, GiftCertificateDTO.class))
-                .collect(toList());
+        certificateRepository.delete(id);
     }
 
     @Transactional
     @Override
-    public Integer update(GiftCertificateDTO certificateDTO) {
+    public void update(GiftCertificateDTO certificateDTO) {
         logger.debug("CERTIFICATE SERVICE: update");
         GiftCertificate certificate = modelMapper.map(certificateDTO, GiftCertificate.class);
         certificate.setModificationDate(LocalDate.now());
@@ -95,75 +89,74 @@ public class GiftCertificateServiceDatabase implements GiftCertificateService {
                 .map(tag -> tagRepository.queryFromDatabase(findTagByName(tag.getName())).get(0))
                 .collect(toSet());
         certificate.setTags(tags);
-        return certificateRepository.update(certificate);
+        certificateRepository.update(certificate);
     }
 
     @Transactional(readOnly = true)
     @Override
     public GiftCertificateDTO findById(Long id) throws EntityNotFoundException {
         logger.debug("CERTIFICATE SERVICE: findById");
-        List<GiftCertificate> selected = certificateRepository.findById(id);
-        if (selected.isEmpty()){
-            throw new EntityNotFoundException("No tag with such id.");
-        }
-        GiftCertificate certificate = selected.get(0);
-        eager(certificate);
+        GiftCertificate certificate = certificateRepository.findById(id).stream()
+                .findFirst()
+                .map(this::eagerLoad)
+                .orElseThrow(() -> new EntityNotFoundException("certificate.not.found.by.id"));
         return modelMapper.map(certificate, GiftCertificateDTO.class);
     }
 
+    //todo: test this method
     @Transactional(readOnly = true)
     public List<GiftCertificateDTO> findByClause(String tag,
-                                                 String regexColumn,
-                                                 String part,
-                                                 String orderColumn,
-                                                 Order order){
+                                                 String filterColumn,
+                                                 String filterValue,
+                                                 String orderColumn){
         SpecificationBuilder builder = new SpecificationBuilder();
-        selectFromCertificate(builder);
+        builder.select(CertificateTable.certificateId,
+                       CertificateTable.certificateName,
+                       CertificateTable.certificateDescription,
+                       CertificateTable.certificatePrice,
+                       CertificateTable.certificateCreationDate,
+                       CertificateTable.certificateModificationDate,
+                       CertificateTable.certificateDuration)
+                .from(CertificateTable.tableName);
+
         List<GiftCertificate> certificates;
         if(tag != null){
-            innerJoinTags(builder);
+            builder.innerJoin(CertificateTagTable.tableName,
+                              CertificateTable.certificateId,
+                              CertificateTagTable.relationCertificateId)
+                    .innerJoin(TagTable.tableName,
+                               CertificateTagTable.relationTagId,
+                               TagTable.tagId);
             builder.where();
-            whereTag(builder, tag);
+            builder.equal(TagTable.tagName, tag);
         }
-        if (part != null){
-            switch (regexColumn){
-                case "name":
-                    if(tag != null){
-                        builder.and();
-                    } else {
-                        builder.where();
-                    }
-                    findByNamePart(builder, "%" + part + "%");
-                    break;
-                case "description":
-                    if(tag != null){
-                        builder.and();
-                    } else {
-                        builder.where();
-                    }
-                    findByDescriptionPart(builder, "%" + part + "%");
-                    break;
+        if (filterValue != null){
+            if (tag != null){
+                builder.and();
+            } else {
+                builder.where();
             }
+            builder.like(FILTER_COLUMN_TO_TABLE_COLUMN.get(filterColumn), "%" + filterValue + "%");
         }
-        if(order != null){
-            switch (orderColumn){
-                case "name":
-                    orderByName(builder, order);
-                    break;
-                case "date":
-                    orderByDate(builder, order);
-                    break;
+        if(orderColumn != null){
+            boolean desc = orderColumn.charAt(0) == '-';
+            String filter = desc ? FILTER_COLUMN_TO_TABLE_COLUMN.get(orderColumn.substring(1))
+                                : FILTER_COLUMN_TO_TABLE_COLUMN.get(orderColumn);
+            builder.orderBy(filter);
+            if(desc){
+                builder.desc();
             }
         }
         certificates = certificateRepository.queryFromDatabase(builder);
-        certificates.forEach(this::eager);
+        certificates.forEach(this::eagerLoad);
         return certificates.stream()
                 .map(certificate -> modelMapper.map(certificate, GiftCertificateDTO.class))
                 .collect(toList());
     }
 
-    private void eager(GiftCertificate certificate) {
+    private GiftCertificate eagerLoad(GiftCertificate certificate) {
         Set<Tag> tags = new HashSet<>(tagRepository.queryFromDatabase(findTagsByCertificate(certificate)));
         certificate.setTags(tags);
+        return certificate;
     }
 }

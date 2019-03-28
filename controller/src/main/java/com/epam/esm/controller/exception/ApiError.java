@@ -1,44 +1,31 @@
 package com.epam.esm.controller.exception;
 
-import org.springframework.http.HttpStatus;
-
 import java.util.Collections;
 import java.util.List;
 
 public class ApiError {
 
-    private HttpStatus status;
-    private String message;
+    private String developerMessage;
     private List<String> errors;
 
-    public ApiError(HttpStatus status, String message, List<String> errors) {
+    public ApiError(String developerMessage, List<String> errors) {
         super();
-        this.status = status;
-        this.message = message;
+        this.developerMessage = developerMessage;
         this.errors = errors;
     }
 
-    public ApiError(HttpStatus status, String message, String error) {
+    public ApiError(String developerMessage, String error) {
         super();
-        this.status = status;
-        this.message = message;
+        this.developerMessage = developerMessage;
         errors = Collections.singletonList(error);
     }
 
-    public HttpStatus getStatus() {
-        return status;
+    public String getDeveloperMessage() {
+        return developerMessage;
     }
 
-    public void setStatus(HttpStatus status) {
-        this.status = status;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
+    public void setDeveloperMessage(String developerMessage) {
+        this.developerMessage = developerMessage;
     }
 
     public List<String> getErrors() {

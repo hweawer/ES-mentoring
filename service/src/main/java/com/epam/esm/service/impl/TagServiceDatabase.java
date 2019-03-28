@@ -57,11 +57,10 @@ public class TagServiceDatabase implements TagService {
     @Transactional(readOnly = true)
     @Override
     public TagDTO findById(Long id) throws EntityNotFoundException {
-        List<Tag> selected = tagRepository.findById(id);
-        if (selected.isEmpty()){
-            throw new EntityNotFoundException("tag.not.found.by.name");
-        }
-        return modelMapper.map(selected.get(0), TagDTO.class);
+        Tag tag = tagRepository.findById(id).stream()
+                .findFirst()
+                .orElseThrow(() -> new EntityNotFoundException("tag.not.found.by.name"));
+        return modelMapper.map(tag, TagDTO.class);
     }
 
     @Transactional(readOnly = true)

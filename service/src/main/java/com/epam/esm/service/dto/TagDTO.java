@@ -5,8 +5,9 @@ import javax.validation.constraints.Pattern;
 
 public class TagDTO {
     private Long id;
-    @NotNull
-    @Pattern(regexp = "\\p{L}{3,12}", message = "Tag name doesn't suite the pattern.")
+
+    @NotNull(message = "tag.name.null.value")
+    @Pattern(regexp = "^[\\p{L}0-9]{3,12}", message = "tag.name.not.suite.pattern")
     private String name;
 
     public TagDTO() {}

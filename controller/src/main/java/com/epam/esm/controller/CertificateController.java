@@ -2,9 +2,11 @@ package com.epam.esm.controller;
 
 import com.epam.esm.service.GiftCertificateService;
 import com.epam.esm.service.dto.GiftCertificateDTO;
-import com.epam.esm.service.util.Order;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.UriComponents;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -19,9 +21,13 @@ public class CertificateController {
         this.certificateService = certificateService;
     }
 
+    //todo: implement method
     @GetMapping
-    public List<GiftCertificateDTO> findCertificates(){
-        return certificateService.findAll();
+    public List<GiftCertificateDTO> findCertificates(@RequestParam(value = "tag", required = false) String tagName,
+                                                     @RequestParam(value = "column", required = false) String filterColumn,
+                                                     @RequestParam(value = "value", required = false) String filterValue,
+                                                     @RequestParam(value = "sort", required = false) String sortColumn){
+        return certificateService.findByClause(tagName, filterColumn, filterValue, sortColumn);
     }
 
     @GetMapping(value = "/{id}")
@@ -29,27 +35,19 @@ public class CertificateController {
         return certificateService.findById(id);
     }
 
-    @GetMapping("/query")
-    public List<GiftCertificateDTO> findSortedByName(@RequestParam(value = "tag", required = false) String name,
-                                                     @RequestParam(value = "name", required = false) String regexName,
-                                                     @RequestParam(value = "description", required = false) String regexDescription,
-                                                     @RequestParam(value = "sort", required = false) String sort,
-                                                     @RequestParam(value = "order", required = false) Order order){
-        String regex = regexName == null ? regexDescription : regexName;
-        String regexColumn = regexName == null ? "description" : "name";
-        return certificateService.findByClause(name, regexColumn, regex, sort, order);
 
-    }
-
-
+    //todo: check if header is present & status
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public GiftCertificateDTO create(@Valid @RequestBody GiftCertificateDTO certificateDTO){
-        return certificateService.create(certificateDTO);
+    public ResponseEntity<GiftCertificateDTO> create(@Valid @RequestBody GiftCertificateDTO certificateDTO,
+                                                     UriComponentsBuilder builder){
+        GiftCertificateDTO created = certificateService.create(certificateDTO);
+        UriComponents uri = builder.path("/certificates/{id}").buildAndExpand(created.getId());
+        return ResponseEntity.created(uri.toUri()).body(created);
     }
 
+    //todo: think about return in body
     @PutMapping(value = "/{id}")
-    @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void update(@Valid @RequestBody GiftCertificateDTO certificateDTO, @PathVariable("id") Long id){
         certificateDTO.setId(id);
         certificateService.update(certificateDTO);
