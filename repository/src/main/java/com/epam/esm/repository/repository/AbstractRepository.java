@@ -3,7 +3,6 @@ package com.epam.esm.repository.repository;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 
-import java.sql.Types;
 
 public abstract class AbstractRepository<T> implements Repository<T> {
     protected JdbcTemplate jdbcTemplate;

@@ -1,5 +1,5 @@
 package com.epam.esm.controller.exception;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpHeaders;
@@ -22,7 +22,6 @@ import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 @RestControllerAdvice
 public class RestResponseEntityExceptionHandler
@@ -49,17 +48,18 @@ public class RestResponseEntityExceptionHandler
         }
 
         ApiError apiError = new ApiError(ex.getLocalizedMessage(), errors);
-        return handleExceptionInternal(ex, apiError, headers, HttpStatus.BAD_REQUEST, request);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiError);
     }
 
     @Override
     protected ResponseEntity<Object> handleMissingServletRequestParameter(
             MissingServletRequestParameterException ex, HttpHeaders headers,
             HttpStatus status, WebRequest request) {
-        String error = ex.getParameterName() + " parameter is missing";
+        String error = ex.getParameterName() + messageSource.getMessage("parameter.missing", null,
+                LocaleContextHolder.getLocale());
 
         ApiError apiError = new ApiError(ex.getLocalizedMessage(), error);
-        return new ResponseEntity<>(apiError, new HttpHeaders(), HttpStatus.BAD_REQUEST);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiError);
     }
 
     @ExceptionHandler({ConstraintViolationException.class})
@@ -68,21 +68,23 @@ public class RestResponseEntityExceptionHandler
         List<String> errors = new ArrayList<>();
         for (ConstraintViolation<?> violation : ex.getConstraintViolations()) {
             errors.add(violation.getRootBeanClass().getName() + " " +
-                    violation.getPropertyPath() + ": " + violation.getMessage());
+                    violation.getPropertyPath() + ": " + messageSource.getMessage(violation.getMessage(), null,
+                    LocaleContextHolder.getLocale()));
         }
 
         ApiError apiError = new ApiError(ex.getLocalizedMessage(), errors);
-        return new ResponseEntity<>(apiError, new HttpHeaders(), HttpStatus.BAD_REQUEST);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiError);
     }
 
     @ExceptionHandler({ MethodArgumentTypeMismatchException.class })
     public ResponseEntity<Object> handleMethodArgumentTypeMismatch(
             MethodArgumentTypeMismatchException ex, WebRequest request) {
         String error =
-                ex.getName() + " should be of type " + Objects.requireNonNull(ex.getRequiredType()).getName();
+                ex.getName() + messageSource.getMessage("argument.type.missmatch", null,
+                        LocaleContextHolder.getLocale()) + ex.getRequiredType().getName();
 
         ApiError apiError = new ApiError(ex.getLocalizedMessage(), error);
-        return new ResponseEntity<>(apiError, new HttpHeaders(), HttpStatus.BAD_REQUEST);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiError);
     }
 
     @Override
@@ -93,12 +95,12 @@ public class RestResponseEntityExceptionHandler
             WebRequest request) {
         StringBuilder builder = new StringBuilder();
         builder.append(ex.getMethod());
-        builder.append(
-                " method is not supported for this request. Supported methods are ");
-        Objects.requireNonNull(ex.getSupportedHttpMethods()).forEach(t -> builder.append(t).append(" "));
+        builder.append(messageSource.getMessage("not.supported.methods", null,
+                        LocaleContextHolder.getLocale()));
+        ex.getSupportedHttpMethods().forEach(t -> builder.append(t).append(" "));
 
         ApiError apiError = new ApiError(ex.getLocalizedMessage(), builder.toString());
-        return new ResponseEntity<>(apiError, new HttpHeaders(), HttpStatus.METHOD_NOT_ALLOWED);
+        return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(apiError);
     }
 
     @Override
@@ -109,20 +111,22 @@ public class RestResponseEntityExceptionHandler
             WebRequest request) {
         StringBuilder builder = new StringBuilder();
         builder.append(ex.getContentType());
-        builder.append(" media type is not supported. Supported media types are ");
+        builder.append(messageSource.getMessage("not.supported.media.type", null,
+                LocaleContextHolder.getLocale()));
         ex.getSupportedMediaTypes().forEach(t -> builder.append(t).append(", "));
 
         ApiError apiError = new ApiError(ex.getLocalizedMessage(), builder.substring(0, builder.length() - 2));
-        return new ResponseEntity<>(apiError, new HttpHeaders(), HttpStatus.UNSUPPORTED_MEDIA_TYPE);
+        return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE).body(apiError);
     }
 
     @Override
     protected ResponseEntity<Object> handleNoHandlerFoundException(
             NoHandlerFoundException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
-        String error = "No handler found for " + ex.getHttpMethod() + " " + ex.getRequestURL();
+        String error = messageSource.getMessage("not.found", null,
+                LocaleContextHolder.getLocale()) + ex.getHttpMethod() + " " + ex.getRequestURL();
 
         ApiError apiError = new ApiError(ex.getLocalizedMessage(), error);
-        return new ResponseEntity<>(apiError, new HttpHeaders(), HttpStatus.NOT_FOUND);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(apiError);
     }
 
     @ExceptionHandler(Exception.class)
@@ -131,6 +135,6 @@ public class RestResponseEntityExceptionHandler
                 null,
                 LocaleContextHolder.getLocale()),
                 "error occurred");
-        return new ResponseEntity<>(apiError, new HttpHeaders(), HttpStatus.BAD_REQUEST);
+        return ResponseEntity.badRequest().body(apiError);
     }
 }

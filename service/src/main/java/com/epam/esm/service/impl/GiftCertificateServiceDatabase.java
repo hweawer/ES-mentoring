@@ -52,14 +52,9 @@ public class GiftCertificateServiceDatabase implements GiftCertificateService {
     public GiftCertificateDTO create(GiftCertificateDTO certificateDTO) {
         logger.debug("CERTIFICATE SERVICE: create");
         GiftCertificate certificate = modelMapper.map(certificateDTO, GiftCertificate.class);
-        Set<Tag> tags = certificate.getTags().stream()
-                        .map(tag -> tagRepository.queryFromDatabase(findTagByName(tag.getName())).stream()
-                        .findFirst()
-                        .orElseGet(() -> tagRepository.create(tag)))
-                        .collect(toSet());
-        certificate.setTags(tags);
-        certificate.setCreationDate(LocalDate.now());
-        GiftCertificate created = certificateRepository.create(certificate);
+        GiftCertificate collectedCertificate = collectTags(certificate);
+        collectedCertificate.setCreationDate(LocalDate.now());
+        GiftCertificate created = certificateRepository.create(collectedCertificate);
         return modelMapper.map(created, GiftCertificateDTO.class);
     }
 
@@ -70,17 +65,15 @@ public class GiftCertificateServiceDatabase implements GiftCertificateService {
         certificateRepository.delete(id);
     }
 
+    //todo: test this method to add new tags and delete old
     @Transactional
     @Override
     public void update(GiftCertificateDTO certificateDTO) {
         logger.debug("CERTIFICATE SERVICE: update");
         GiftCertificate certificate = modelMapper.map(certificateDTO, GiftCertificate.class);
-        certificate.setModificationDate(LocalDate.now());
-        Set<Tag> tags = certificateDTO.getTags().stream()
-                .map(tag -> tagRepository.queryFromDatabase(findTagByName(tag.getName())).get(0))
-                .collect(toSet());
-        certificate.setTags(tags);
-        certificateRepository.update(certificate);
+        GiftCertificate collectedCertificate = collectTags(certificate);
+        collectedCertificate.setModificationDate(LocalDate.now());
+        certificateRepository.update(collectedCertificate);
     }
 
     @Transactional(readOnly = true)
@@ -89,7 +82,7 @@ public class GiftCertificateServiceDatabase implements GiftCertificateService {
         logger.debug("CERTIFICATE SERVICE: findById");
         GiftCertificate certificate = certificateRepository.findById(id).stream()
                 .findFirst()
-                .map(this::eagerLoad)
+                .map(this::loadTags)
                 .orElseThrow(() -> new EntityNotFoundException("certificate.not.found.by.id"));
         return modelMapper.map(certificate, GiftCertificateDTO.class);
     }
@@ -142,14 +135,24 @@ public class GiftCertificateServiceDatabase implements GiftCertificateService {
             builder.orderBy(order, desc);
         }
         certificates = certificateRepository.queryFromDatabase(builder);
-        certificates.forEach(this::eagerLoad);
+        certificates.forEach(this::loadTags);
         return certificates.stream()
                 .map(certificate -> modelMapper.map(certificate, GiftCertificateDTO.class))
                 .collect(toList());
     }
 
-    private GiftCertificate eagerLoad(GiftCertificate certificate) {
+    private GiftCertificate loadTags(GiftCertificate certificate) {
         Set<Tag> tags = new HashSet<>(tagRepository.queryFromDatabase(findTagsByCertificate(certificate)));
+        certificate.setTags(tags);
+        return certificate;
+    }
+
+    private GiftCertificate collectTags(GiftCertificate certificate){
+        Set<Tag> tags = certificate.getTags().stream()
+                .map(tag -> tagRepository.queryFromDatabase(findTagByName(tag.getName())).stream()
+                        .findFirst()
+                        .orElseGet(() -> tagRepository.create(tag)))
+                .collect(toSet());
         certificate.setTags(tags);
         return certificate;
     }

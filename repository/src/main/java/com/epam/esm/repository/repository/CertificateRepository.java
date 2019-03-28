@@ -5,19 +5,18 @@ import com.epam.esm.repository.config.CertificateTagTable;
 import com.epam.esm.entity.GiftCertificate;
 import com.epam.esm.entity.Tag;
 import com.epam.esm.repository.config.RepositoryConfig;
+import com.epam.esm.repository.config.TagTable;
 import com.epam.esm.repository.repository.specification.Specification;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
 import java.util.*;
 import java.util.stream.Stream;
 
-import static com.epam.esm.repository.config.CertificateTable.*;
 import static com.epam.esm.repository.config.CertificateTagTable.*;
 import static java.util.function.Predicate.not;
 import static java.util.stream.Collectors.*;
@@ -34,30 +33,31 @@ public class CertificateRepository extends AbstractRepository<GiftCertificate> {
         this.giftMapper = giftMapper;
     }
 
-    //todo: on conflict
     @Override
     public GiftCertificate create(GiftCertificate certificate) {
         Objects.requireNonNull(certificate, "CERTIFICATE CREATE: Certificate is null");
         logger.debug("CREATE CERTIFICATE: " + certificate);
-        Map<String, Object> parameters = Map.of(
-                name, certificate.getName(),
-                description, certificate.getDescription(),
-                price, certificate.getPrice(),
-                creationDate, certificate.getCreationDate(),
-                duration, certificate.getDuration()
-        );
 
-        Long insertedCertificateId = simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
+        final String INSERT_TAG = "INSERT INTO " + CertificateTable.tableName +
+                "(" + CertificateTable.name + ", " +
+                CertificateTable.description + ", " +
+                CertificateTable.duration + ", " +
+                CertificateTable.creationDate + ", " +
+                CertificateTable.price + ")"
+                + " VALUES(?, ?, ?, ?, ?) ON CONFLICT (" + CertificateTable.id + ") DO NOTHING RETURNING " + TagTable.id;
+
+        final String INSERT_DEPENDENCY = "INSERT INTO " + CertificateTagTable.tableName +
+                "(" + CertificateTagTable.relationCertificateId + ", " +
+                CertificateTagTable.relationTagId + ")"
+                + " VALUES(?, ?)";
+        Long insertedCertificateId = jdbcTemplate.queryForObject(INSERT_TAG,
+                new Object[]{certificate.getName(), certificate.getDescription(), certificate.getDuration(),
+                        certificate.getCreationDate(), certificate.getPrice()}, Long.class);
         certificate.setId(insertedCertificateId);
 
         Set<Tag> tags = certificate.getTags();
-        tags.forEach(tag -> new SimpleJdbcInsert(jdbcTemplate)
-                    .withTableName(CertificateTagTable.tableName)
-                    .withSchemaName(RepositoryConfig.schemaInUse)
-                    .execute(Map.of(
-                        relationCertificateId, insertedCertificateId,
-                        relationTagId, tag.getId()
-                        ))
+        tags.forEach(tag ->
+                jdbcTemplate.update(INSERT_DEPENDENCY, insertedCertificateId, tag.getId())
         );
         return certificate;
     }
@@ -93,6 +93,10 @@ public class CertificateRepository extends AbstractRepository<GiftCertificate> {
     private void updateCertificateTagRelation(GiftCertificate certificate){
         final String SELECT_RELATION = "SELECT " + CertificateTagTable.relationTagId + " FROM " + CertificateTagTable.tableName
                 + " WHERE " + CertificateTagTable.relationCertificateId + "=?";
+        final String INSERT_DEPENDENCY = "INSERT INTO " + CertificateTagTable.tableName +
+                "(" + CertificateTagTable.relationCertificateId + ", " +
+                CertificateTagTable.relationTagId + ")"
+                + " VALUES(?, ?)";
         List<Long> currentAssignedTagIds = jdbcTemplate.queryForList(SELECT_RELATION,
                 new Object[]{certificate.getId()},
                 Long.class);
@@ -115,15 +119,7 @@ public class CertificateRepository extends AbstractRepository<GiftCertificate> {
             params.addAll(removedTagIds);
             jdbcTemplate.update(deleteRelation, params.toArray(Object[]::new));
         }
-        Map<String, Object> relationParameters = new HashMap<>();
-        addedTagIds.forEach(id -> {
-            SimpleJdbcInsert relationInsert = new SimpleJdbcInsert(jdbcTemplate)
-                    .withTableName(CertificateTagTable.tableName)
-                    .withSchemaName(RepositoryConfig.schemaInUse);
-            relationParameters.put(relationCertificateId, certificate.getId());
-            relationParameters.put(relationTagId, id);
-            relationInsert.execute(relationParameters);
-        });
+        addedTagIds.forEach(id -> jdbcTemplate.update(INSERT_DEPENDENCY, certificate.getId(), id));
     }
 
     private String generatePlaceholders(Integer size){

@@ -59,7 +59,7 @@ public class TagServiceDatabase implements TagService {
     public TagDTO findById(Long id) throws EntityNotFoundException {
         Tag tag = tagRepository.findById(id).stream()
                 .findFirst()
-                .orElseThrow(() -> new EntityNotFoundException("tag.not.found.by.name"));
+                .orElseThrow(() -> new EntityNotFoundException("tag.not.found.by.id"));
         return modelMapper.map(tag, TagDTO.class);
     }
 
@@ -67,10 +67,9 @@ public class TagServiceDatabase implements TagService {
     @Override
     public TagDTO findByName(String name) throws EntityNotFoundException {
         Specification specification = findTagByName(name);
-        List<Tag> selected = tagRepository.queryFromDatabase(specification);
-        if (selected.isEmpty()){
-            throw new EntityNotFoundException("No tag with such name.");
-        }
-        return modelMapper.map(selected.get(0), TagDTO.class);
+        Tag selected = tagRepository.queryFromDatabase(specification).stream()
+                .findFirst()
+                .orElseThrow(() -> new EntityNotFoundException("tag.not.found.by.name"));
+        return modelMapper.map(selected, TagDTO.class);
     }
 }
