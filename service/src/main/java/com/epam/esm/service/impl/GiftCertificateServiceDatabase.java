@@ -52,9 +52,10 @@ public class GiftCertificateServiceDatabase implements GiftCertificateService {
     public GiftCertificateDTO create(GiftCertificateDTO certificateDTO) {
         logger.debug("CERTIFICATE SERVICE: create");
         GiftCertificate certificate = modelMapper.map(certificateDTO, GiftCertificate.class);
-        GiftCertificate collectedCertificate = collectTags(certificate);
-        collectedCertificate.setCreationDate(LocalDate.now());
-        GiftCertificate created = certificateRepository.create(collectedCertificate);
+        Set<Tag> tags = findOrCreateTags(certificate);
+        certificate.setTags(tags);
+        certificate.setCreationDate(LocalDate.now());
+        GiftCertificate created = certificateRepository.create(certificate);
         return modelMapper.map(created, GiftCertificateDTO.class);
     }
 
@@ -65,15 +66,15 @@ public class GiftCertificateServiceDatabase implements GiftCertificateService {
         certificateRepository.delete(id);
     }
 
-    //todo: test this method to add new tags and delete old
     @Transactional
     @Override
     public void update(GiftCertificateDTO certificateDTO) {
         logger.debug("CERTIFICATE SERVICE: update");
         GiftCertificate certificate = modelMapper.map(certificateDTO, GiftCertificate.class);
-        GiftCertificate collectedCertificate = collectTags(certificate);
-        collectedCertificate.setModificationDate(LocalDate.now());
-        certificateRepository.update(collectedCertificate);
+        Set<Tag> tags = findOrCreateTags(certificate);
+        certificate.setTags(tags);
+        certificate.setModificationDate(LocalDate.now());
+        certificateRepository.update(certificate);
     }
 
     @Transactional(readOnly = true)
@@ -147,13 +148,13 @@ public class GiftCertificateServiceDatabase implements GiftCertificateService {
         return certificate;
     }
 
-    private GiftCertificate collectTags(GiftCertificate certificate){
+    private Set<Tag> findOrCreateTags(GiftCertificate certificate){
         Set<Tag> tags = certificate.getTags().stream()
                 .map(tag -> tagRepository.queryFromDatabase(findTagByName(tag.getName())).stream()
                         .findFirst()
                         .orElseGet(() -> tagRepository.create(tag)))
                 .collect(toSet());
-        certificate.setTags(tags);
-        return certificate;
+
+        return tags;
     }
 }
