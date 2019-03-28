@@ -103,7 +103,6 @@ public class GiftCertificateServiceDatabase implements GiftCertificateService {
         return modelMapper.map(certificate, GiftCertificateDTO.class);
     }
 
-    //todo: test this method
     @Transactional(readOnly = true)
     public List<GiftCertificateDTO> findByClause(String tag,
                                                  String filterColumn,

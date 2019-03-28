@@ -21,7 +21,6 @@ public class CertificateController {
         this.certificateService = certificateService;
     }
 
-    //todo: implement method
     @GetMapping
     public List<GiftCertificateDTO> findCertificates(@RequestParam(value = "tag", required = false) String tagName,
                                                      @RequestParam(value = "column", required = false) String filterColumn,
@@ -36,7 +35,6 @@ public class CertificateController {
     }
 
 
-    //todo: check if header is present & status
     @PostMapping
     public ResponseEntity<GiftCertificateDTO> create(@Valid @RequestBody GiftCertificateDTO certificateDTO,
                                                      UriComponentsBuilder builder){
@@ -45,7 +43,6 @@ public class CertificateController {
         return ResponseEntity.created(uri.toUri()).body(created);
     }
 
-    //todo: think about return in body
     @PutMapping(value = "/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void update(@Valid @RequestBody GiftCertificateDTO certificateDTO, @PathVariable("id") Long id){

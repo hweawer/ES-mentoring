@@ -35,7 +35,6 @@ public class TagController {
         return tagService.findByName(name);
     }
 
-    //todo: check if header is present & status
     @PostMapping
     public ResponseEntity<TagDTO> create(@Valid @RequestBody TagDTO tagDTO, UriComponentsBuilder builder){
         TagDTO created = tagService.create(tagDTO);
