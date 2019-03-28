@@ -1,4 +1,4 @@
-package com.epam.esm.service;
+package com.epam.esm.service.impl;
 
 import com.epam.esm.entity.GiftCertificate;
 import com.epam.esm.repository.config.CertificateTable;

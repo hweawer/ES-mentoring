@@ -84,6 +84,14 @@ public class SpecificationBuilder implements Specification {
         return this;
     }
 
+    public SpecificationBuilder orderBy(String column, boolean desc) {
+        sql.append(" ORDER BY ").append(column);
+        if(desc){
+            sql.append(" DESC ");
+        }
+        return this;
+    }
+
     public SpecificationBuilder orderBy(String column) {
         sql.append(" ORDER BY ").append(column);
         return this;
@@ -94,11 +102,6 @@ public class SpecificationBuilder implements Specification {
                 .append(joinTable)
                 .append(" ON ")
                 .append(fromColumn).append(" = ").append(joinColumn);
-        return this;
-    }
-
-    public SpecificationBuilder desc(){
-        sql.append(" DESC ");
         return this;
     }
 

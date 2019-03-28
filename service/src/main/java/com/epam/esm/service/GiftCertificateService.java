@@ -10,6 +10,6 @@ public interface GiftCertificateService {
     void delete(Long id);
     void update(GiftCertificateDTO t);
     GiftCertificateDTO findById(Long id) throws EntityNotFoundException;
-    List<GiftCertificateDTO> findByClause(String tag, String filterColumn, String filterValue,
-                                          String orderColumn);
+    List<GiftCertificateDTO> findByClause(String tag, String filterAttribute, String filterValue,
+                                          String orderAttribute);
 }

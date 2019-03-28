@@ -12,7 +12,7 @@ import javax.validation.Valid;
 import java.util.List;
 
 @RestController
-@RequestMapping(value = "/tags", consumes = "application/json")
+@RequestMapping(value = "/tags", consumes = "application/json", produces = "application/json")
 public class TagController {
     private final TagService tagService;
 

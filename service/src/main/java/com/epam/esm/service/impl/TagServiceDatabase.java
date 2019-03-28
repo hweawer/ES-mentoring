@@ -14,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static com.epam.esm.service.TagDatabaseSpecifications.*;
+import static com.epam.esm.service.impl.TagDatabaseSpecifications.*;
 import static java.util.stream.Collectors.*;
 
 @Service

@@ -34,6 +34,7 @@ public class CertificateRepository extends AbstractRepository<GiftCertificate> {
         this.giftMapper = giftMapper;
     }
 
+    //todo: on conflict
     @Override
     public GiftCertificate create(GiftCertificate certificate) {
         Objects.requireNonNull(certificate, "CERTIFICATE CREATE: Certificate is null");

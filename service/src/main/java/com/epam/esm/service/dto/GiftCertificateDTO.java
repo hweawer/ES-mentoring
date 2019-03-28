@@ -9,13 +9,16 @@ import java.util.Set;
 public class GiftCertificateDTO {
     private Long id;
 
-    @NotNull(message = "certificate.name.null") @Pattern(regexp = "\\p{L}{3,12}", message = "certificate.name.not.suite.pattern")
+    @NotNull(message = "certificate.name.null")
+    @Pattern(regexp = "\\p{L}{3,12}", message = "certificate.name.not.suite.pattern")
     private String name;
 
-    @NotBlank(message = "certificate.description.blank") @Size(min = 3, message = "certificate.description.size")
+    @NotBlank(message = "certificate.description.blank")
+    @Size(min = 3, message = "certificate.description.size")
     private String description;
 
-    @NotNull(message = "certificate.price.null") @PositiveOrZero(message = "certificate.price.positive.or.zero")
+    @NotNull(message = "certificate.price.null")
+    @PositiveOrZero(message = "certificate.price.positive.or.zero")
     @Digits(integer=11, fraction=2, message = "")
     private BigDecimal price;
 
@@ -25,7 +28,9 @@ public class GiftCertificateDTO {
     @PastOrPresent(message = "date.modification.past.present")
     private LocalDate modificationDate;
 
-    @NotNull(message = "duration.null") @Min(value = 5, message = "duration.min") @Max(value = 365, message = "duration.max")
+    @NotNull(message = "duration.null")
+    @Min(value = 5, message = "duration.min")
+    @Max(value = 365, message = "duration.max")
     private Short duration;
 
     @Valid

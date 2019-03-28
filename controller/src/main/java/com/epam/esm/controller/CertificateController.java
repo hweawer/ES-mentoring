@@ -12,7 +12,7 @@ import javax.validation.Valid;
 import java.util.List;
 
 @RestController
-@RequestMapping(value = "/certificates", consumes = "application/json")
+@RequestMapping(value = "/certificates", consumes = "application/json", produces = "application/json")
 public class CertificateController {
 
     private final GiftCertificateService certificateService;
