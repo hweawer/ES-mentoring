@@ -38,7 +38,7 @@ public class TagController {
     @PostMapping
     public ResponseEntity<TagDTO> create(@Valid @RequestBody TagDTO tagDTO, UriComponentsBuilder builder){
         TagDTO created = tagService.create(tagDTO);
-        UriComponents uri = builder.path("/tags/{id}").buildAndExpand(created.getId());
+        UriComponents uri = builder.path("/tags/{ID}").buildAndExpand(created.getId());
         return ResponseEntity.created(uri.toUri()).body(created);
     }
 

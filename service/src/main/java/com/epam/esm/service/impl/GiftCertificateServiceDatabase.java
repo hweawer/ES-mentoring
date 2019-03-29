@@ -35,9 +35,9 @@ public class GiftCertificateServiceDatabase implements GiftCertificateService {
     private final ModelMapper modelMapper;
 
     private static final Map<String, String> TABLE_COLUMN_BY_ATTRIBUTE = Map.of(
-            "name", CertificateTable.name,
-            "description", CertificateTable.description,
-            "date", CertificateTable.creationDate
+            "name", CertificateTable.CERTIFICATE_NAME,
+            "description", CertificateTable.CERTIFICATE_DESCRIPTION,
+            "creation_date", CertificateTable.CERTIFICATE_CREATION_DATE
     );
 
     public GiftCertificateServiceDatabase(Repository<GiftCertificate> certificateRepository,
@@ -94,25 +94,25 @@ public class GiftCertificateServiceDatabase implements GiftCertificateService {
                                                  String filterValue,
                                                  String orderAttribute){
         SpecificationBuilder builder = new SpecificationBuilder();
-        builder.select(CertificateTable.certificateId,
-                       CertificateTable.certificateName,
-                       CertificateTable.certificateDescription,
-                       CertificateTable.certificatePrice,
-                       CertificateTable.certificateCreationDate,
-                       CertificateTable.certificateModificationDate,
-                       CertificateTable.certificateDuration)
-                .from(CertificateTable.tableName);
+        builder.select(CertificateTable.CERTIFICATE_ID,
+                       CertificateTable.CERTIFICATE_NAME,
+                       CertificateTable.CERTIFICATE_DESCRIPTION,
+                       CertificateTable.CERTIFICATE_PRICE,
+                       CertificateTable.CERTIFICATE_CREATION_DATE,
+                       CertificateTable.CERTIFICATE_MODIFICATION_DATE,
+                       CertificateTable.CERTIFICATE_DURATION)
+                .from(CertificateTable.TABLE_NAME);
 
         List<GiftCertificate> certificates;
         if(tag != null){
-            builder.innerJoin(CertificateTagTable.tableName,
-                              CertificateTable.certificateId,
-                              CertificateTagTable.relationCertificateId)
-                    .innerJoin(TagTable.tableName,
-                               CertificateTagTable.relationTagId,
-                               TagTable.tagId)
+            builder.innerJoin(CertificateTagTable.TABLE_NAME,
+                              CertificateTable.CERTIFICATE_ID,
+                              CertificateTagTable.RELATION_CERTIFICATE_ID)
+                    .innerJoin(TagTable.TABLE_NAME,
+                               CertificateTagTable.RELATION_TAG_ID,
+                               TagTable.TAG_ID)
                     .where()
-                    .equal(TagTable.tagName, tag);
+                    .equivalent(TagTable.TAG_NAME, tag);
         }
         if (filterValue != null){
             if (tag != null){
@@ -149,6 +149,9 @@ public class GiftCertificateServiceDatabase implements GiftCertificateService {
     }
 
     private Set<Tag> findOrCreateTags(GiftCertificate certificate){
+        if(certificate.getTags() == null){
+            return new HashSet<>();
+        }
         Set<Tag> tags = certificate.getTags().stream()
                 .map(tag -> tagRepository.queryFromDatabase(findTagByName(tag.getName())).stream()
                         .findFirst()

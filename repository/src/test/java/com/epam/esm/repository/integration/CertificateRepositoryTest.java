@@ -34,7 +34,7 @@ public class CertificateRepositoryTest {
     public void certificateInsertTest(){
         GiftCertificate certificate = new GiftCertificate();
         certificate.setName("Test Certificate");
-        certificate.setDescription("Test description");
+        certificate.setDescription("Test DESCRIPTION");
         certificate.setPrice(new BigDecimal(25.5));
         certificate.setDuration((short) 12);
         certificate.setCreationDate(LocalDate.of(2105, 12, 2));
@@ -51,7 +51,7 @@ public class CertificateRepositoryTest {
     @Test
     public void updateCertificate(){
         GiftCertificate selected = certificateRepository.findById(5L).get();
-        selected.setDescription("New description for test");
+        selected.setDescription("New DESCRIPTION for test");
         certificateRepository.update(selected);
         GiftCertificate updated = certificateRepository.findById(5L).get();
         assertEquals(updated, selected);

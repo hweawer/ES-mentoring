@@ -60,7 +60,7 @@ public class SpecificationBuilder implements Specification {
         return this;
     }
 
-    public SpecificationBuilder equal(String column, Object arg) {
+    public SpecificationBuilder equivalent(String column, Object arg) {
         sql.append(column).append("=?");
         params.add(arg);
         return this;

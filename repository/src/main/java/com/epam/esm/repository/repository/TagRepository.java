@@ -21,16 +21,16 @@ public class TagRepository extends AbstractRepository<Tag> {
 
     @Autowired
     public TagRepository(JdbcTemplate jdbcTemplate, BeanPropertyRowMapper<Tag> tagMapper) {
-        super(jdbcTemplate, TagTable.tableName, TagTable.id, RepositoryConfig.schemaInUse);
+        super(jdbcTemplate, TagTable.TABLE_NAME, TagTable.ID, RepositoryConfig.schemaInUse);
         this.tagMapper = tagMapper;
     }
 
     @Override
     public Tag create(Tag tag) {
         Objects.requireNonNull(tag, "TAG CREATE: Tag is null");
-        final String INSERT_TAG = "INSERT INTO " + TagTable.tableName + "(" + TagTable.name + ")"
-                + " VALUES(?) ON CONFLICT (" + TagTable.name + ") DO UPDATE SET id = excluded.id returning "
-                + TagTable.id;
+        final String INSERT_TAG = "INSERT INTO " + TagTable.TABLE_NAME + "(" + TagTable.NAME + ")"
+                + " VALUES(?) ON CONFLICT (" + TagTable.NAME + ") DO UPDATE SET id = excluded.id returning "
+                + TagTable.ID;
         Long insertedId = jdbcTemplate.queryForObject(INSERT_TAG, new Object[]{tag.getName()}, Long.class);
         tag.setId(insertedId);
         logger.debug("Tag entity: " + tag + " was created.");
@@ -39,7 +39,7 @@ public class TagRepository extends AbstractRepository<Tag> {
 
     @Override
     public Integer delete(Long id) {
-        final String DELETE_TAG = "DELETE FROM " + TagTable.tableName + " WHERE " + TagTable.id + "=?;";
+        final String DELETE_TAG = "DELETE FROM " + TagTable.TABLE_NAME + " WHERE " + TagTable.ID + "=?;";
         return delete(DELETE_TAG, id);
     }
 
@@ -56,13 +56,13 @@ public class TagRepository extends AbstractRepository<Tag> {
 
     @Override
     public List<Tag> findAll() {
-        final String SELECT_ALL = "SELECT * FROM " + TagTable.tableName;
+        final String SELECT_ALL = "SELECT * FROM " + TagTable.TABLE_NAME;
         return jdbcTemplate.query(SELECT_ALL, tagMapper);
     }
 
     @Override
     public Optional<Tag> findById(Long id) {
-        final String SELECT_BY_ID = "SELECT * FROM " + TagTable.tableName + " WHERE " + TagTable.id + "=?";
+        final String SELECT_BY_ID = "SELECT * FROM " + TagTable.TABLE_NAME + " WHERE " + TagTable.ID + "=?";
         return jdbcTemplate.query(SELECT_BY_ID, new Object[]{id}, tagMapper).stream().findFirst();
     }
 }

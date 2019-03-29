@@ -35,7 +35,7 @@ public class TagRepositoryTest {
     public void updateTag(){
         assertThrows(UnsupportedOperationException.class, () -> {
             Tag selected = tagRepository.findById(2L).get();
-            selected.setName("New name");
+            selected.setName("New NAME");
             tagRepository.update(selected);
         });
     }

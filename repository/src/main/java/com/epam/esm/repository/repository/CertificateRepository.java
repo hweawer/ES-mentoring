@@ -29,7 +29,7 @@ public class CertificateRepository extends AbstractRepository<GiftCertificate> {
     @Autowired
     public CertificateRepository(JdbcTemplate jdbcTemplate,
                                  BeanPropertyRowMapper<GiftCertificate> giftMapper) {
-        super(jdbcTemplate, CertificateTable.tableName, CertificateTable.id, RepositoryConfig.schemaInUse);
+        super(jdbcTemplate, CertificateTable.TABLE_NAME, CertificateTable.ID, RepositoryConfig.schemaInUse);
         this.giftMapper = giftMapper;
     }
 
@@ -38,17 +38,17 @@ public class CertificateRepository extends AbstractRepository<GiftCertificate> {
         Objects.requireNonNull(certificate, "CERTIFICATE CREATE: Certificate is null");
         logger.debug("CREATE CERTIFICATE: " + certificate);
 
-        final String INSERT_TAG = "INSERT INTO " + CertificateTable.tableName +
-                "(" + CertificateTable.name + ", " +
-                CertificateTable.description + ", " +
-                CertificateTable.duration + ", " +
-                CertificateTable.creationDate + ", " +
-                CertificateTable.price + ")"
-                + " VALUES(?, ?, ?, ?, ?) ON CONFLICT (" + CertificateTable.id + ") DO NOTHING RETURNING " + TagTable.id;
+        final String INSERT_TAG = "INSERT INTO " + CertificateTable.TABLE_NAME +
+                "(" + CertificateTable.NAME + ", " +
+                CertificateTable.DESCRIPTION + ", " +
+                CertificateTable.DURATION + ", " +
+                CertificateTable.CREATION_DATE + ", " +
+                CertificateTable.PRICE + ")"
+                + " VALUES(?, ?, ?, ?, ?) ON CONFLICT (" + CertificateTable.ID + ") DO NOTHING RETURNING " + TagTable.ID;
 
-        final String INSERT_DEPENDENCY = "INSERT INTO " + CertificateTagTable.tableName +
-                "(" + CertificateTagTable.relationCertificateId + ", " +
-                CertificateTagTable.relationTagId + ")"
+        final String INSERT_DEPENDENCY = "INSERT INTO " + CertificateTagTable.TABLE_NAME +
+                "(" + CertificateTagTable.RELATION_CERTIFICATE_ID + ", " +
+                CertificateTagTable.RELATION_TAG_ID + ")"
                 + " VALUES(?, ?)";
         Long insertedCertificateId = jdbcTemplate.queryForObject(INSERT_TAG,
                 new Object[]{certificate.getName(), certificate.getDescription(), certificate.getDuration(),
@@ -64,21 +64,21 @@ public class CertificateRepository extends AbstractRepository<GiftCertificate> {
 
     @Override
     public Integer delete(Long id) {
-        final String DELETE_CERTIFICATE = "DELETE FROM " + CertificateTable.tableName
-                + " WHERE " + CertificateTable.id + "=?;";
+        final String DELETE_CERTIFICATE = "DELETE FROM " + CertificateTable.TABLE_NAME
+                + " WHERE " + CertificateTable.ID + "=?;";
         return delete(DELETE_CERTIFICATE, id);
     }
 
     @Override
     public Integer update(GiftCertificate certificate) {
         Objects.requireNonNull(certificate, "CERTIFICATE REMOVE: Certificate is null");
-        final String UPDATE_CERTIFICATE = "UPDATE " + CertificateTable.tableName + " SET " +
-                CertificateTable.name + "=?, " +
-                CertificateTable.description + "=?, " +
-                CertificateTable.price + "=?, " +
-                CertificateTable.modificationDate + "=?, " +
-                CertificateTable.duration + " =?" +
-                " WHERE " + CertificateTable.id + "=?";
+        final String UPDATE_CERTIFICATE = "UPDATE " + CertificateTable.TABLE_NAME + " SET " +
+                CertificateTable.NAME + "=?, " +
+                CertificateTable.DESCRIPTION + "=?, " +
+                CertificateTable.PRICE + "=?, " +
+                CertificateTable.MODIFICATION_DATE + "=?, " +
+                CertificateTable.DURATION + " =?" +
+                " WHERE " + CertificateTable.ID + "=?";
         logger.debug("UPDATE CERTIFICATE: " + certificate);
         Object[] params = { certificate.getName(),
                 certificate.getDescription(),
@@ -91,11 +91,11 @@ public class CertificateRepository extends AbstractRepository<GiftCertificate> {
     }
 
     private void updateCertificateTagRelation(GiftCertificate certificate){
-        final String SELECT_RELATION = "SELECT " + CertificateTagTable.relationTagId + " FROM " + CertificateTagTable.tableName
-                + " WHERE " + CertificateTagTable.relationCertificateId + "=?";
-        final String INSERT_DEPENDENCY = "INSERT INTO " + CertificateTagTable.tableName +
-                "(" + CertificateTagTable.relationCertificateId + ", " +
-                CertificateTagTable.relationTagId + ")"
+        final String SELECT_RELATION = "SELECT " + CertificateTagTable.RELATION_TAG_ID + " FROM " + CertificateTagTable.TABLE_NAME
+                + " WHERE " + CertificateTagTable.RELATION_CERTIFICATE_ID + "=?";
+        final String INSERT_DEPENDENCY = "INSERT INTO " + CertificateTagTable.TABLE_NAME +
+                "(" + CertificateTagTable.RELATION_CERTIFICATE_ID + ", " +
+                CertificateTagTable.RELATION_TAG_ID + ")"
                 + " VALUES(?, ?)";
         List<Long> currentAssignedTagIds = jdbcTemplate.queryForList(SELECT_RELATION,
                 new Object[]{certificate.getId()},
@@ -111,9 +111,9 @@ public class CertificateRepository extends AbstractRepository<GiftCertificate> {
                 .collect(toList());
         if(!removedTagIds.isEmpty()) {
             String deleteRelation = "DELETE FROM "
-                    + CertificateTagTable.tableName
-                    + " WHERE " + relationCertificateId + "=?"
-                    + " AND " + relationTagId + " IN " + generatePlaceholders(removedTagIds.size());
+                    + CertificateTagTable.TABLE_NAME
+                    + " WHERE " + RELATION_CERTIFICATE_ID + "=?"
+                    + " AND " + RELATION_TAG_ID + " IN " + generatePlaceholders(removedTagIds.size());
             List<Long> params = new ArrayList<>();
             params.add(certificate.getId());
             params.addAll(removedTagIds);
@@ -136,13 +136,13 @@ public class CertificateRepository extends AbstractRepository<GiftCertificate> {
 
     @Override
     public List<GiftCertificate> findAll() {
-        final String SELECT_ALL = "SELECT * FROM " + CertificateTable.tableName;
+        final String SELECT_ALL = "SELECT * FROM " + CertificateTable.TABLE_NAME;
         return jdbcTemplate.query(SELECT_ALL, giftMapper);
     }
 
     @Override
     public Optional<GiftCertificate> findById(Long id) {
-        final String SELECT_BY_ID = "SELECT * FROM " + CertificateTable.tableName + " WHERE " + CertificateTable.id + "=?";
+        final String SELECT_BY_ID = "SELECT * FROM " + CertificateTable.TABLE_NAME + " WHERE " + CertificateTable.ID + "=?";
         return jdbcTemplate.query(SELECT_BY_ID, new Object[]{id}, giftMapper).stream().findFirst();
     }
 }

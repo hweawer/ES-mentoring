@@ -24,9 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestControllerAdvice
-public class RestResponseEntityExceptionHandler
-        extends ResponseEntityExceptionHandler {
-
+public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionHandler {
     private final MessageSource messageSource;
 
     public RestResponseEntityExceptionHandler(MessageSource messageSource) {
@@ -134,6 +132,6 @@ public class RestResponseEntityExceptionHandler
                 null,
                 LocaleContextHolder.getLocale()),
                 "error occurred");
-        return ResponseEntity.badRequest().body(apiError);
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(apiError);
     }
 }

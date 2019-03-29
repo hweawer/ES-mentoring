@@ -15,9 +15,9 @@ public final class TagDatabaseSpecifications {
     public static Specification findTagByName(String name){
         SpecificationBuilder builder = new SpecificationBuilder();
         builder.select()
-                .from(TagTable.tableName)
+                .from(TagTable.TABLE_NAME)
                 .where()
-                .equal(TagTable.name, name);
+                .equivalent(TagTable.NAME, name);
         logger.debug("SQL findTagByName : " + builder.toSqlClauses());
         return builder;
     }
@@ -25,15 +25,15 @@ public final class TagDatabaseSpecifications {
     public static Specification findTagsByCertificate(GiftCertificate certificate){
         SpecificationBuilder builder = new SpecificationBuilder();
         builder.select()
-                .from(CertificateTable.tableName)
-                .innerJoin(CertificateTagTable.tableName,
-                        CertificateTable.certificateId,
-                        CertificateTagTable.relationCertificateId)
-                .innerJoin(TagTable.tableName,
-                        CertificateTagTable.relationTagId,
-                        TagTable.tagId)
+                .from(CertificateTable.TABLE_NAME)
+                .innerJoin(CertificateTagTable.TABLE_NAME,
+                        CertificateTable.CERTIFICATE_ID,
+                        CertificateTagTable.RELATION_CERTIFICATE_ID)
+                .innerJoin(TagTable.TABLE_NAME,
+                        CertificateTagTable.RELATION_TAG_ID,
+                        TagTable.TAG_ID)
                 .where()
-                .equal(CertificateTable.certificateId, certificate.getId());
+                .equivalent(CertificateTable.CERTIFICATE_ID, certificate.getId());
         logger.debug("SQL findTagsByCertificate : " + builder.toSqlClauses());
         return builder;
     }

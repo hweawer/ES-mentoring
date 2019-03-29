@@ -40,7 +40,7 @@ public class CertificateController {
     public ResponseEntity<GiftCertificateDTO> create(@Valid @RequestBody GiftCertificateDTO certificateDTO,
                                                      UriComponentsBuilder builder){
         GiftCertificateDTO created = certificateService.create(certificateDTO);
-        UriComponents uri = builder.path("/certificates/{id}").buildAndExpand(created.getId());
+        UriComponents uri = builder.path("/certificates/{ID}").buildAndExpand(created.getId());
         return ResponseEntity.created(uri.toUri()).body(created);
     }
 
@@ -52,7 +52,7 @@ public class CertificateController {
     }
 
     @DeleteMapping(value = "/{id}")
-    public ResponseEntity<GiftCertificateDTO> delete(@PathVariable("id") Long id) {
+    public ResponseEntity<Void> delete(@PathVariable("id") Long id) {
         int rows = certificateService.delete(id);
         if (rows == 0) return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         else return ResponseEntity.status(HttpStatus.NO_CONTENT).build();

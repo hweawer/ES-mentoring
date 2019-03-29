@@ -1,5 +1,7 @@
 package com.epam.esm.service.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import javax.validation.Valid;
 import javax.validation.constraints.*;
 import java.math.BigDecimal;
@@ -25,9 +27,11 @@ public class GiftCertificateDTO {
     private BigDecimal price;
 
     @Past(message = "date.creation.past")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate creationDate;
 
     @PastOrPresent(message = "date.modification.past.present")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate modificationDate;
 
     @NotNull(message = "duration.null")
@@ -127,13 +131,13 @@ public class GiftCertificateDTO {
     @Override
     public String toString() {
         return "GiftCertificateDTO{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", description='" + description + '\'' +
-                ", price=" + price +
-                ", creationDate=" + creationDate +
-                ", modificationDate=" + modificationDate +
-                ", duration=" + duration +
+                "ID=" + id +
+                ", NAME='" + name + '\'' +
+                ", DESCRIPTION='" + description + '\'' +
+                ", PRICE=" + price +
+                ", CREATION_DATE=" + creationDate +
+                ", MODIFICATION_DATE=" + modificationDate +
+                ", DURATION=" + duration +
                 '}';
     }
 }
