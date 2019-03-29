@@ -27,14 +27,14 @@ public class TagRepositoryTest {
     @Test
     public void tagInsertTest(){
         Tag inserted = tagRepository.create(new Tag("TestTag"));
-        Tag selected = tagRepository.findById(inserted.getId()).get(0);
+        Tag selected = tagRepository.findById(inserted.getId()).get();
         assertEquals(inserted, selected);
     }
 
     @Test
     public void updateTag(){
         assertThrows(UnsupportedOperationException.class, () -> {
-            Tag selected = tagRepository.findById(2L).get(0);
+            Tag selected = tagRepository.findById(2L).get();
             selected.setName("New name");
             tagRepository.update(selected);
         });

@@ -61,8 +61,8 @@ public class TagRepository extends AbstractRepository<Tag> {
     }
 
     @Override
-    public List<Tag> findById(Long id) {
+    public Optional<Tag> findById(Long id) {
         final String SELECT_BY_ID = "SELECT * FROM " + TagTable.tableName + " WHERE " + TagTable.id + "=?";
-        return jdbcTemplate.query(SELECT_BY_ID, new Object[]{id}, tagMapper);
+        return jdbcTemplate.query(SELECT_BY_ID, new Object[]{id}, tagMapper).stream().findFirst();
     }
 }

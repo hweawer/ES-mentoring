@@ -103,7 +103,10 @@ public final class ConnectionPool extends AbstractDriverBasedDataSource implemen
                         connection.close();
                         return null;
                     }
-                    return method.invoke(connection, args);
+                    if (!availableConnections.contains(connection)) {
+                        return method.invoke(connection, args);
+                    }
+                    return null;
                 });
         logger.debug("Proxy connection " + proxyConnection + " was created.");
         return proxyConnection;

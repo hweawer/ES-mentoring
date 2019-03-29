@@ -141,8 +141,8 @@ public class CertificateRepository extends AbstractRepository<GiftCertificate> {
     }
 
     @Override
-    public List<GiftCertificate> findById(Long id) {
+    public Optional<GiftCertificate> findById(Long id) {
         final String SELECT_BY_ID = "SELECT * FROM " + CertificateTable.tableName + " WHERE " + CertificateTable.id + "=?";
-        return jdbcTemplate.query(SELECT_BY_ID, new Object[]{id}, giftMapper);
+        return jdbcTemplate.query(SELECT_BY_ID, new Object[]{id}, giftMapper).stream().findFirst();
     }
 }

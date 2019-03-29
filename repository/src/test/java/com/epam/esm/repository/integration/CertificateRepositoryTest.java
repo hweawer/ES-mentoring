@@ -2,12 +2,9 @@ package com.epam.esm.repository.integration;
 
 import com.epam.esm.entity.GiftCertificate;
 import com.epam.esm.entity.Tag;
-import com.epam.esm.repository.config.CertificateTable;
 import com.epam.esm.repository.config.RepositoryConfig;
-import com.epam.esm.repository.config.TagTable;
 import com.epam.esm.repository.integration.config.RepositoryTestConfig;
 import com.epam.esm.repository.repository.Repository;
-import com.epam.esm.repository.repository.specification.SpecificationBuilder;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,10 +50,10 @@ public class CertificateRepositoryTest {
 
     @Test
     public void updateCertificate(){
-        GiftCertificate selected = certificateRepository.findById(5L).get(0);
+        GiftCertificate selected = certificateRepository.findById(5L).get();
         selected.setDescription("New description for test");
         certificateRepository.update(selected);
-        GiftCertificate updated = certificateRepository.findById(5L).get(0);
+        GiftCertificate updated = certificateRepository.findById(5L).get();
         assertEquals(updated, selected);
     }
 

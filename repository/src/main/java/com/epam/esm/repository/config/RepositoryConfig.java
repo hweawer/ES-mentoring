@@ -2,6 +2,7 @@ package com.epam.esm.repository.config;
 
 import com.epam.esm.entity.GiftCertificate;
 import com.epam.esm.entity.Tag;
+import com.epam.esm.repository.exception.InitializingDataSourceException;
 import com.epam.esm.repository.pool.ConnectionPool;
 import org.springframework.context.annotation.*;
 import org.springframework.core.env.Environment;
@@ -18,7 +19,6 @@ import java.util.Properties;
 public class RepositoryConfig {
     private final Environment env;
 
-    private static final String DEFAULT_URL = "jdbc:postgresql://localhost:5432/postgres?currentSchema=jes_dev";
     private static final Integer DEFAULT_POOL_SIZE = 30;
     private static final String DEFAULT_SCHEMA = "jes_dev";
 
@@ -40,7 +40,11 @@ public class RepositoryConfig {
         properties.setProperty(user, env.getProperty(user));
         properties.setProperty(password, env.getProperty(password));
         schemaInUse = env.getProperty(schema, DEFAULT_SCHEMA);
-        String jdbcUrl = env.getProperty(url, DEFAULT_URL) + "?currentSchema=" + schemaInUse;
+        String propertyUrl = env.getProperty(url);
+        if (propertyUrl == null){
+            throw new InitializingDataSourceException("Url property is required but not found");
+        }
+        String jdbcUrl = env.getProperty(url) + "?currentSchema=" + schemaInUse;
         properties.setProperty(url, jdbcUrl);
         return properties;
     }
