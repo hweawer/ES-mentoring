@@ -61,9 +61,9 @@ public class GiftCertificateServiceDatabase implements GiftCertificateService {
 
     @Transactional
     @Override
-    public void delete(Long id) {
+    public int delete(Long id) {
         logger.debug("CERTIFICATE SERVICE: delete");
-        certificateRepository.delete(id);
+        return certificateRepository.delete(id);
     }
 
     @Transactional

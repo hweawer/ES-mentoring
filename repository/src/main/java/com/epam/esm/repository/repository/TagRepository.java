@@ -1,7 +1,6 @@
 package com.epam.esm.repository.repository;
 
 import com.epam.esm.entity.Tag;
-import com.epam.esm.repository.config.CertificateTable;
 import com.epam.esm.repository.config.RepositoryConfig;
 import com.epam.esm.repository.config.TagTable;
 import com.epam.esm.repository.repository.specification.Specification;
@@ -30,7 +29,8 @@ public class TagRepository extends AbstractRepository<Tag> {
     public Tag create(Tag tag) {
         Objects.requireNonNull(tag, "TAG CREATE: Tag is null");
         final String INSERT_TAG = "INSERT INTO " + TagTable.tableName + "(" + TagTable.name + ")"
-                + " VALUES(?) ON CONFLICT (" + TagTable.id + ") DO NOTHING RETURNING " + TagTable.id;
+                + " VALUES(?) ON CONFLICT (" + TagTable.name + ") DO UPDATE SET id = excluded.id returning "
+                + TagTable.id;
         Long insertedId = jdbcTemplate.queryForObject(INSERT_TAG, new Object[]{tag.getName()}, Long.class);
         tag.setId(insertedId);
         logger.debug("Tag entity: " + tag + " was created.");

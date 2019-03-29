@@ -3,6 +3,7 @@ package com.epam.esm.controller;
 import com.epam.esm.service.GiftCertificateService;
 import com.epam.esm.service.dto.GiftCertificateDTO;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponents;
@@ -12,7 +13,7 @@ import javax.validation.Valid;
 import java.util.List;
 
 @RestController
-@RequestMapping(value = "/certificates", consumes = "application/json", produces = "application/json")
+@RequestMapping(value = "/certificates", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 public class CertificateController {
 
     private final GiftCertificateService certificateService;
@@ -51,8 +52,9 @@ public class CertificateController {
     }
 
     @DeleteMapping(value = "/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable("id") Long id) {
-        certificateService.delete(id);
+    public ResponseEntity<GiftCertificateDTO> delete(@PathVariable("id") Long id) {
+        int rows = certificateService.delete(id);
+        if (rows == 0) return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        else return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }

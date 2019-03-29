@@ -41,14 +41,14 @@ public class RestResponseEntityExceptionHandler
             WebRequest request) {
         List<String> errors = new ArrayList<>();
         for (FieldError error : ex.getBindingResult().getFieldErrors()) {
-            errors.add(error.getField() + ": " + error.getDefaultMessage());
+            errors.add(error.getField() + ": " + messageSource.getMessage(error.getDefaultMessage(), null, LocaleContextHolder.getLocale()));
         }
         for (ObjectError error : ex.getBindingResult().getGlobalErrors()) {
-            errors.add(error.getObjectName() + ": " + error.getDefaultMessage());
+            errors.add(error.getObjectName() + ": " + messageSource.getMessage(error.getDefaultMessage(), null, LocaleContextHolder.getLocale()));
         }
 
         ApiError apiError = new ApiError(ex.getLocalizedMessage(), errors);
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiError);
+        return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(apiError);
     }
 
     @Override
@@ -67,9 +67,8 @@ public class RestResponseEntityExceptionHandler
             ConstraintViolationException ex, WebRequest request) {
         List<String> errors = new ArrayList<>();
         for (ConstraintViolation<?> violation : ex.getConstraintViolations()) {
-            errors.add(violation.getRootBeanClass().getName() + " " +
-                    violation.getPropertyPath() + ": " + messageSource.getMessage(violation.getMessage(), null,
-                    LocaleContextHolder.getLocale()));
+            errors.add(violation.getPropertyPath() + ": "
+                    + messageSource.getMessage(violation.getMessage(), null, LocaleContextHolder.getLocale()));
         }
 
         ApiError apiError = new ApiError(ex.getLocalizedMessage(), errors);
