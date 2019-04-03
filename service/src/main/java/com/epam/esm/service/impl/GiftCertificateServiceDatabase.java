@@ -4,6 +4,7 @@ import com.epam.esm.entity.GiftCertificate;
 import com.epam.esm.entity.Tag;
 import com.epam.esm.repository.CrudRepository;
 import com.epam.esm.repository.TagRepository;
+import com.epam.esm.repository.exception.EntityNotFoundException;
 import com.epam.esm.service.GiftCertificateService;
 import com.epam.esm.service.dto.CertificateDto;
 import com.epam.esm.service.dto.CertificateMapper;
@@ -13,7 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
@@ -35,7 +35,13 @@ public class GiftCertificateServiceDatabase implements GiftCertificateService {
         GiftCertificate certificate = CertificateMapper.INSTANCE.certificateDtoToCertificate(certificateDTO);
         certificate.setCreationDate(LocalDate.now());
         Set<Tag> attachedTags = certificate.getTags().stream()
-                .map(tag -> tagRepository.findTagByName(tag.getName()))
+                .map(tag -> {
+                    try {
+                        return tagRepository.findTagByName(tag.getName());
+                    } catch (EntityNotFoundException e){
+                        return tag;
+                    }
+                })
                 .collect(toSet());
         certificate.setTags(attachedTags);
         certificateRepository.create(certificate);
