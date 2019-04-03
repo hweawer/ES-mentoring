@@ -1,14 +1,13 @@
 package com.epam.esm.service;
 
-import com.epam.esm.service.dto.TagDTO;
-import com.epam.esm.service.exception.EntityNotFoundException;
+import com.epam.esm.service.dto.TagDto;
 
-import java.util.List;
+import java.util.Set;
 
 public interface TagService {
-    TagDTO create(TagDTO t);
-    Integer delete(Long id);
-    List<TagDTO> findAll();
-    TagDTO findById(Long id) throws EntityNotFoundException;
-    TagDTO findByName(String name) throws EntityNotFoundException;
+    TagDto create(TagDto t);
+    Set<TagDto> findAll();
+    TagDto findById(Long id);
+    TagDto findByName(String name);
+    void delete(Long id);
 }

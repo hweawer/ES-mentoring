@@ -1,7 +1,7 @@
 package com.epam.esm.controller;
 
 import com.epam.esm.service.TagService;
-import com.epam.esm.service.dto.TagDTO;
+import com.epam.esm.service.dto.TagDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -9,10 +9,10 @@ import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.validation.Valid;
-import java.util.List;
+import java.util.Set;
 
 @RestController
-@RequestMapping(value = "/tags", consumes = "application/json", produces = "application/json")
+@RequestMapping(value = "/tags", produces = "application/json")
 public class TagController {
     private final TagService tagService;
 
@@ -21,23 +21,23 @@ public class TagController {
     }
 
     @GetMapping
-    public List<TagDTO> findAll(){
+    public Set<TagDto> findAll(){
         return tagService.findAll();
     }
 
     @GetMapping(value = "/{id:\\d+}")
-    public TagDTO findById(@PathVariable("id") Long id){
+    public TagDto findById(@PathVariable("id") Long id){
         return tagService.findById(id);
     }
 
     @GetMapping(value = "/{name:^[\\p{L}0-9]{3,12}}")
-    public TagDTO findByName(@PathVariable("name") String name){
+    public TagDto findByName(@PathVariable("name") String name){
         return tagService.findByName(name);
     }
 
     @PostMapping
-    public ResponseEntity<TagDTO> create(@Valid @RequestBody TagDTO tagDTO, UriComponentsBuilder builder){
-        TagDTO created = tagService.create(tagDTO);
+    public ResponseEntity<TagDto> create(@Valid @RequestBody TagDto tagDto, UriComponentsBuilder builder){
+        TagDto created = tagService.create(tagDto);
         UriComponents uri = builder.path("/tags/{ID}").buildAndExpand(created.getId());
         return ResponseEntity.created(uri.toUri()).body(created);
     }

@@ -1,14 +1,11 @@
-# Intellij
-.idea/
-*.iml
-*.iws
-
-# Maven
-domain/log/
-domain/target/
-repository/log/
-repository/target/
-service/log/
-service/target/
-controller/log/
-controller/target/
+.gradle
+.idea
+build/
+controller/build/
+controller/out/
+domain/build/
+domain/out/
+repository/build/
+repository/out/
+service/build/
+service/out/
