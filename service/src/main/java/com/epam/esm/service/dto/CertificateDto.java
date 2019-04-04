@@ -94,26 +94,6 @@ public class CertificateDto {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof CertificateDto)) return false;
-        CertificateDto that = (CertificateDto) o;
-        return Objects.equals(id, that.id) &&
-                name.equals(that.name) &&
-                description.equals(that.description) &&
-                price.equals(that.price) &&
-                Objects.equals(creationDate, that.creationDate) &&
-                Objects.equals(modificationDate, that.modificationDate) &&
-                duration.equals(that.duration) &&
-                tags.equals(that.tags);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, name, description, price, creationDate, modificationDate, duration, tags);
-    }
-
-    @Override
     public String toString() {
         return "CertificateDto{" +
                 "id=" + id +

@@ -9,10 +9,9 @@ import java.util.stream.Stream;
 //todo: update method
 public interface CrudRepository<T> {
     void delete(T t);
-    void deleteById(Long id);
     void create(T t);
     T update(T t);
     Stream<T> findAll(CriteriaQuery<T> specification);
     Stream<T> findAll();
-    T findById(Long id);
+    Optional<T> findById(Long id);
 }

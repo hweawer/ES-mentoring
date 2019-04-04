@@ -5,6 +5,7 @@ import com.epam.esm.repository.TagRepository;
 import com.epam.esm.service.TagService;
 import com.epam.esm.service.dto.TagDto;
 import com.epam.esm.service.dto.TagMapper;
+import com.epam.esm.service.exception.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,20 +40,23 @@ public class TagServiceDatabase implements TagService {
     @Transactional(readOnly = true)
     @Override
     public TagDto findById(Long id) {
-        Tag tag = tagRepository.findById(id);
+        Tag tag = tagRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(""));
         return TagMapper.INSTANCE.tagToTagDto(tag);
     }
 
+    //todo: localization message
     @Transactional(readOnly = true)
     @Override
     public TagDto findByName(String name) {
-        Tag tag = tagRepository.findTagByName(name);
+        Tag tag = tagRepository.findTagByName(name).orElseThrow(() -> new EntityNotFoundException(""));
         return TagMapper.INSTANCE.tagToTagDto(tag);
     }
 
+    //todo: localization message
     @Transactional
     @Override
     public void delete(Long id) {
-        tagRepository.deleteById(id);
+        tagRepository.findById(id)
+                .ifPresentOrElse(tag -> tagRepository.delete(tag), () -> new EntityNotFoundException(""));
     }
 }

@@ -4,7 +4,7 @@ import com.epam.esm.entity.GiftCertificate;
 import com.epam.esm.entity.Tag;
 import com.epam.esm.repository.CrudRepository;
 import com.epam.esm.repository.TagRepository;
-import com.epam.esm.repository.exception.EntityNotFoundException;
+import com.epam.esm.service.exception.EntityNotFoundException;
 import com.epam.esm.service.GiftCertificateService;
 import com.epam.esm.service.dto.CertificateDto;
 import com.epam.esm.service.dto.CertificateMapper;
@@ -35,13 +35,7 @@ public class GiftCertificateServiceDatabase implements GiftCertificateService {
         GiftCertificate certificate = CertificateMapper.INSTANCE.certificateDtoToCertificate(certificateDTO);
         certificate.setCreationDate(LocalDate.now());
         Set<Tag> attachedTags = certificate.getTags().stream()
-                .map(tag -> {
-                    try {
-                        return tagRepository.findTagByName(tag.getName());
-                    } catch (EntityNotFoundException e){
-                        return tag;
-                    }
-                })
+                .map(tag -> tagRepository.findTagByName(tag.getName()).orElse(tag))
                 .collect(toSet());
         certificate.setTags(attachedTags);
         certificateRepository.create(certificate);
@@ -56,17 +50,21 @@ public class GiftCertificateServiceDatabase implements GiftCertificateService {
                 .collect(toList());
     }
 
+    //todo: localization message
     @Transactional
     @Override
     public void delete(Long id) {
-        certificateRepository.deleteById(id);
+        GiftCertificate certificate = certificateRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(""));
+        certificateRepository.delete(certificate);
     }
 
+    //todo: localization message
     @Transactional(readOnly = true)
     @Override
     public CertificateDto findById(Long id) {
-        GiftCertificate certificate = certificateRepository.findById(id);
-        return CertificateMapper.INSTANCE.certificateToCertificateDto(certificate);
+        return CertificateMapper.INSTANCE.certificateToCertificateDto(certificateRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("")));
     }
 
 }

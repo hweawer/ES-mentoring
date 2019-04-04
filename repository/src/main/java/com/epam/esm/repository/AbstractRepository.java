@@ -1,7 +1,5 @@
 package com.epam.esm.repository;
 
-import com.epam.esm.repository.exception.EntityNotFoundException;
-
 import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -9,7 +7,6 @@ import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
-import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -56,14 +53,7 @@ public abstract class AbstractRepository<T> implements CrudRepository<T> {
 
     //todo: change localization message
     @Override
-    public T findById(Long id) {
-        return Optional.ofNullable(entityManager.find(entity, id))
-                .orElseThrow(() -> new EntityNotFoundException("tag.not.found.by.id"));
-    }
-
-    @Override
-    public void deleteById(Long id) {
-        T entity = findById(id);
-        delete(entity);
+    public Optional<T> findById(Long id) {
+        return Optional.ofNullable(entityManager.find(entity, id));
     }
 }

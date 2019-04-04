@@ -1,4 +1,4 @@
-package com.epam.esm.repository.exception;
+package com.epam.esm.service.exception;
 
 public class EntityNotFoundException extends RuntimeException {
     public EntityNotFoundException() {

@@ -1,6 +1,5 @@
 .gradle
 .idea
-build/
 controller/build/
 controller/out/
 domain/build/

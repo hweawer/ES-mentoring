@@ -1,4 +1,5 @@
 rootProject.name = 'epm-jes-mentoring'
+
 include 'domain'
 include 'repository'
 include 'service'
