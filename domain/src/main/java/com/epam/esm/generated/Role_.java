@@ -1,17 +1,17 @@
 package com.epam.esm.generated;
 
-import com.epam.esm.entity.Tag;
+import com.epam.esm.entity.Role;
 
 import javax.annotation.Generated;
 import javax.persistence.metamodel.SingularAttribute;
 import javax.persistence.metamodel.StaticMetamodel;
 
 @Generated(value = "org.hibernate.jpamodelgen.JPAMetaModelEntityProcessor")
-@StaticMetamodel(Tag.class)
-public abstract class Tag_ {
+@StaticMetamodel(Role.class)
+public abstract class Role_ {
 
-	public static volatile SingularAttribute<Tag, String> name;
-	public static volatile SingularAttribute<Tag, Long> id;
+	public static volatile SingularAttribute<Role, String> name;
+	public static volatile SingularAttribute<Role, Long> id;
 
 	public static final String NAME = "name";
 	public static final String ID = "id";

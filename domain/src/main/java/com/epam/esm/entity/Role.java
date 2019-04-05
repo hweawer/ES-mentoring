@@ -1,5 +1,24 @@
 package com.epam.esm.entity;
 
-public enum Role {
-    GUEST, USER, ADMIN
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.NonNull;
+
+import javax.persistence.*;
+
+@Data
+@NoArgsConstructor
+@Entity
+@Table(name = "roles")
+public class Role {
+    @EqualsAndHashCode.Exclude
+    @Id
+    @GeneratedValue
+    private Long id;
+
+    @Column(unique = true)
+    @NonNull
+    private String name;
+
 }
