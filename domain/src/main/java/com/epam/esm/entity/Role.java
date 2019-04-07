@@ -6,19 +6,20 @@ import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 @Data
 @NoArgsConstructor
 @Entity
 @Table(name = "roles")
-public class Role {
+public class Role implements Serializable {
     @EqualsAndHashCode.Exclude
     @Id
     @GeneratedValue
     private Long id;
 
-    @Column(unique = true)
+    @Enumerated(EnumType.STRING)
     @NonNull
-    private String name;
+    private RoleType type;
 
 }

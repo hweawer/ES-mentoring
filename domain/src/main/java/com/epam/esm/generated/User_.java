@@ -1,6 +1,5 @@
 package com.epam.esm.generated;
 
-import com.epam.esm.entity.GiftCertificate;
 import com.epam.esm.entity.Role;
 import com.epam.esm.entity.User;
 
@@ -16,14 +15,12 @@ public abstract class User_ {
 
 	public static volatile SingularAttribute<User, String> password;
 	public static volatile SingularAttribute<User, BigDecimal> money;
-	public static volatile SetAttribute<User, GiftCertificate> certificates;
 	public static volatile SetAttribute<User, Role> roles;
 	public static volatile SingularAttribute<User, Long> id;
 	public static volatile SingularAttribute<User, String> login;
 
 	public static final String PASSWORD = "password";
 	public static final String MONEY = "money";
-	public static final String CERTIFICATES = "certificates";
 	public static final String ROLES = "roles";
 	public static final String ID = "id";
 	public static final String LOGIN = "login";

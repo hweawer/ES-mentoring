@@ -13,7 +13,7 @@ import java.util.Set;
 @NoArgsConstructor
 @Entity
 @Table(name = "certificates")
-public class GiftCertificate implements Serializable {
+public class GiftCertificate implements Serializable, Cloneable {
     @EqualsAndHashCode.Exclude
     @Id
     @GeneratedValue
@@ -40,10 +40,10 @@ public class GiftCertificate implements Serializable {
     private Short duration;
 
     @EqualsAndHashCode.Exclude
-    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @OneToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(
             name = "certificates_tags",
             joinColumns = @JoinColumn(name = "certificate_id"),
             inverseJoinColumns = @JoinColumn(name = "tag_id"))
-    private Set<Tag> tags = new HashSet<>(); ;
+    private Set<Tag> tags = new HashSet<>();
 }

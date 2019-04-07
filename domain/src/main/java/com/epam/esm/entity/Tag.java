@@ -1,11 +1,9 @@
 package com.epam.esm.entity;
 
 import lombok.*;
-import org.hibernate.annotations.NaturalId;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.Set;
 
 @Data
 @NoArgsConstructor
@@ -20,5 +18,4 @@ public class Tag implements Serializable {
     @Column(unique = true)
     @NonNull
     private String name;
-
 }
