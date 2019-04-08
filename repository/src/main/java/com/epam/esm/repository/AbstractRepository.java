@@ -37,23 +37,28 @@ public abstract class AbstractRepository<T> implements CrudRepository<T> {
     }
 
     @Override
-    public Stream<T> findAll(CriteriaQuery<T> specification) {
+    public Stream<T> findAll(CriteriaQuery<T> specification, Integer page, Integer limit) {
         TypedQuery<T> query = entityManager.createQuery(specification);
+        query.setFirstResult((page - 1) * limit);
+        query.setMaxResults(limit);
         return query.getResultStream();
     }
 
     @Override
-    public Stream<T> findAll() {
-        CriteriaQuery<T> criteriaQuery = builder.createQuery(entity);
-        Root<T> root = criteriaQuery.from(entity);
-        criteriaQuery.select(root);
-        TypedQuery<T> query = entityManager.createQuery(criteriaQuery);
-        return query.getResultStream();
+    public Stream<T> findAll(Integer page, Integer limit) {
+        CriteriaQuery<T> select = builder.createQuery(entity);
+        Root<T> from = select.from(entity);
+        select.select(from);
+        return findAll(select, page, limit);
     }
 
-    //todo: change localization message
     @Override
     public Optional<T> findById(Long id) {
         return Optional.ofNullable(entityManager.find(entity, id));
+    }
+
+    @Override
+    public T update(T t) {
+        return entityManager.merge(t);
     }
 }

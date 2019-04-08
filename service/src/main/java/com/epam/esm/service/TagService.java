@@ -6,7 +6,7 @@ import java.util.Set;
 
 public interface TagService {
     TagDto create(TagDto t);
-    Set<TagDto> findAll();
+    Set<TagDto> findAll(Integer page, Integer limit);
     TagDto findById(Long id);
     TagDto findByName(String name);
     void delete(Long id);

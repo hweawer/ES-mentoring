@@ -1,17 +1,28 @@
 package com.epam.esm.service.dto;
 
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Past;
+import javax.validation.constraints.PastOrPresent;
+import javax.validation.constraints.Positive;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.Objects;
 import java.util.Set;
 
 public class CertificateDto {
     private Long id;
+    @NotNull
     private String name;
+    @NotNull
     private String description;
+    @NotNull
+    @Positive
     private BigDecimal price;
+    @NotNull
+    @PastOrPresent
     private LocalDate creationDate;
+
     private LocalDate modificationDate;
+    @NotNull
     private Short duration;
     private Set<TagDto> tags;
 

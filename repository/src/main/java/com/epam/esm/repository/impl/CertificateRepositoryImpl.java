@@ -10,9 +10,4 @@ public class CertificateRepositoryImpl extends AbstractRepository<GiftCertificat
     public CertificateRepositoryImpl() {
         super(GiftCertificate.class);
     }
-
-    @Override
-    public GiftCertificate update(GiftCertificate certificate) {
-        return entityManager.merge(certificate);
-    }
 }

@@ -18,7 +18,6 @@ public class TagRepositoryImpl extends AbstractRepository<Tag> implements TagRep
         super(Tag.class);
     }
 
-    //todo: change localization message
     @Override
     public Optional<Tag> findTagByName(String name){
         CriteriaQuery<Tag> criteriaQuery = builder.createQuery(Tag.class);
@@ -27,10 +26,5 @@ public class TagRepositoryImpl extends AbstractRepository<Tag> implements TagRep
         criteriaQuery.where(builder.equal(root.get(Tag_.NAME), name));
         TypedQuery<Tag> query = entityManager.createQuery(criteriaQuery);
         return query.getResultStream().findFirst();
-    }
-
-    @Override
-    public Tag update(Tag tag) {
-        return entityManager.merge(tag);
     }
 }

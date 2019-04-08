@@ -20,11 +20,6 @@ public class TagController {
         this.tagService = tagService;
     }
 
-    @GetMapping
-    public Set<TagDto> findAll(){
-        return tagService.findAll();
-    }
-
     @GetMapping(value = "/{id:\\d+}")
     public TagDto findById(@PathVariable("id") Long id){
         return tagService.findById(id);
@@ -33,6 +28,12 @@ public class TagController {
     @GetMapping(value = "/{name:^[\\p{L}0-9]{3,12}}")
     public TagDto findByName(@PathVariable("name") String name){
         return tagService.findByName(name);
+    }
+
+    @GetMapping
+    public Set<TagDto> findAll(@RequestParam(required = false, defaultValue = "1") Integer page,
+                               @RequestParam(required = false, defaultValue = "5") Integer limit){
+        return tagService.findAll(page, limit);
     }
 
     @PostMapping
