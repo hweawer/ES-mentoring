@@ -8,8 +8,8 @@ import org.mapstruct.factory.Mappers;
 public interface TagMapper {
     TagMapper INSTANCE = Mappers.getMapper( TagMapper.class );
 
-    TagDto tagToTagDto(Tag tag);
-    Tag tagDtoToTag(TagDto tagDto);
+    TagDto toDto(Tag tag);
+    Tag toEntity(TagDto tagDto);
 }
 
 

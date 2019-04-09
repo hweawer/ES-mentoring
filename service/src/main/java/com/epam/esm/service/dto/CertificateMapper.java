@@ -8,6 +8,6 @@ import org.mapstruct.factory.Mappers;
 public interface CertificateMapper {
     CertificateMapper INSTANCE = Mappers.getMapper(CertificateMapper.class);
 
-    CertificateDto certificateToCertificateDto(GiftCertificate certificate);
-    GiftCertificate certificateDtoToCertificate(CertificateDto certificateDto);
+    CertificateDto toDto(GiftCertificate certificate);
+    GiftCertificate toEntity(CertificateDto certificateDto);
 }

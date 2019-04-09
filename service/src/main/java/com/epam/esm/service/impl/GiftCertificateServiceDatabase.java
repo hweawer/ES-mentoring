@@ -33,28 +33,28 @@ public class GiftCertificateServiceDatabase implements GiftCertificateService {
     @Transactional
     @Override
     public CertificateDto create(CertificateDto certificateDTO) {
-        GiftCertificate certificate = CertificateMapper.INSTANCE.certificateDtoToCertificate(certificateDTO);
+        GiftCertificate certificate = CertificateMapper.INSTANCE.toEntity(certificateDTO);
         certificate.setCreationDate(LocalDate.now());
         Set<Tag> attachedTags = certificate.getTags().stream()
                 .map(tag -> tagRepository.findTagByName(tag.getName()).orElse(tag))
                 .collect(toSet());
         certificate.setTags(attachedTags);
         certificateRepository.create(certificate);
-        return CertificateMapper.INSTANCE.certificateToCertificateDto(certificate);
+        return CertificateMapper.INSTANCE.toDto(certificate);
     }
 
     @Transactional(readOnly = true)
     @Override
     public List<CertificateDto> findAll(Integer page, Integer limit) {
         return certificateRepository.findAll(page, limit)
-                .map(CertificateMapper.INSTANCE::certificateToCertificateDto)
+                .map(CertificateMapper.INSTANCE::toDto)
                 .collect(toList());
     }
 
     @Override
     public CertificateDto update(CertificateDto dto) {
-        GiftCertificate certificate = CertificateMapper.INSTANCE.certificateDtoToCertificate(dto);
-        return CertificateMapper.INSTANCE.certificateToCertificateDto(certificateRepository.update(certificate));
+        GiftCertificate certificate = CertificateMapper.INSTANCE.toEntity(dto);
+        return CertificateMapper.INSTANCE.toDto(certificateRepository.update(certificate));
     }
 
     //todo: localization message
@@ -70,7 +70,7 @@ public class GiftCertificateServiceDatabase implements GiftCertificateService {
     @Transactional(readOnly = true)
     @Override
     public CertificateDto findById(Long id) {
-        return CertificateMapper.INSTANCE.certificateToCertificateDto(certificateRepository.findById(id)
+        return CertificateMapper.INSTANCE.toDto(certificateRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("")));
     }
 
@@ -81,7 +81,7 @@ public class GiftCertificateServiceDatabase implements GiftCertificateService {
         GiftCertificate certificate = certificateRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(""));
         certificate.setPrice(price);
-        return CertificateMapper.INSTANCE.certificateToCertificateDto(certificateRepository.update(certificate));
+        return CertificateMapper.INSTANCE.toDto(certificateRepository.update(certificate));
     }
 
     @Override

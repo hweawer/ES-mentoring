@@ -9,15 +9,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping(value = "/user")
 public class UserController {
-    @Autowired
-    private UserService userService;
 
-    public static final String SUCCESS = "success";
-    public static final String ROLE_ADMIN = "ROLE_ADMIN";
-    public static final String ROLE_USER = "ROLE_USER";
-
-
-    @PostMapping(value = "/register")
+    @PostMapping(value = "/signup")
     public String register(){
         return "Registration";
     }

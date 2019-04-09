@@ -10,10 +10,8 @@ import com.epam.esm.service.dto.UserDto;
 import com.epam.esm.service.dto.UserMapper;
 import com.epam.esm.service.exception.EntityNotFoundException;
 import com.epam.esm.service.exception.LoginConstraintException;
-import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -24,14 +22,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 
 import static java.util.stream.Collectors.*;
 
 @Transactional
 @Service(value = "userService")
 public class UserServiceDatabase implements UserDetailsService, UserService {
-    private Logger logger = LogManager.getLogger();
     private PasswordEncoder passwordEncoder;
     private UserRepository userRepository;
     private RoleRepository roleRepository;
@@ -46,26 +42,26 @@ public class UserServiceDatabase implements UserDetailsService, UserService {
 
     @Override
     public UserDto create(UserDto userDto) {
-        User user = UserMapper.INSTANCE.userDtoToUser(userDto);
+        User user = UserMapper.INSTANCE.toEntity(userDto);
         if (userRepository.findUserByLogin(user.getLogin()).isPresent()) {
             throw new LoginConstraintException("");
         }
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         Role role = roleRepository.findByName(USER_ROLE).orElseThrow(() -> new RuntimeException(""));
         user.getRoles().add(role);
-        return UserMapper.INSTANCE.userToUserDto(user);
+        return UserMapper.INSTANCE.toDto(user);
     }
 
     @Override
     public UserDto findById(Long id) {
         User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException(""));
-        return UserMapper.INSTANCE.userToUserDto(user);
+        return UserMapper.INSTANCE.toDto(user);
     }
 
     @Override
     public UserDto findByLogin(String login) {
         User user = userRepository.findUserByLogin(login).orElseThrow(() -> new RuntimeException(""));
-        return UserMapper.INSTANCE.userToUserDto(user);
+        return UserMapper.INSTANCE.toDto(user);
     }
 
     @Override
@@ -77,18 +73,13 @@ public class UserServiceDatabase implements UserDetailsService, UserService {
     @Override
     public List<UserDto> findAll(Integer page, Integer limit) {
         return userRepository.findAll(page, limit)
-                .map(UserMapper.INSTANCE::userToUserDto)
+                .map(UserMapper.INSTANCE::toDto)
                 .collect(toList());
     }
 
+    @Override
     public UserDetails loadUserByUsername(String userId) throws UsernameNotFoundException {
         User user = userRepository.findUserByLogin(userId).orElseThrow(() -> new UsernameNotFoundException("Invalid username or password."));
         return new CustomUserDetails(user);
     }
-
-    private List getAuthority() {
-        return Arrays.asList(new SimpleGrantedAuthority("ROLE_ADMIN"));
-    }
-
-
 }

@@ -30,9 +30,9 @@ public class TagServiceDatabase implements TagService {
     @Transactional
     @Override
     public TagDto create(TagDto tagDTO) {
-        Tag tag = TagMapper.INSTANCE.tagDtoToTag(tagDTO);
+        Tag tag = TagMapper.INSTANCE.toEntity(tagDTO);
         tagRepository.create(tag);
-        return TagMapper.INSTANCE.tagToTagDto(tag);
+        return TagMapper.INSTANCE.toDto(tag);
     }
 
     //todo: localization message
@@ -43,7 +43,7 @@ public class TagServiceDatabase implements TagService {
             throw new IncorrectPaginationValues("");
         }
         return tagRepository.findAll(page, limit)
-                .map(TagMapper.INSTANCE::tagToTagDto)
+                .map(TagMapper.INSTANCE::toDto)
                 .collect(toSet());
     }
 
@@ -51,7 +51,7 @@ public class TagServiceDatabase implements TagService {
     @Override
     public TagDto findById(Long id) {
         Tag tag = tagRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(""));
-        return TagMapper.INSTANCE.tagToTagDto(tag);
+        return TagMapper.INSTANCE.toDto(tag);
     }
 
     //todo: localization message
@@ -59,7 +59,7 @@ public class TagServiceDatabase implements TagService {
     @Override
     public TagDto findByName(String name) {
         Tag tag = tagRepository.findTagByName(name).orElseThrow(() -> new EntityNotFoundException(""));
-        return TagMapper.INSTANCE.tagToTagDto(tag);
+        return TagMapper.INSTANCE.toDto(tag);
     }
 
     //todo: localization message

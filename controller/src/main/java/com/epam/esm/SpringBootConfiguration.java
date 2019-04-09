@@ -11,8 +11,5 @@ public class SpringBootConfiguration {
         SpringApplication.run(SpringBootConfiguration.class, args);
     }
 
-    @Bean
-    public BCryptPasswordEncoder encoder(){
-        return new BCryptPasswordEncoder();
-    }
+
 }
