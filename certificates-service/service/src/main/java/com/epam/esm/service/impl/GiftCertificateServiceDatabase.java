@@ -2,6 +2,8 @@ package com.epam.esm.service.impl;
 
 import com.epam.esm.entity.GiftCertificate;
 import com.epam.esm.entity.Tag;
+import com.epam.esm.entity.GiftCertificate_;
+import com.epam.esm.entity.Tag_;
 import com.epam.esm.repository.CrudRepository;
 import com.epam.esm.repository.TagRepository;
 import com.epam.esm.service.exception.EntityNotFoundException;
@@ -11,9 +13,11 @@ import com.epam.esm.service.dto.CertificateMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.criteria.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import static java.util.stream.Collectors.toList;
@@ -86,55 +90,48 @@ public class GiftCertificateServiceDatabase implements GiftCertificateService {
 
     @Override
     public List<CertificateDto> findByClause(Integer page, Integer limit,
-            String tag, String filterAttribute, String filterValue, String orderAttribute) {
-        /*SpecificationBuilder builder = new SpecificationBuilder();
-        builder.select(CertificateTable.CERTIFICATE_ID,
-                CertificateTable.CERTIFICATE_NAME,
-                CertificateTable.CERTIFICATE_DESCRIPTION,
-                CertificateTable.CERTIFICATE_PRICE,
-                CertificateTable.CERTIFICATE_CREATION_DATE,
-                CertificateTable.CERTIFICATE_MODIFICATION_DATE,
-                CertificateTable.CERTIFICATE_DURATION)
-                .from(CertificateTable.TABLE_NAME);
-
-        List<GiftCertificate> certificates;
-        if(tag != null){
-            builder.innerJoin(CertificateTagTable.TABLE_NAME,
-                    CertificateTable.CERTIFICATE_ID,
-                    CertificateTagTable.RELATION_CERTIFICATE_ID)
-                    .innerJoin(TagTable.TABLE_NAME,
-                            CertificateTagTable.RELATION_TAG_ID,
-                            TagTable.TAG_ID)
-                    .where()
-                    .equivalent(TagTable.TAG_NAME, tag);
+            List<String> tags, String filterAttribute, String filterValue, String orderAttribute) {
+        CriteriaBuilder builder = certificateRepository.getEntityManager().getCriteriaBuilder();
+        CriteriaQuery<GiftCertificate> query = builder.createQuery(GiftCertificate.class);
+        Root<GiftCertificate> from = query.from(GiftCertificate.class);
+        query.select(from);
+        Predicate predicate = null;
+        if (!tags.isEmpty()) {
+            predicate = tagsInPredicate(builder, query, tags, from);
         }
         if (filterValue != null){
-            if (tag != null){
-                builder.and();
+            Predicate likePredicate = builder.like(from.get(filterAttribute), "%"+filterValue+"%");
+            predicate = predicate == null ? likePredicate : builder.and(predicate, likePredicate);
+        }
+        if (predicate != null) {
+            query.where(predicate);
+        }
+        if (orderAttribute != null){
+            char order = orderAttribute.charAt(0);
+            if (order == '-'){
+               orderAttribute = orderAttribute.substring(1);
+               query.orderBy(builder.desc(from.get(orderAttribute)));
             } else {
-                builder.where();
+                query.orderBy(builder.asc(from.get(orderAttribute)));
             }
-            String filterColumn = TABLE_COLUMN_BY_ATTRIBUTE.get(filterAttribute);
-            if (filterColumn == null){
-                throw new AliasNotFoundException("unknown.filter.attribute");
-            }
-            builder.like(filterColumn, "%" + filterValue + "%");
         }
-        if(orderAttribute != null){
-            boolean desc = orderAttribute.charAt(0) == '-';
-            String order = desc ? TABLE_COLUMN_BY_ATTRIBUTE.get(orderAttribute.substring(1))
-                    : TABLE_COLUMN_BY_ATTRIBUTE.get(orderAttribute);
-            if(order == null){
-                throw new AliasNotFoundException("unknown.sort.attribute");
-            }
-            builder.orderBy(order, desc);
-        }
-        certificates = certificateRepository.queryFromDatabase(builder);
-        certificates.forEach(this::loadTags);
-        return certificates.stream()
-                .map(certificate -> modelMapper.map(certificate, GiftCertificateDTO.class))
-                .collect(toList());*/
-        return null;
+
+        return certificateRepository.findAll(query, page, limit)
+                .map(CertificateMapper.INSTANCE::toDto)
+                .collect(toList());
+    }
+
+    private Predicate tagsInPredicate(CriteriaBuilder builder,
+                                      CriteriaQuery query,
+                                      List<String> tags, Root<GiftCertificate> from){
+        Subquery<Long> sub = query.subquery(Long.class);
+        Root<GiftCertificate> sqFrom = sub.from(GiftCertificate.class);
+        Join<GiftCertificate, Tag> join = sqFrom.join(GiftCertificate_.tags);
+
+        sub.select(sqFrom.get(GiftCertificate_.id));
+        sub.where(join.get(Tag_.name).in(tags)).groupBy(sqFrom.get(GiftCertificate_.id));
+        sub.having(builder.equal(builder.count(sqFrom), tags.size()));
+        return builder.in(from.get(GiftCertificate_.id)).value(sub);
     }
 
 }

@@ -1,6 +1,4 @@
 spring:
-  application:
-    name: controller
   datasource:
     driverClassName: org.postgresql.Driver
     url: jdbc:postgresql://localhost:5432/postgres?currentSchema=jes_dev

@@ -61,4 +61,9 @@ public abstract class AbstractRepository<T> implements CrudRepository<T> {
     public T update(T t) {
         return entityManager.merge(t);
     }
+
+    @Override
+    public EntityManager getEntityManager() {
+        return entityManager;
+    }
 }

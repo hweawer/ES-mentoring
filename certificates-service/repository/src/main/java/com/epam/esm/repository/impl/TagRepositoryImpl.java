@@ -1,7 +1,7 @@
 package com.epam.esm.repository.impl;
 
 import com.epam.esm.entity.Tag;
-import com.epam.esm.generated.Tag_;
+import com.epam.esm.entity.Tag_;
 import com.epam.esm.repository.AbstractRepository;
 import com.epam.esm.repository.TagRepository;
 import org.springframework.stereotype.Repository;

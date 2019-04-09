@@ -1,5 +1,6 @@
 package com.epam.esm.controller;
 
+import com.epam.esm.controller.util.SearchCertificatesRequest;
 import com.epam.esm.service.GiftCertificateService;
 import com.epam.esm.service.dto.CertificateDto;
 import org.springframework.http.HttpStatus;
@@ -25,13 +26,10 @@ public class CertificateController {
     }
 
     @GetMapping
-    public List<CertificateDto> findCertificates(@RequestParam(value = "page", required = false, defaultValue = "1") Integer page,
-                                                 @RequestParam(value = "limit", required = false, defaultValue = "5") Integer limit,
-                                                 @RequestParam(value = "tag", required = false) String tagName,
-                                                 @RequestParam(value = "column", required = false) String filterColumn,
-                                                 @RequestParam(value = "value", required = false) String filterValue,
-                                                 @RequestParam(value = "sort", required = false) String sortColumn){
-        return certificateService.findByClause(page, limit, tagName, filterColumn, filterValue, sortColumn);
+    public List<CertificateDto> findCertificates(SearchCertificatesRequest request){
+        return certificateService.findByClause(request.getPage(), request.getLimit(),
+                                                request.getTag(), request.getColumn(),
+                                                request.getValue(), request.getSort());
     }
 
     @GetMapping(value = "/{id}")
@@ -66,7 +64,7 @@ public class CertificateController {
 
     @PatchMapping(value = "/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public CertificateDto updateProperty(@Valid @RequestBody CertificateDto certificateDto, @PathVariable("id") Long id){
+    public CertificateDto updateProperty(@RequestBody CertificateDto certificateDto, @PathVariable("id") Long id){
         return certificateService.updateCost(id, certificateDto.getPrice());
     }
 }

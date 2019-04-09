@@ -1,4 +1,4 @@
-package com.epam.esm.generated;
+package com.epam.esm.entity;
 
 import com.epam.esm.entity.Tag;
 
