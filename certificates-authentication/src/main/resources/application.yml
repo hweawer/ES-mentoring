@@ -20,3 +20,6 @@ spring:
           use_jdbc_metadata_defaults: false
 server:
   port: 8081
+auth:
+  clientId: client-id
+  clientSecret: $2a$10$kVuyPCSQNnrTgExnJp1O3uhFBpFDa/8PEPNMY3V15GG1LKA.4u.CC

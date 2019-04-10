@@ -16,7 +16,7 @@ public interface GiftCertificateService {
 
     CertificateDto findById(Long id);
 
-    CertificateDto updateCost(Long id, BigDecimal cost);
+    CertificateDto patch(Long id, CertificateDto certificateDto);
 
     List<CertificateDto> findByClause(Integer page, Integer limit,
                                       List<String> tags, String filterAttribute, String filterValue, String orderAttribute);

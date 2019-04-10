@@ -1,120 +1,53 @@
 package com.epam.esm.service.dto;
 
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Past;
-import javax.validation.constraints.PastOrPresent;
-import javax.validation.constraints.Positive;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import javax.validation.Valid;
+import javax.validation.constraints.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Set;
 
+@Data
+@NoArgsConstructor
 public class CertificateDto {
+
+    public interface onPatch {
+    }
+
+    public interface onCreate {
+    }
+
     private Long id;
-    @NotNull
+
+    @NotNull(groups = onCreate.class, message = "")
+    @Pattern(regexp = "\\p{L}{3,12}", groups = {onCreate.class, onPatch.class}, message = "")
     private String name;
-    @NotNull
+
+    @NotNull(groups = onCreate.class, message = "")
+    @Size(min = 3, groups = {onCreate.class, onPatch.class}, message = "")
     private String description;
-    @NotNull
-    @Positive
+
+    @NotNull(groups = onCreate.class, message = "")
+    @PositiveOrZero(groups = {onCreate.class, onPatch.class}, message = "")
+    @Digits(integer=11, fraction=2, groups = {onCreate.class, onPatch.class}, message = "")
     private BigDecimal price;
-    @NotNull
-    @PastOrPresent
+
+    @Past(message = "")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate creationDate;
 
+    @PastOrPresent(message = "")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate modificationDate;
-    @NotNull
+
+    @NotNull(groups = onCreate.class, message = "")
+    @Min(value = 5, groups = {onCreate.class, onPatch.class}, message = "")
+    @Max(value = 365, groups = {onCreate.class, onPatch.class}, message = "")
     private Short duration;
+
+    @Valid
     private Set<TagDto> tags;
-
-    public CertificateDto(Long id, String name, String description, BigDecimal price, LocalDate creationDate, LocalDate modificationDate, Short duration, Set<TagDto> tags) {
-        this.id = id;
-        this.name = name;
-        this.description = description;
-        this.price = price;
-        this.creationDate = creationDate;
-        this.modificationDate = modificationDate;
-        this.duration = duration;
-        this.tags = tags;
-    }
-
-    public CertificateDto() {
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public BigDecimal getPrice() {
-        return price;
-    }
-
-    public void setPrice(BigDecimal price) {
-        this.price = price;
-    }
-
-    public LocalDate getCreationDate() {
-        return creationDate;
-    }
-
-    public void setCreationDate(LocalDate creationDate) {
-        this.creationDate = creationDate;
-    }
-
-    public LocalDate getModificationDate() {
-        return modificationDate;
-    }
-
-    public void setModificationDate(LocalDate modificationDate) {
-        this.modificationDate = modificationDate;
-    }
-
-    public Short getDuration() {
-        return duration;
-    }
-
-    public void setDuration(Short duration) {
-        this.duration = duration;
-    }
-
-    public Set<TagDto> getTags() {
-        return tags;
-    }
-
-    public void setTags(Set<TagDto> tags) {
-        this.tags = tags;
-    }
-
-    @Override
-    public String toString() {
-        return "CertificateDto{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", description='" + description + '\'' +
-                ", price=" + price +
-                ", creationDate=" + creationDate +
-                ", modificationDate=" + modificationDate +
-                ", duration=" + duration +
-                ", tags=" + tags +
-                '}';
-    }
 }

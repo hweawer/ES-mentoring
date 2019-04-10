@@ -1,7 +1,5 @@
 package com.epam.esm.entity;
 
-import com.epam.esm.entity.CertificateSnapshot;
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import javax.annotation.Generated;

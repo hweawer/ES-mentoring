@@ -9,4 +9,5 @@ certificates-service/repository/out/
 certificates-service/service/build/
 certificates-service/service/out/
 certificates-authentication/.gradle
-certificates-authentication/.build
+certificates-authentication/build
+certificates-authentication/out

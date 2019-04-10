@@ -6,6 +6,8 @@ import com.epam.esm.entity.GiftCertificate_;
 import com.epam.esm.entity.Tag_;
 import com.epam.esm.repository.CrudRepository;
 import com.epam.esm.repository.TagRepository;
+import com.epam.esm.service.dto.TagDto;
+import com.epam.esm.service.dto.TagMapper;
 import com.epam.esm.service.exception.EntityNotFoundException;
 import com.epam.esm.service.GiftCertificateService;
 import com.epam.esm.service.dto.CertificateDto;
@@ -17,7 +19,6 @@ import javax.persistence.criteria.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 import static java.util.stream.Collectors.toList;
@@ -38,7 +39,6 @@ public class GiftCertificateServiceDatabase implements GiftCertificateService {
     @Override
     public CertificateDto create(CertificateDto certificateDTO) {
         GiftCertificate certificate = CertificateMapper.INSTANCE.toEntity(certificateDTO);
-        certificate.setCreationDate(LocalDate.now());
         Set<Tag> attachedTags = certificate.getTags().stream()
                 .map(tag -> tagRepository.findTagByName(tag.getName()).orElse(tag))
                 .collect(toSet());
@@ -55,6 +55,7 @@ public class GiftCertificateServiceDatabase implements GiftCertificateService {
                 .collect(toList());
     }
 
+    @Transactional
     @Override
     public CertificateDto update(CertificateDto dto) {
         GiftCertificate certificate = CertificateMapper.INSTANCE.toEntity(dto);
@@ -81,10 +82,24 @@ public class GiftCertificateServiceDatabase implements GiftCertificateService {
     //todo: localization message
     @Transactional
     @Override
-    public CertificateDto updateCost(Long id, BigDecimal price) {
+    public CertificateDto patch(Long id, CertificateDto certificateDto) {
         GiftCertificate certificate = certificateRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(""));
-        certificate.setPrice(price);
+        String name = certificateDto.getName();
+        String description = certificateDto.getDescription();
+        Short duration = certificateDto.getDuration();
+        BigDecimal price = certificateDto.getPrice();
+        Set<TagDto> tagDtos = certificateDto.getTags();
+        if (name != null) certificate.setName(name);
+        if (description != null) certificate.setDescription(description);
+        if (duration != null) certificate.setDuration(duration);
+        if (price != null) certificate.setPrice(price);
+        if(tagDtos != null){
+            Set<Tag> tags = tagDtos.stream()
+                                .map(TagMapper.INSTANCE::toEntity)
+                                .collect(toSet());
+            certificate.setTags(tags);
+        }
         return CertificateMapper.INSTANCE.toDto(certificateRepository.update(certificate));
     }
 

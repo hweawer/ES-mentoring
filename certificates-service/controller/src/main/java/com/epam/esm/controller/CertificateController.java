@@ -6,12 +6,9 @@ import com.epam.esm.service.dto.CertificateDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-import org.springframework.web.util.UriComponents;
-import org.springframework.web.util.UriComponentsBuilder;
-
-import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
 
@@ -38,9 +35,8 @@ public class CertificateController {
     }
 
     @PostMapping
-    public ResponseEntity<CertificateDto> create(@Valid @RequestBody CertificateDto certificateDTO,
-                                                 UriComponentsBuilder builder){
-        CertificateDto created = certificateService.create(certificateDTO);
+    public ResponseEntity<CertificateDto> create(@Validated(CertificateDto.onCreate.class) @RequestBody CertificateDto certificateDto){
+        CertificateDto created = certificateService.create(certificateDto);
         URI uri = ServletUriComponentsBuilder
                 .fromCurrentRequest()
                 .path("/{id}")
@@ -51,7 +47,8 @@ public class CertificateController {
 
     @PutMapping(value = "/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void update(@Valid @RequestBody CertificateDto certificateDTO, @PathVariable("id") Long id){
+    public void update(@Validated(CertificateDto.onCreate.class) @RequestBody CertificateDto certificateDTO,
+                       @PathVariable("id") Long id){
         certificateDTO.setId(id);
         certificateService.update(certificateDTO);
     }
@@ -64,7 +61,8 @@ public class CertificateController {
 
     @PatchMapping(value = "/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public CertificateDto updateProperty(@RequestBody CertificateDto certificateDto, @PathVariable("id") Long id){
-        return certificateService.updateCost(id, certificateDto.getPrice());
+    public CertificateDto updateProperty(@Validated(CertificateDto.onPatch.class)@RequestBody CertificateDto certificateDto,
+                                         @PathVariable("id") Long id){
+        return certificateService.patch(id, certificateDto);
     }
 }
