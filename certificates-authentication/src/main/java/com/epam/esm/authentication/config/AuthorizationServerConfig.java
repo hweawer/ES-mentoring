@@ -1,6 +1,5 @@
 package com.epam.esm.authentication.config;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -15,7 +14,6 @@ import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
 
 @Configuration
 @EnableAuthorizationServer
-@ConfigurationProperties(prefix = "auth")
 public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdapter {
     private static final String CLIENT_ID = "client-id";
     private static final String CLIENT_SECRET = "$2a$10$kVuyPCSQNnrTgExnJp1O3uhFBpFDa/8PEPNMY3V15GG1LKA.4u.CC";

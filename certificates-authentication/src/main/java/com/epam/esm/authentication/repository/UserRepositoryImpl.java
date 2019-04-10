@@ -1,6 +1,5 @@
 package com.epam.esm.authentication.repository;
 
-
 import com.epam.esm.authentication.entity.User;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,11 +12,14 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import java.util.Optional;
 
-
 @Repository
-public class UserRepositoryImpl implements UserRepository {
+public class UserRepositoryImpl extends AbstractRepository<User> implements UserRepository {
     @PersistenceContext
     private EntityManager entityManager;
+
+    public UserRepositoryImpl() {
+        super(User.class);
+    }
 
     @Transactional
     @Override
