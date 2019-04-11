@@ -36,7 +36,6 @@ public abstract class AbstractRepository<T> implements CrudRepository<T> {
         entityManager.remove(t);
     }
 
-    //todo: JPQL
     @Override
     public Stream<T> findAll(CriteriaQuery<T> specification, Integer page, Integer limit) {
         TypedQuery<T> query = entityManager.createQuery(specification);
@@ -45,7 +44,6 @@ public abstract class AbstractRepository<T> implements CrudRepository<T> {
         return query.getResultStream();
     }
 
-    //todo: JPQL
     @Override
     public Stream<T> findAll(Integer page, Integer limit) {
         CriteriaQuery<T> select = builder.createQuery(entity);

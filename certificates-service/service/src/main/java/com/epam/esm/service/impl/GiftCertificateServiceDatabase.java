@@ -46,14 +46,6 @@ public class GiftCertificateServiceDatabase implements GiftCertificateService {
         return CertificateMapper.INSTANCE.toDto(certificate);
     }
 
-    @Transactional(readOnly = true)
-    @Override
-    public List<CertificateDto> findAll(Integer page, Integer limit) {
-        return certificateRepository.findAll(page, limit)
-                .map(CertificateMapper.INSTANCE::toDto)
-                .collect(toList());
-    }
-
     @Transactional
     @Override
     public CertificateDto update(CertificateDto dto) {
