@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.util.List;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -38,25 +37,5 @@ public class UserServiceImpl implements UserService {
         user.setMoney(new BigDecimal(0));
         userRepository.create(user);
         return UserMapper.INSTANCE.toDto(user);
-    }
-
-    @Override
-    public UserDto findById(Long id) {
-        return null;
-    }
-
-    @Override
-    public UserDto findByLogin(String login) {
-        return null;
-    }
-
-    @Override
-    public void delete(Long id) {
-
-    }
-
-    @Override
-    public List<UserDto> findAll(Integer page, Integer limit) {
-        return null;
     }
 }
