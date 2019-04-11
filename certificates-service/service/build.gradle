@@ -29,6 +29,7 @@ dependencies {
             'org.springframework.boot:spring-boot-starter-validation',
             'org.springframework.boot:spring-boot-starter-test',
             'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.9.8',
+            'org.springframework.boot:spring-boot-starter-security',
             project(':domain'),
             project(':repository'),
             "org.mapstruct:mapstruct:$mapstructVersion"

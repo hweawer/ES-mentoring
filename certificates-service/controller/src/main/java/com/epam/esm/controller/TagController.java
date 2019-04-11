@@ -2,18 +2,19 @@ package com.epam.esm.controller;
 
 import com.epam.esm.service.TagService;
 import com.epam.esm.service.dto.TagDto;
-import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.util.UriComponents;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.validation.Valid;
+import java.net.URI;
 import java.util.Set;
 
 @RestController
-@RequestMapping(value = "/tags", produces = "application/json")
+@RequestMapping(value = "/tags", produces = MediaType.APPLICATION_JSON_VALUE)
 public class TagController {
     private final TagService tagService;
 
@@ -37,11 +38,15 @@ public class TagController {
         return tagService.findAll(page, limit);
     }
 
-    @PostMapping
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<TagDto> create(@Valid @RequestBody TagDto tagDto, UriComponentsBuilder builder){
         TagDto created = tagService.create(tagDto);
-        UriComponents uri = builder.path("/tags/{ID}").buildAndExpand(created.getId());
-        return ResponseEntity.created(uri.toUri()).body(created);
+        URI uri = ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(created.getId())
+                .toUri();
+        return ResponseEntity.created(uri).body(created);
     }
 
     @DeleteMapping(value = "/{id}")

@@ -2,13 +2,10 @@ package com.epam.esm.service;
 
 import com.epam.esm.service.dto.CertificateDto;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 public interface GiftCertificateService {
     CertificateDto create(CertificateDto dto);
-
-    List<CertificateDto> findAll(Integer page, Integer limit);
 
     CertificateDto update(CertificateDto dto);
 

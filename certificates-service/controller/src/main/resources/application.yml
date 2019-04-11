@@ -18,3 +18,8 @@ spring:
           use_jdbc_metadata_defaults: false
 server:
   port: 8080
+security:
+  oauth2:
+    resource:
+      jwt:
+        key-value: ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDMPTrcYrpQsKL5ZF1hPFhXGy1yK+qOAdC8+AX2WfPpZRBFB1PiqTh7SHVXVeZs+xdbeD/qehaosIKX/j64wfneYWM/4DBtpadnkSn1BXy+Eeyw+LSldx/2Fi8TWyTyPzT5Enhz7DCmcPYYIsqz4AHH03vcnWH2iAkK8Rf4CwdPQH2fMvgOLAPAvQc6et2bX2/9i1DwNybQTFIB5Sx3cqDwUvqhtYjudya1b5MgZqUUIdY+UngxhyVxXPF50BS3l/X5xflVBbndaGaKuHm3DkWVzVrikIXgzlxHVcZ3g+KtcygkY+csRIxZYenHhahW4aVfwaefF0e+aK6g0vqxw4THoUqks3h2XkK3LHYbKlMK7F8OgBFaUbIS5QBKiWeXKnSf38XBKTmNv8ZSWxV8vyc38m49/foAFJOkhi4mawQdVifyTEhGC1N1ewHMKrJPx2S5sA9+WuDZlrrPLQBXf7omYQxOjzW1qckGc/TorejjqBRfpjFpi/Epuf2Rx1yCwmimDBaqpYQd9JLZ+el5qkoOYP5SQv1siiqOpfoxNFiSeQ0Zh+xv4pjBHvnlGoo7jpowz/MIaeK/M8iZZCgc6nnYpcd2ZFjxA006D8+W3Bb5c51sdtujvhyOERQSyX0qYioDrgcwvyf8K+0/SYksgocYs8DphVYmkZJNeABipCbDXQ== alexa@DESKTOP-LLMKGF0

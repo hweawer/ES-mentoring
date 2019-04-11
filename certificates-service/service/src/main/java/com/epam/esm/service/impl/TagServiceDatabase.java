@@ -35,7 +35,6 @@ public class TagServiceDatabase implements TagService {
         return TagMapper.INSTANCE.toDto(tag);
     }
 
-    //todo: localization message
     @Transactional(readOnly = true)
     @Override
     public Set<TagDto> findAll(Integer page, Integer limit) {
@@ -54,7 +53,6 @@ public class TagServiceDatabase implements TagService {
         return TagMapper.INSTANCE.toDto(tag);
     }
 
-    //todo: localization message
     @Transactional(readOnly = true)
     @Override
     public TagDto findByName(String name) {
@@ -62,7 +60,6 @@ public class TagServiceDatabase implements TagService {
         return TagMapper.INSTANCE.toDto(tag);
     }
 
-    //todo: localization message
     @Transactional
     @Override
     public void delete(Long id) {

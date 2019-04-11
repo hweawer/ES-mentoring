@@ -17,6 +17,7 @@ public class UserRepositoryImpl extends AbstractRepository<User> implements User
         super(User.class);
     }
 
+    //todo: JPQL
     @Override
     public Optional<User> findUserByLogin(String login) {
         CriteriaQuery<User> criteriaQuery = builder.createQuery(User.class);

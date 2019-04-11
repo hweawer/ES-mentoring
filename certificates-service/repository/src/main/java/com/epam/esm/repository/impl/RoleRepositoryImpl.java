@@ -17,6 +17,7 @@ public class RoleRepositoryImpl extends AbstractRepository<Role> implements Role
         super(Role.class);
     }
 
+    //todo: JPQL
     @Override
     public Optional<Role> findByName(String name) {
         CriteriaQuery<Role> criteriaQuery = builder.createQuery(Role.class);

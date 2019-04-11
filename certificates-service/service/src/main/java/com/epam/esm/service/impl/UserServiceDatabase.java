@@ -27,6 +27,7 @@ public class UserServiceDatabase implements  UserService {
         this.roleRepository = roleRepository;
     }
 
+    @Transactional
     @Override
     public UserDto create(UserDto userDto) {
         User user = UserMapper.INSTANCE.toEntity(userDto);
@@ -38,24 +39,28 @@ public class UserServiceDatabase implements  UserService {
         return UserMapper.INSTANCE.toDto(user);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public UserDto findById(Long id) {
         User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException(""));
         return UserMapper.INSTANCE.toDto(user);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public UserDto findByLogin(String login) {
         User user = userRepository.findUserByLogin(login).orElseThrow(() -> new RuntimeException(""));
         return UserMapper.INSTANCE.toDto(user);
     }
 
+    @Transactional
     @Override
     public void delete(Long id) {
         User user = userRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(""));
         userRepository.delete(user);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public List<UserDto> findAll(Integer page, Integer limit) {
         return userRepository.findAll(page, limit)

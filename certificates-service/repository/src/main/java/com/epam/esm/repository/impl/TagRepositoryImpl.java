@@ -18,6 +18,7 @@ public class TagRepositoryImpl extends AbstractRepository<Tag> implements TagRep
         super(Tag.class);
     }
 
+    //todo: JPQL
     @Override
     public Optional<Tag> findTagByName(String name){
         CriteriaQuery<Tag> criteriaQuery = builder.createQuery(Tag.class);

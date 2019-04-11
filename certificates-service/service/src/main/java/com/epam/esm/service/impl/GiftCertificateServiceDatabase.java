@@ -17,7 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.criteria.*;
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 
@@ -103,6 +102,7 @@ public class GiftCertificateServiceDatabase implements GiftCertificateService {
         return CertificateMapper.INSTANCE.toDto(certificateRepository.update(certificate));
     }
 
+    @Transactional(readOnly = true)
     @Override
     public List<CertificateDto> findByClause(Integer page, Integer limit,
             List<String> tags, String filterAttribute, String filterValue, String orderAttribute) {

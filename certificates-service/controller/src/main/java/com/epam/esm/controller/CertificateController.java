@@ -24,9 +24,8 @@ public class CertificateController {
 
     @GetMapping
     public List<CertificateDto> findCertificates(SearchCertificatesRequest request){
-        return certificateService.findByClause(request.getPage(), request.getLimit(),
-                                                request.getTag(), request.getColumn(),
-                                                request.getValue(), request.getSort());
+        return certificateService.findByClause(request.getPage(), request.getLimit(), request.getTag(),
+                                                request.getColumn(), request.getValue(), request.getSort());
     }
 
     @GetMapping(value = "/{id}")
@@ -34,7 +33,7 @@ public class CertificateController {
         return certificateService.findById(id);
     }
 
-    @PostMapping
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<CertificateDto> create(@Validated(CertificateDto.onCreate.class) @RequestBody CertificateDto certificateDto){
         CertificateDto created = certificateService.create(certificateDto);
         URI uri = ServletUriComponentsBuilder
@@ -45,7 +44,7 @@ public class CertificateController {
         return ResponseEntity.created(uri).body(created);
     }
 
-    @PutMapping(value = "/{id}")
+    @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void update(@Validated(CertificateDto.onCreate.class) @RequestBody CertificateDto certificateDTO,
                        @PathVariable("id") Long id){
@@ -59,7 +58,7 @@ public class CertificateController {
         certificateService.delete(id);
     }
 
-    @PatchMapping(value = "/{id}")
+    @PatchMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
     public CertificateDto updateProperty(@Validated(CertificateDto.onPatch.class)@RequestBody CertificateDto certificateDto,
                                          @PathVariable("id") Long id){

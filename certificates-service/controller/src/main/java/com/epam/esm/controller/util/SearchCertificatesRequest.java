@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import java.util.ArrayList;
 import java.util.List;
 
+//todo: can create validation
 @Data
 @NoArgsConstructor
 public class SearchCertificatesRequest {
@@ -15,5 +16,4 @@ public class SearchCertificatesRequest {
     private String column;
     private String value;
     private String sort;
-
 }

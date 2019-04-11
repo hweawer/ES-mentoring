@@ -8,6 +8,7 @@ import lombok.NonNull;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
@@ -26,7 +27,7 @@ public class Order implements Serializable {
 
     @NonNull
     @Column(name = "time")
-    private Timestamp timestamp;
+    private LocalDateTime timestamp;
 
     @OneToMany
     @JoinColumn(name = "order_id")
