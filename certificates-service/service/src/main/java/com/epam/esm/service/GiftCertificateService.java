@@ -7,13 +7,9 @@ import java.util.List;
 public interface GiftCertificateService {
     CertificateDto create(CertificateDto dto);
 
-    CertificateDto update(CertificateDto dto);
-
     void delete(Long id);
 
     CertificateDto findById(Long id);
-
-    CertificateDto patch(Long id, CertificateDto certificateDto);
 
     List<CertificateDto> searchByClause(SearchCertificateRequest request);
 }

@@ -3,6 +3,7 @@ package com.epam.esm.controller;
 import com.epam.esm.service.SearchCertificateRequest;
 import com.epam.esm.service.GiftCertificateService;
 import com.epam.esm.service.dto.CertificateDto;
+import com.epam.esm.service.update.UpdateCertificateService;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -26,6 +27,8 @@ public class CertificateController {
 
     @NonNull
     private final GiftCertificateService certificateService;
+    @NonNull
+    private final UpdateCertificateService updateService;
 
     @GetMapping
     public List<CertificateDto> findCertificates(@Valid SearchCertificateRequest request){
@@ -50,10 +53,9 @@ public class CertificateController {
 
     @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void update(@Validated(onCreate.class) @RequestBody CertificateDto certificateDTO,
+    public void update(@Validated(onCreate.class) @RequestBody CertificateDto certificateDto,
                        @Positive @PathVariable("id") Long id){
-        certificateDTO.setId(id);
-        certificateService.update(certificateDTO);
+        updateService.update(id, certificateDto);
     }
 
     @DeleteMapping(value = "/{id}")
@@ -66,6 +68,6 @@ public class CertificateController {
     @ResponseStatus(HttpStatus.OK)
     public CertificateDto updateProperty(@Validated(onPatch.class)@RequestBody CertificateDto certificateDto,
                                          @Positive @PathVariable("id") Long id){
-        return certificateService.patch(id, certificateDto);
+        return updateService.update(id, certificateDto);
     }
 }

@@ -9,6 +9,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.Set;
 
 import static com.epam.esm.service.validation.ValidationScopes.*;
@@ -46,5 +47,5 @@ public class CertificateDto {
     private Short duration;
 
     @Valid
-    private Set<TagDto> tags;
+    private Set<TagDto> tags = new HashSet<>();
 }

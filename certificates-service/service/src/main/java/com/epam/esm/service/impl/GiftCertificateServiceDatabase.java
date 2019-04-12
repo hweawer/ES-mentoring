@@ -21,7 +21,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.criteria.*;
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.Set;
 
@@ -52,13 +51,6 @@ public class GiftCertificateServiceDatabase implements GiftCertificateService {
 
     @Transactional
     @Override
-    public CertificateDto update(CertificateDto dto) {
-        GiftCertificate certificate = CertificateMapper.INSTANCE.toEntity(dto);
-        return CertificateMapper.INSTANCE.toDto(certificateRepository.update(certificate));
-    }
-
-    @Transactional
-    @Override
     public void delete(Long id) {
         GiftCertificate certificate = certificateRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(""));
@@ -72,28 +64,6 @@ public class GiftCertificateServiceDatabase implements GiftCertificateService {
                 .orElseThrow(() -> new EntityNotFoundException("")));
     }
 
-    @Transactional
-    @Override
-    public CertificateDto patch(Long id, CertificateDto certificateDto) {
-        GiftCertificate certificate = certificateRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(""));
-        String name = certificateDto.getName();
-        String description = certificateDto.getDescription();
-        Short duration = certificateDto.getDuration();
-        BigDecimal price = certificateDto.getPrice();
-        Set<TagDto> tagDtos = certificateDto.getTags();
-        if (name != null) certificate.setName(name);
-        if (description != null) certificate.setDescription(description);
-        if (duration != null) certificate.setDuration(duration);
-        if (price != null) certificate.setPrice(price);
-        if(tagDtos != null){
-            Set<Tag> tags = tagDtos.stream()
-                                .map(TagMapper.INSTANCE::toEntity)
-                                .collect(toSet());
-            certificate.setTags(tags);
-        }
-        return CertificateMapper.INSTANCE.toDto(certificateRepository.update(certificate));
-    }
 
     @Transactional(readOnly = true)
     @Override
