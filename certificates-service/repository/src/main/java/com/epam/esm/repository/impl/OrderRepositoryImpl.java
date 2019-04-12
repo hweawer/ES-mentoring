@@ -6,12 +6,19 @@ import com.epam.esm.repository.AbstractRepository;
 import com.epam.esm.repository.OrderRepository;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.stream.Stream;
 
 @Repository
 public class OrderRepositoryImpl extends AbstractRepository<Order> implements OrderRepository {
     public OrderRepositoryImpl() {
         super(Order.class);
+    }
+
+    @Override
+    public void create(Order order) {
+        order.setTimestamp(LocalDateTime.now());
+        super.create(order);
     }
 
     @Override

@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class UpdateCertificateName implements UpdateProperty<GiftCertificate, String> {
     public boolean update(GiftCertificate certificate, String name){
-        if(name == null || certificate.getName().equals(name)) return false;
+        if (name == null || certificate.getName().equals(name)) return false;
         certificate.setName(name);
         return true;
     }

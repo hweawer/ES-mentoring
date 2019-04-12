@@ -1,4 +1,4 @@
-package com.epam.esm.service;
+package com.epam.esm.service.find;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;

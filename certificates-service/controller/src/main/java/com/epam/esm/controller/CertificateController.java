@@ -1,11 +1,11 @@
 package com.epam.esm.controller;
 
-import com.epam.esm.entity.GiftCertificate;
-import com.epam.esm.service.SearchCertificateRequest;
-import com.epam.esm.service.GiftCertificateService;
+import com.epam.esm.service.find.FindCertificateService;
+import com.epam.esm.service.find.SearchCertificateRequest;
+import com.epam.esm.service.create.CreateCertificateService;
+import com.epam.esm.service.delete.DeleteCertificateService;
 import com.epam.esm.service.dto.CertificateDto;
 import com.epam.esm.service.update.UpdateCertificateService;
-import com.epam.esm.service.update.UpdateEntity;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -26,25 +26,28 @@ import static com.epam.esm.service.validation.ValidationScopes.*;
 @RestController
 @RequestMapping(value = "/certificates", produces = MediaType.APPLICATION_JSON_VALUE)
 public class CertificateController {
-
     @NonNull
-    private final GiftCertificateService certificateService;
+    private final FindCertificateService searchService;
     @NonNull
-    private final UpdateEntity<Long, CertificateDto> updateService;
+    private final UpdateCertificateService updateService;
+    @NonNull
+    private final CreateCertificateService createService;
+    @NonNull
+    private final DeleteCertificateService deleteService;
 
     @GetMapping
     public List<CertificateDto> findCertificates(@Valid SearchCertificateRequest request){
-        return certificateService.searchByClause(request);
+        return searchService.searchByClause(request);
     }
 
     @GetMapping(value = "/{id}")
     public CertificateDto findById(@Positive @PathVariable("id") Long id){
-        return certificateService.findById(id);
+        return searchService.findById(id);
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<CertificateDto> create(@Validated(onCreate.class) @RequestBody CertificateDto certificateDto){
-        CertificateDto created = certificateService.create(certificateDto);
+        CertificateDto created = createService.createCertificate(certificateDto);
         URI uri = ServletUriComponentsBuilder
                 .fromCurrentRequest()
                 .path("/{id}")
@@ -57,19 +60,19 @@ public class CertificateController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void update(@Validated(onCreate.class) @RequestBody CertificateDto certificateDto,
                        @Positive @PathVariable("id") Long id){
-        updateService.update(id, certificateDto);
+        updateService.putUpdate(id, certificateDto);
     }
 
     @DeleteMapping(value = "/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable("id") Long id) {
-        certificateService.delete(id);
+        deleteService.deleteCertificate(id);
     }
 
     @PatchMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
     public CertificateDto updateProperty(@Validated(onPatch.class)@RequestBody CertificateDto certificateDto,
                                          @Positive @PathVariable("id") Long id){
-        return updateService.update(id, certificateDto);
+        return updateService.patchUpdate(id, certificateDto);
     }
 }

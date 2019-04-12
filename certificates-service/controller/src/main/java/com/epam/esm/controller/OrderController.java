@@ -1,7 +1,8 @@
 package com.epam.esm.controller;
 
-import com.epam.esm.service.OrderService;
+import com.epam.esm.service.create.CreateOrderService;
 import com.epam.esm.service.dto.OrderDto;
+import com.epam.esm.service.find.FindOrderService;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
@@ -19,23 +20,25 @@ import java.util.List;
 @RequestMapping(value = "/orders", produces = MediaType.APPLICATION_JSON_VALUE)
 public class OrderController {
     @NonNull
-    public OrderService orderService;
+    private final FindOrderService searchService;
+    @NonNull
+    private final CreateOrderService createService;
 
     @GetMapping
     public List<OrderDto> ordersByUser(@Positive @RequestParam(required = false, defaultValue = "1") Integer page,
                                        @Positive @RequestParam(required = false, defaultValue = "5") Integer limit,
                                         Authentication authentication){
-        return orderService.findByUser(page, limit, authentication.getName());
+        return searchService.userOrders(page, limit, authentication.getName());
     }
 
     @GetMapping("/{id}")
     public OrderDto findById(@Positive @PathVariable("id") Long id){
-        return orderService.findById(id);
+        return searchService.findById(id);
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<OrderDto> buyCertificates(@RequestBody List<Long> id, Authentication authentication){
-        OrderDto created = orderService.orderCertificatesByUser(authentication.getName(), id);
+        OrderDto created = createService.orderCertificatesByUser(authentication.getName(), id);
         URI uri = ServletUriComponentsBuilder
                 .fromCurrentRequest()
                 .path("/{id}")

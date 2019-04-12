@@ -1,12 +1,12 @@
-package com.epam.esm.service.impl;
+package com.epam.esm.service.find.impl;
 
 import com.epam.esm.entity.Tag;
 import com.epam.esm.repository.TagRepository;
-import com.epam.esm.service.TagService;
 import com.epam.esm.service.dto.TagDto;
 import com.epam.esm.service.dto.mapper.TagMapper;
 import com.epam.esm.service.exception.EntityNotFoundException;
 import com.epam.esm.service.exception.IncorrectPaginationValues;
+import com.epam.esm.service.find.FindTagService;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -14,21 +14,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Set;
 
-import static java.util.stream.Collectors.*;
+import static java.util.stream.Collectors.toSet;
 
-@RequiredArgsConstructor()
+@RequiredArgsConstructor
 @Service
-public class TagServiceDatabase implements TagService {
+public class FindTagServiceImpl implements FindTagService {
     @NonNull
     private TagRepository tagRepository;
-
-    @Transactional
-    @Override
-    public TagDto create(TagDto tagDTO) {
-        Tag tag = TagMapper.INSTANCE.toEntity(tagDTO);
-        tagRepository.create(tag);
-        return TagMapper.INSTANCE.toDto(tag);
-    }
 
     @Transactional(readOnly = true)
     @Override
@@ -37,6 +29,7 @@ public class TagServiceDatabase implements TagService {
         if (page > tagCount / limit){
             throw new IncorrectPaginationValues("");
         }
+
         return tagRepository.findAll(page, limit)
                 .map(TagMapper.INSTANCE::toDto)
                 .collect(toSet());
@@ -45,21 +38,16 @@ public class TagServiceDatabase implements TagService {
     @Transactional(readOnly = true)
     @Override
     public TagDto findById(Long id) {
-        Tag tag = tagRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(""));
+        Tag tag = tagRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(""));
         return TagMapper.INSTANCE.toDto(tag);
     }
 
     @Transactional(readOnly = true)
     @Override
     public TagDto findByName(String name) {
-        Tag tag = tagRepository.findTagByName(name).orElseThrow(() -> new EntityNotFoundException(""));
+        Tag tag = tagRepository.findTagByName(name)
+                .orElseThrow(() -> new EntityNotFoundException(""));
         return TagMapper.INSTANCE.toDto(tag);
-    }
-
-    @Transactional
-    @Override
-    public void delete(Long id) {
-        tagRepository.findById(id)
-                .ifPresentOrElse(tag -> tagRepository.delete(tag), () -> new EntityNotFoundException(""));
     }
 }

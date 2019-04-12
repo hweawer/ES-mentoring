@@ -1,13 +1,12 @@
-package com.epam.esm.service.impl;
+package com.epam.esm.service.find.impl;
 
 import com.epam.esm.entity.GiftCertificate;
 import com.epam.esm.entity.GiftCertificate_;
 import com.epam.esm.entity.Tag;
 import com.epam.esm.entity.Tag_;
 import com.epam.esm.repository.CrudRepository;
-import com.epam.esm.service.SearchCertificateRequest;
-import com.epam.esm.service.SearchCertificateRequestTranslator;
-import com.epam.esm.service.exception.IncorrectPaginationValues;
+import com.epam.esm.service.find.SearchCertificateRequest;
+import com.epam.esm.service.find.SearchCertificateRequestTranslator;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -33,16 +32,27 @@ public class JpaCriteriaSearchCertificateRequestTranslator implements SearchCert
         Root<GiftCertificate> from = query.from(GiftCertificate.class);
         query.select(from);
         Predicate predicate = null;
+
         if (!tags.isEmpty()) {
-            predicate = tagsInPredicate(builder, query, tags, from);
+            Subquery<Long> sub = query.subquery(Long.class);
+            Root<GiftCertificate> sqFrom = sub.from(GiftCertificate.class);
+            Join<GiftCertificate, Tag> join = sqFrom.join(GiftCertificate_.tags);
+
+            sub.select(sqFrom.get(GiftCertificate_.id));
+            sub.where(join.get(Tag_.name).in(tags)).groupBy(sqFrom.get(GiftCertificate_.id));
+            sub.having(builder.equal(builder.count(sqFrom), tags.size()));
+            predicate = builder.in(from.get(GiftCertificate_.id)).value(sub);
         }
+
         if (filterValue != null){
             Predicate likePredicate = builder.like(from.get(filterAttribute), "%"+filterValue+"%");
             predicate = predicate == null ? likePredicate : builder.and(predicate, likePredicate);
         }
+
         if (predicate != null) {
             query.where(predicate);
         }
+
         if (orderAttribute != null){
             char order = orderAttribute.charAt(0);
             if (order == '-'){
@@ -53,18 +63,5 @@ public class JpaCriteriaSearchCertificateRequestTranslator implements SearchCert
             }
         }
         return query;
-    }
-
-    private Predicate tagsInPredicate(CriteriaBuilder builder,
-                                      CriteriaQuery query,
-                                      List<String> tags, Root<GiftCertificate> from){
-        Subquery<Long> sub = query.subquery(Long.class);
-        Root<GiftCertificate> sqFrom = sub.from(GiftCertificate.class);
-        Join<GiftCertificate, Tag> join = sqFrom.join(GiftCertificate_.tags);
-
-        sub.select(sqFrom.get(GiftCertificate_.id));
-        sub.where(join.get(Tag_.name).in(tags)).groupBy(sqFrom.get(GiftCertificate_.id));
-        sub.having(builder.equal(builder.count(sqFrom), tags.size()));
-        return builder.in(from.get(GiftCertificate_.id)).value(sub);
     }
 }
