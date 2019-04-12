@@ -13,6 +13,10 @@ import java.io.Serializable;
 @Entity
 @Table(name = "roles")
 public class Role implements Serializable {
+
+    public static final String USER_ROLE = "USER";
+    public static final String ADMIN_ROLE = "ADMIN";
+
     @EqualsAndHashCode.Exclude
     @Id
     @GeneratedValue

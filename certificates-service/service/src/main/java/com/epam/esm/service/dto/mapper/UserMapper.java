@@ -1,6 +1,7 @@
-package com.epam.esm.service.dto;
+package com.epam.esm.service.dto.mapper;
 
 import com.epam.esm.entity.User;
+import com.epam.esm.service.dto.UserDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 

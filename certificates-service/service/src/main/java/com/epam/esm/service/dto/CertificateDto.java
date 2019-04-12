@@ -1,5 +1,6 @@
 package com.epam.esm.service.dto;
 
+import com.epam.esm.service.validation.ValidationScopes;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -10,15 +11,11 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Set;
 
+import static com.epam.esm.service.validation.ValidationScopes.*;
+
 @Data
 @NoArgsConstructor
 public class CertificateDto {
-
-    public interface onPatch {
-    }
-
-    public interface onCreate {
-    }
 
     private Long id;
 

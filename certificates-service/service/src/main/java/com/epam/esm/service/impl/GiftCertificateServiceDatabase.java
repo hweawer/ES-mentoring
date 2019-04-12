@@ -6,12 +6,17 @@ import com.epam.esm.entity.GiftCertificate_;
 import com.epam.esm.entity.Tag_;
 import com.epam.esm.repository.CrudRepository;
 import com.epam.esm.repository.TagRepository;
+import com.epam.esm.service.SearchCertificateRequest;
+import com.epam.esm.service.SearchCertificateRequestTranslator;
 import com.epam.esm.service.dto.TagDto;
-import com.epam.esm.service.dto.TagMapper;
+import com.epam.esm.service.dto.mapper.TagMapper;
 import com.epam.esm.service.exception.EntityNotFoundException;
 import com.epam.esm.service.GiftCertificateService;
 import com.epam.esm.service.dto.CertificateDto;
-import com.epam.esm.service.dto.CertificateMapper;
+import com.epam.esm.service.dto.mapper.CertificateMapper;
+import com.epam.esm.service.exception.IncorrectPaginationValues;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,16 +28,15 @@ import java.util.Set;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 
+@RequiredArgsConstructor
 @Service
 public class GiftCertificateServiceDatabase implements GiftCertificateService {
+    @NonNull
     private CrudRepository<GiftCertificate> certificateRepository;
+    @NonNull
     private TagRepository tagRepository;
-
-    public GiftCertificateServiceDatabase(CrudRepository<GiftCertificate> certificateRepository,
-                                          TagRepository tagRepository) {
-        this.certificateRepository = certificateRepository;
-        this.tagRepository = tagRepository;
-    }
+    @NonNull
+    private SearchCertificateRequestTranslator<CriteriaQuery<GiftCertificate>> criteriaTranslator;
 
     @Transactional
     @Override
@@ -53,7 +57,6 @@ public class GiftCertificateServiceDatabase implements GiftCertificateService {
         return CertificateMapper.INSTANCE.toDto(certificateRepository.update(certificate));
     }
 
-    //todo: localization message
     @Transactional
     @Override
     public void delete(Long id) {
@@ -62,7 +65,6 @@ public class GiftCertificateServiceDatabase implements GiftCertificateService {
         certificateRepository.delete(certificate);
     }
 
-    //todo: localization message
     @Transactional(readOnly = true)
     @Override
     public CertificateDto findById(Long id) {
@@ -70,7 +72,6 @@ public class GiftCertificateServiceDatabase implements GiftCertificateService {
                 .orElseThrow(() -> new EntityNotFoundException("")));
     }
 
-    //todo: localization message
     @Transactional
     @Override
     public CertificateDto patch(Long id, CertificateDto certificateDto) {
@@ -96,49 +97,19 @@ public class GiftCertificateServiceDatabase implements GiftCertificateService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<CertificateDto> findByClause(Integer page, Integer limit,
-            List<String> tags, String filterAttribute, String filterValue, String orderAttribute) {
-        CriteriaBuilder builder = certificateRepository.getEntityManager().getCriteriaBuilder();
-        CriteriaQuery<GiftCertificate> query = builder.createQuery(GiftCertificate.class);
-        Root<GiftCertificate> from = query.from(GiftCertificate.class);
-        query.select(from);
-        Predicate predicate = null;
-        if (!tags.isEmpty()) {
-            predicate = tagsInPredicate(builder, query, tags, from);
+    public List<CertificateDto> searchByClause(SearchCertificateRequest searchRequest) {
+        Integer page = searchRequest.getPage();
+        Integer limit = searchRequest.getLimit();
+
+        Double certificatesCount = Double.valueOf(certificateRepository.count());
+
+        if (page > certificatesCount / limit){
+            throw new IncorrectPaginationValues("");
         }
-        if (filterValue != null){
-            Predicate likePredicate = builder.like(from.get(filterAttribute), "%"+filterValue+"%");
-            predicate = predicate == null ? likePredicate : builder.and(predicate, likePredicate);
-        }
-        if (predicate != null) {
-            query.where(predicate);
-        }
-        if (orderAttribute != null){
-            char order = orderAttribute.charAt(0);
-            if (order == '-'){
-               orderAttribute = orderAttribute.substring(1);
-               query.orderBy(builder.desc(from.get(orderAttribute)));
-            } else {
-                query.orderBy(builder.asc(from.get(orderAttribute)));
-            }
-        }
+        CriteriaQuery<GiftCertificate> query = criteriaTranslator.translate(searchRequest);
 
         return certificateRepository.findAll(query, page, limit)
                 .map(CertificateMapper.INSTANCE::toDto)
                 .collect(toList());
     }
-
-    private Predicate tagsInPredicate(CriteriaBuilder builder,
-                                      CriteriaQuery query,
-                                      List<String> tags, Root<GiftCertificate> from){
-        Subquery<Long> sub = query.subquery(Long.class);
-        Root<GiftCertificate> sqFrom = sub.from(GiftCertificate.class);
-        Join<GiftCertificate, Tag> join = sqFrom.join(GiftCertificate_.tags);
-
-        sub.select(sqFrom.get(GiftCertificate_.id));
-        sub.where(join.get(Tag_.name).in(tags)).groupBy(sqFrom.get(GiftCertificate_.id));
-        sub.having(builder.equal(builder.count(sqFrom), tags.size()));
-        return builder.in(from.get(GiftCertificate_.id)).value(sub);
-    }
-
 }

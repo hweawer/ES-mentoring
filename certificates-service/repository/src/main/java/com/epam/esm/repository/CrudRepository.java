@@ -15,4 +15,5 @@ public interface CrudRepository<T> {
     Stream<T> findAll(Integer page, Integer limit);
     Optional<T> findById(Long id);
     EntityManager getEntityManager();
+    Long count();
 }

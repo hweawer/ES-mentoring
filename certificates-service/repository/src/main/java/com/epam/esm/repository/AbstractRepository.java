@@ -66,4 +66,11 @@ public abstract class AbstractRepository<T> implements CrudRepository<T> {
     public EntityManager getEntityManager() {
         return entityManager;
     }
+
+    @Override
+    public Long count() {
+        CriteriaQuery<Long> cq = builder.createQuery(Long.class);
+        cq.select(builder.count(cq.from(entity)));
+        return entityManager.createQuery(cq).getSingleResult();
+    }
 }

@@ -2,25 +2,25 @@ package com.epam.esm.controller;
 
 import com.epam.esm.service.TagService;
 import com.epam.esm.service.dto.TagDto;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Positive;
 import java.net.URI;
 import java.util.Set;
 
+@RequiredArgsConstructor
 @RestController
 @RequestMapping(value = "/tags", produces = MediaType.APPLICATION_JSON_VALUE)
 public class TagController {
+    @NonNull
     private final TagService tagService;
-
-    public TagController(TagService tagService) {
-        this.tagService = tagService;
-    }
 
     @GetMapping(value = "/{id:\\d+}")
     public TagDto findById(@PathVariable("id") Long id){
@@ -33,13 +33,13 @@ public class TagController {
     }
 
     @GetMapping
-    public Set<TagDto> findAll(@RequestParam(required = false, defaultValue = "1") Integer page,
-                               @RequestParam(required = false, defaultValue = "5") Integer limit){
+    public Set<TagDto> findAll(@Positive @RequestParam(required = false, defaultValue = "1") Integer page,
+                               @Positive @RequestParam(required = false, defaultValue = "5") Integer limit){
         return tagService.findAll(page, limit);
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<TagDto> create(@Valid @RequestBody TagDto tagDto, UriComponentsBuilder builder){
+    public ResponseEntity<TagDto> create(@Valid @RequestBody TagDto tagDto){
         TagDto created = tagService.create(tagDto);
         URI uri = ServletUriComponentsBuilder
                 .fromCurrentRequest()

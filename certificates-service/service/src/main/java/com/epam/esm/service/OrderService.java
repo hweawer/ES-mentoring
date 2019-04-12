@@ -5,7 +5,7 @@ import com.epam.esm.service.dto.OrderDto;
 import java.util.List;
 
 public interface OrderService {
-    OrderDto create(String username, List<Long> certificatesIds);
+    OrderDto orderCertificatesByUser(String username, List<Long> certificatesIds);
 
     OrderDto findById(Long id);
 

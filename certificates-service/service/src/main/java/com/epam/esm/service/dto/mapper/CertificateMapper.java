@@ -1,6 +1,7 @@
-package com.epam.esm.service.dto;
+package com.epam.esm.service.dto.mapper;
 
 import com.epam.esm.entity.GiftCertificate;
+import com.epam.esm.service.dto.CertificateDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 

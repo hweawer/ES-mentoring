@@ -1,40 +1,44 @@
 package com.epam.esm.controller;
 
-import com.epam.esm.controller.util.SearchCertificatesRequest;
+import com.epam.esm.service.SearchCertificateRequest;
 import com.epam.esm.service.GiftCertificateService;
 import com.epam.esm.service.dto.CertificateDto;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+
+import javax.validation.Valid;
+import javax.validation.constraints.Positive;
 import java.net.URI;
 import java.util.List;
 
+import static com.epam.esm.service.validation.ValidationScopes.*;
+
+@RequiredArgsConstructor
 @RestController
 @RequestMapping(value = "/certificates", produces = MediaType.APPLICATION_JSON_VALUE)
 public class CertificateController {
 
+    @NonNull
     private final GiftCertificateService certificateService;
 
-    public CertificateController(GiftCertificateService certificateService) {
-        this.certificateService = certificateService;
-    }
-
     @GetMapping
-    public List<CertificateDto> findCertificates(SearchCertificatesRequest request){
-        return certificateService.findByClause(request.getPage(), request.getLimit(), request.getTag(),
-                                                request.getColumn(), request.getValue(), request.getSort());
+    public List<CertificateDto> findCertificates(@Valid SearchCertificateRequest request){
+        return certificateService.searchByClause(request);
     }
 
     @GetMapping(value = "/{id}")
-    public CertificateDto findById(@PathVariable("id") Long id){
+    public CertificateDto findById(@Positive @PathVariable("id") Long id){
         return certificateService.findById(id);
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<CertificateDto> create(@Validated(CertificateDto.onCreate.class) @RequestBody CertificateDto certificateDto){
+    public ResponseEntity<CertificateDto> create(@Validated(onCreate.class) @RequestBody CertificateDto certificateDto){
         CertificateDto created = certificateService.create(certificateDto);
         URI uri = ServletUriComponentsBuilder
                 .fromCurrentRequest()
@@ -46,8 +50,8 @@ public class CertificateController {
 
     @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void update(@Validated(CertificateDto.onCreate.class) @RequestBody CertificateDto certificateDTO,
-                       @PathVariable("id") Long id){
+    public void update(@Validated(onCreate.class) @RequestBody CertificateDto certificateDTO,
+                       @Positive @PathVariable("id") Long id){
         certificateDTO.setId(id);
         certificateService.update(certificateDTO);
     }
@@ -60,8 +64,8 @@ public class CertificateController {
 
     @PatchMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
-    public CertificateDto updateProperty(@Validated(CertificateDto.onPatch.class)@RequestBody CertificateDto certificateDto,
-                                         @PathVariable("id") Long id){
+    public CertificateDto updateProperty(@Validated(onPatch.class)@RequestBody CertificateDto certificateDto,
+                                         @Positive @PathVariable("id") Long id){
         return certificateService.patch(id, certificateDto);
     }
 }
