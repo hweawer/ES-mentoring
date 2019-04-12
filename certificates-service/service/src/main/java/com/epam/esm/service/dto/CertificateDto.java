@@ -47,5 +47,5 @@ public class CertificateDto {
     private Short duration;
 
     @Valid
-    private Set<TagDto> tags = new HashSet<>();
+    private Set<TagDto> tags;
 }

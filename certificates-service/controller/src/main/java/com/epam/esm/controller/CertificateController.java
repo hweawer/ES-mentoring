@@ -1,9 +1,11 @@
 package com.epam.esm.controller;
 
+import com.epam.esm.entity.GiftCertificate;
 import com.epam.esm.service.SearchCertificateRequest;
 import com.epam.esm.service.GiftCertificateService;
 import com.epam.esm.service.dto.CertificateDto;
 import com.epam.esm.service.update.UpdateCertificateService;
+import com.epam.esm.service.update.UpdateEntity;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -28,7 +30,7 @@ public class CertificateController {
     @NonNull
     private final GiftCertificateService certificateService;
     @NonNull
-    private final UpdateCertificateService updateService;
+    private final UpdateEntity<Long, CertificateDto> updateService;
 
     @GetMapping
     public List<CertificateDto> findCertificates(@Valid SearchCertificateRequest request){
