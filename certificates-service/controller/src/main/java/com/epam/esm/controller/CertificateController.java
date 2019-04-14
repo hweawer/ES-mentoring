@@ -9,6 +9,7 @@ import com.epam.esm.service.dto.CertificateDto;
 import com.epam.esm.service.update.UpdateCertificateService;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +22,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.Positive;
 import java.net.URI;
 import java.util.List;
+import java.util.Locale;
 
 import static com.epam.esm.service.validation.ValidationScopes.*;
 
@@ -36,6 +38,8 @@ public class CertificateController {
     private final CreateCertificateService createService;
     @NonNull
     private final DeleteCertificateService deleteService;
+    @NonNull
+    private final MessageSource messageSource;
 
     @GetMapping
     public List<CertificateDto> findCertificates(@Valid SearchCertificateRequest request){
@@ -80,5 +84,11 @@ public class CertificateController {
     public CertificateDto updateProperty(@Validated(onPatch.class)@RequestBody CertificateDto certificateDto,
                                          @Positive @PathVariable("id") Long id){
         return updateService.patchUpdate(id, certificateDto);
+    }
+
+    @PreAuthorize("hasAuthority('USER')")
+    @GetMapping("/hello-world-I18N")
+    public String helloWorldI18N(@RequestHeader(name="Accept-Language",required = false) Locale locale) {
+        return messageSource.getMessage("tag.not.found",null,locale);
     }
 }
