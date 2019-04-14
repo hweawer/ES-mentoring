@@ -19,30 +19,30 @@ public class CertificateDto {
 
     private Long id;
 
-    @NotNull(groups = onCreate.class, message = "")
-    @Pattern(regexp = "\\p{L}{3,12}", groups = {onCreate.class, onPatch.class}, message = "")
+    @NotNull(groups = onCreate.class, message = "certificate.name.null")
+    @Pattern(regexp = "\\p{L}{3,12}", groups = {onCreate.class, onPatch.class}, message = "certificate.name.not.suite.pattern")
     private String name;
 
-    @NotNull(groups = onCreate.class, message = "")
-    @Size(min = 3, groups = {onCreate.class, onPatch.class}, message = "")
+    @NotBlank(groups = onCreate.class, message = "certificate.description.blank")
+    @Size(min = 3, groups = {onCreate.class, onPatch.class}, message = "certificate.description.size")
     private String description;
 
-    @NotNull(groups = onCreate.class, message = "")
-    @PositiveOrZero(groups = {onCreate.class, onPatch.class}, message = "")
-    @Digits(integer=11, fraction=2, groups = {onCreate.class, onPatch.class}, message = "")
+    @NotNull(groups = onCreate.class, message = "certificate.price.null")
+    @PositiveOrZero(groups = {onCreate.class, onPatch.class}, message = "certificate.price.positive.or.zero")
+    @Digits(integer=11, fraction=2, groups = {onCreate.class, onPatch.class}, message = "certificate.price.digits")
     private BigDecimal price;
 
-    @Past(message = "")
+    @Past(message = "date.creation.past")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate creationDate;
 
-    @PastOrPresent(message = "")
+    @PastOrPresent(message = "date.modification.past.present")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate modificationDate;
 
-    @NotNull(groups = onCreate.class, message = "")
-    @Min(value = 5, groups = {onCreate.class, onPatch.class}, message = "")
-    @Max(value = 365, groups = {onCreate.class, onPatch.class}, message = "")
+    @NotNull(groups = onCreate.class, message = "duration.null")
+    @Min(value = 5, groups = {onCreate.class, onPatch.class}, message = "duration.min")
+    @Max(value = 365, groups = {onCreate.class, onPatch.class}, message = "duration.max")
     private Short duration;
 
     @Valid

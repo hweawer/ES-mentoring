@@ -10,7 +10,7 @@ import javax.validation.constraints.Pattern;
 @NoArgsConstructor
 public class TagDto {
     private Long id;
-    @NotNull(message = "")
-    @Pattern(regexp = "^[\\p{L}0-9]{3,12}", message = "")
+    @NotNull(message = "tag.name.null.value")
+    @Pattern(regexp = "^[\\p{L}0-9]{3,12}", message = "tag.name.not.suite.pattern")
     private String name;
 }

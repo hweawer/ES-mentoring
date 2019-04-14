@@ -9,6 +9,7 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -29,7 +30,7 @@ public class Order implements Serializable {
     @Column(name = "time")
     private LocalDateTime timestamp;
 
-    @OneToMany
+    @OneToMany(fetch = FetchType.EAGER)
     @JoinColumn(name = "order_id")
-    private List<CertificateSnapshot> certificates;
+    private List<CertificateSnapshot> certificates = new ArrayList<>();
 }

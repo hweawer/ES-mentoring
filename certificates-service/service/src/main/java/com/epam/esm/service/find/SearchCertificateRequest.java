@@ -14,11 +14,11 @@ public class SearchCertificateRequest {
     private int page = 1;
     private List<String> tag = new ArrayList<>();
 
-    @Pattern(regexp = "description|name")
+    @Pattern(regexp = "description|name", message = "unknown.filter.attribute")
     private String column;
 
     private String value;
 
-    @Pattern(regexp = "date|name")
+    @Pattern(regexp = "date|name", message = "unknown.sort.attribute")
     private String sort;
 }

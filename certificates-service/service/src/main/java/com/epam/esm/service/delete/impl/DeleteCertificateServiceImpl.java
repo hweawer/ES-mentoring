@@ -18,6 +18,6 @@ public class DeleteCertificateServiceImpl implements DeleteCertificateService {
     @Override
     public void deleteCertificate(Long id) {
         certificatesRepository.findById(id)
-                .ifPresentOrElse(tag -> certificatesRepository.delete(tag), () -> new EntityNotFoundException(""));
+                .ifPresentOrElse(tag -> certificatesRepository.delete(tag), () -> new EntityNotFoundException("certificate.not.found"));
     }
 }

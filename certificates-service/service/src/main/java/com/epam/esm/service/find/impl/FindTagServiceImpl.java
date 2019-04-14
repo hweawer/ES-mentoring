@@ -26,8 +26,10 @@ public class FindTagServiceImpl implements FindTagService {
     @Override
     public Set<TagDto> findAll(Integer page, Integer limit) {
         Double tagCount = Double.valueOf(tagRepository.count());
-        if (page > tagCount / limit){
-            throw new IncorrectPaginationValues("");
+        Double div = tagCount / limit;
+        div = div % limit == 0 ? div : div + 1;
+        if (page > div){
+            throw new IncorrectPaginationValues("incorrect.pagination");
         }
 
         return tagRepository.findAll(page, limit)
@@ -39,7 +41,7 @@ public class FindTagServiceImpl implements FindTagService {
     @Override
     public TagDto findById(Long id) {
         Tag tag = tagRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(""));
+                .orElseThrow(() -> new EntityNotFoundException("tag.not.found"));
         return TagMapper.INSTANCE.toDto(tag);
     }
 
@@ -47,7 +49,7 @@ public class FindTagServiceImpl implements FindTagService {
     @Override
     public TagDto findByName(String name) {
         Tag tag = tagRepository.findTagByName(name)
-                .orElseThrow(() -> new EntityNotFoundException(""));
+                .orElseThrow(() -> new EntityNotFoundException("tag.not.found"));
         return TagMapper.INSTANCE.toDto(tag);
     }
 }

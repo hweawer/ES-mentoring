@@ -9,6 +9,8 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
 @NoArgsConstructor
@@ -33,6 +35,14 @@ public class CertificateSnapshot implements Serializable {
 
     @NonNull
     private Short duration;
+
+    @EqualsAndHashCode.Exclude
+    @OneToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "certificates_tags",
+            joinColumns = @JoinColumn(name = "certificate_id"),
+            inverseJoinColumns = @JoinColumn(name = "tag_id"))
+    private Set<Tag> tags = new HashSet<>();
 
     public CertificateSnapshot(GiftCertificate certificate){
         this.id = certificate.getId();

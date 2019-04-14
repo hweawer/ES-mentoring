@@ -18,6 +18,6 @@ public class DeleteTagServiceImpl implements DeleteTagService {
     @Override
     public void deleteTag(Long id) {
         tagRepository.findById(id)
-                .ifPresentOrElse(tag -> tagRepository.delete(tag), () -> new EntityNotFoundException(""));
+                .ifPresentOrElse(tag -> tagRepository.delete(tag), () -> new EntityNotFoundException("tag.not.found"));
     }
 }

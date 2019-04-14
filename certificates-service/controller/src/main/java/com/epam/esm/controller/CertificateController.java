@@ -1,5 +1,6 @@
 package com.epam.esm.controller;
 
+import com.epam.esm.entity.Role;
 import com.epam.esm.service.find.FindCertificateService;
 import com.epam.esm.service.find.SearchCertificateRequest;
 import com.epam.esm.service.create.CreateCertificateService;
@@ -11,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -45,6 +47,7 @@ public class CertificateController {
         return searchService.findById(id);
     }
 
+    @PreAuthorize("hasAuthority('ADMIN')")
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<CertificateDto> create(@Validated(onCreate.class) @RequestBody CertificateDto certificateDto){
         CertificateDto created = createService.createCertificate(certificateDto);
@@ -56,6 +59,7 @@ public class CertificateController {
         return ResponseEntity.created(uri).body(created);
     }
 
+    @PreAuthorize("hasAuthority('ADMIN')")
     @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void update(@Validated(onCreate.class) @RequestBody CertificateDto certificateDto,
@@ -63,12 +67,14 @@ public class CertificateController {
         updateService.putUpdate(id, certificateDto);
     }
 
+    @PreAuthorize("hasAuthority('ADMIN')")
     @DeleteMapping(value = "/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable("id") Long id) {
         deleteService.deleteCertificate(id);
     }
 
+    @PreAuthorize("hasAuthority('ADMIN')")
     @PatchMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
     public CertificateDto updateProperty(@Validated(onPatch.class)@RequestBody CertificateDto certificateDto,

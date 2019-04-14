@@ -2,12 +2,13 @@ package com.epam.esm.repository.impl;
 
 import com.epam.esm.entity.GiftCertificate;
 import com.epam.esm.repository.AbstractRepository;
+import com.epam.esm.repository.CertificatesRepository;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 
 @Repository
-public class CertificateRepositoryImpl extends AbstractRepository<GiftCertificate> {
+public class CertificateRepositoryImpl extends AbstractRepository<GiftCertificate> implements CertificatesRepository {
 
     public CertificateRepositoryImpl() {
         super(GiftCertificate.class);

@@ -2,7 +2,6 @@ package com.epam.esm.service.find.impl;
 
 import com.epam.esm.entity.GiftCertificate;
 import com.epam.esm.repository.CertificatesRepository;
-import com.epam.esm.repository.CrudRepository;
 import com.epam.esm.service.find.SearchCertificateRequest;
 import com.epam.esm.service.find.SearchCertificateRequestTranslator;
 import com.epam.esm.service.dto.CertificateDto;
@@ -32,7 +31,7 @@ public class FindCertificateServiceImpl implements FindCertificateService {
     @Override
     public CertificateDto findById(Long id) {
         return CertificateMapper.INSTANCE.toDto(certificateRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("")));
+                .orElseThrow(() -> new EntityNotFoundException("certificate.not.found")));
     }
 
 
@@ -43,9 +42,10 @@ public class FindCertificateServiceImpl implements FindCertificateService {
         Integer limit = searchRequest.getLimit();
 
         Double certificatesCount = Double.valueOf(certificateRepository.count());
-
-        if (page > certificatesCount / limit){
-            throw new IncorrectPaginationValues("");
+        Double div = certificatesCount / limit;
+        div = div % limit == 0 ? div : div + 1;
+        if (page > div){
+            throw new IncorrectPaginationValues("incorrect.pagination");
         }
         CriteriaQuery<GiftCertificate> query = criteriaTranslator.translate(searchRequest);
 

@@ -29,7 +29,7 @@ public class UpdateCertificateServiceImpl implements UpdateCertificateService {
     @Transactional
     public CertificateDto update(Long id, CertificateDto dto){
         GiftCertificate certificate = certificateRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(""));
+                .orElseThrow(() -> new EntityNotFoundException("certificate.not.found"));
 
         updateBuilder.update(certificate)
                 .updateName(dto.getName())

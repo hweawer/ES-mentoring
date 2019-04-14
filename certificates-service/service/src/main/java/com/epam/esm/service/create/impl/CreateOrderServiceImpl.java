@@ -7,6 +7,7 @@ import com.epam.esm.repository.*;
 import com.epam.esm.service.create.CreateOrderService;
 import com.epam.esm.service.dto.OrderDto;
 import com.epam.esm.service.dto.mapper.OrderMapper;
+import com.epam.esm.service.exception.EntityNotFoundException;
 import com.epam.esm.service.exception.NotEnoughMoneyException;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -34,18 +35,18 @@ public class CreateOrderServiceImpl implements CreateOrderService {
     @Override
     public OrderDto orderCertificatesByUser(String username, List<Long> certificatesIds) {
         User user = userRepository.findUserByLogin(username)
-                .orElseThrow(() -> new RuntimeException(""));
+                .orElseThrow(() -> new EntityNotFoundException("user.not.exists"));
         List<CertificateSnapshot> snapshots = certificatesIds.stream()
-                .map(id -> certificateRepository.findById(id).orElseThrow(() -> new RuntimeException("")))
+                .map(id -> certificateRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("certificate.not.found")))
                 .map(CertificateSnapshot::new)
                 .collect(toList());
         BigDecimal sum = snapshots.stream()
                                             .map(CertificateSnapshot::getPrice)
                                             .reduce(BigDecimal::add)
-                                            .orElseThrow(() -> new RuntimeException(""));
+                                            .orElseThrow(() -> new EntityNotFoundException("price.not.calculated"));
         BigDecimal money = user.getMoney();
         if (money.compareTo(sum) < 0){
-            throw new NotEnoughMoneyException("");
+            throw new NotEnoughMoneyException("not.enough.money");
         }
         user.setMoney(money.subtract(sum));
 
