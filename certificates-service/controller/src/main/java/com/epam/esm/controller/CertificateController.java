@@ -86,9 +86,4 @@ public class CertificateController {
         return updateService.patchUpdate(id, certificateDto);
     }
 
-    @PreAuthorize("hasAuthority('USER')")
-    @GetMapping("/hello-world-I18N")
-    public String helloWorldI18N(@RequestHeader(name="Accept-Language",required = false) Locale locale) {
-        return messageSource.getMessage("tag.not.found",null,locale);
-    }
 }
