@@ -10,6 +10,7 @@ version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '11'
 
 ext {
+    oauthVersion = '2.1.4.RELEASE'
     lombokVersion = '1.18.6'
 }
 
@@ -22,7 +23,7 @@ dependencies {
             'org.springframework.boot:spring-boot-starter-actuator',
             'org.springframework.boot:spring-boot-starter-web',
             'org.springframework.security.oauth:spring-security-oauth2',
-            'org.springframework.security.oauth.boot:spring-security-oauth2-autoconfigure:2.1.4.RELEASE',
+            "org.springframework.security.oauth.boot:spring-security-oauth2-autoconfigure:$oauthVersion",
             'org.springframework.security:spring-security-jwt',
             project(':service')
     )

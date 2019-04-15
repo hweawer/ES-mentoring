@@ -1,12 +1,11 @@
 package com.epam.esm.controller;
 
-import com.epam.esm.service.create.CreateOrderService;
+import com.epam.esm.service.order.CreateOrderService;
 import com.epam.esm.service.dto.OrderDto;
 import com.epam.esm.service.dto.SnapshotDto;
-import com.epam.esm.service.find.FindOrderService;
-import com.epam.esm.service.find.FindSnapshotService;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
+import com.epam.esm.service.order.FindOrderService;
+import com.epam.esm.service.snapshot.FindSnapshotService;
+import lombok.AllArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -18,16 +17,13 @@ import javax.validation.constraints.Positive;
 import java.net.URI;
 import java.util.List;
 
-@RequiredArgsConstructor
+@AllArgsConstructor
 @RestController
 @RequestMapping(value = "/orders", produces = MediaType.APPLICATION_JSON_VALUE)
 public class OrderController {
-    @NonNull
     private final FindOrderService searchOrderService;
-    @NonNull
     private final FindSnapshotService searchSnapshotService;
-    @NonNull
-    private final CreateOrderService createService;
+    private final CreateOrderService createOrderService;
 
     @PreAuthorize("hasAuthority('USER')")
     @GetMapping
@@ -54,7 +50,7 @@ public class OrderController {
     @PreAuthorize("hasAuthority('USER')")
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<OrderDto> buyCertificates(@RequestBody List<Long> id, Authentication authentication){
-        OrderDto created = createService.orderCertificatesByUser(authentication.getName(), id);
+        OrderDto created = createOrderService.orderCertificatesByUser(authentication.getName(), id);
         URI uri = ServletUriComponentsBuilder
                 .fromCurrentRequest()
                 .path("/{id}")
