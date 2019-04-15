@@ -9,6 +9,7 @@ import com.epam.esm.service.dto.mapper.TagMapper;
 import com.epam.esm.service.exception.EntityNotFoundException;
 import com.epam.esm.service.certificate.UpdateCertificateService;
 import com.epam.esm.service.certificate.builder.UpdateCertificateBuilder;
+import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -16,14 +17,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import static java.util.stream.Collectors.toSet;
 
-@RequiredArgsConstructor
+@AllArgsConstructor
 @Service
 public class UpdateCertificateServiceImpl implements UpdateCertificateService {
-    @NonNull
     private CertificatesRepository certificateRepository;
-    @NonNull
     private TagRepository tagRepository;
-    @NonNull
     private UpdateCertificateBuilder updateBuilder;
 
     @Transactional

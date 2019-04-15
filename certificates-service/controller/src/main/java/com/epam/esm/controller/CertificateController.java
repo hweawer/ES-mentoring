@@ -58,7 +58,7 @@ public class CertificateController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void update(@Validated(onCreate.class) @RequestBody CertificateDto certificateDto,
                        @Positive @PathVariable("id") Long id){
-        updateCertificatesService.putUpdate(id, certificateDto);
+        updateCertificatesService.update(id, certificateDto);
     }
 
     @PreAuthorize("hasAuthority('ADMIN')")
@@ -73,7 +73,7 @@ public class CertificateController {
     @ResponseStatus(HttpStatus.OK)
     public CertificateDto updateProperty(@Validated(onPatch.class)@RequestBody CertificateDto certificateDto,
                                          @Positive @PathVariable("id") Long id){
-        return updateCertificatesService.patchUpdate(id, certificateDto);
+        return updateCertificatesService.merge(id, certificateDto);
     }
 
 }

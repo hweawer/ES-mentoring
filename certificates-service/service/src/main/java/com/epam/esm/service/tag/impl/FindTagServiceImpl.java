@@ -63,7 +63,7 @@ public class FindTagServiceImpl implements FindTagService {
         User user = userRepository.findUserByLogin(username)
                 .orElseThrow(() -> new EntityNotFoundException("user.not.found"));
         Optional<Tag> optionalTag = orderRepository.mostPopularUserTag(user);
-        Tag tag = optionalTag.orElseThrow(() -> new RuntimeException(""));
+        Tag tag = optionalTag.orElseThrow(() -> new EntityNotFoundException("tag.not.found"));
         return TagMapper.INSTANCE.toDto(tag);
     }
 }
