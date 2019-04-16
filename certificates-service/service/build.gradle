@@ -25,17 +25,14 @@ repositories {
 
 dependencies {
     api(
-            'org.springframework.boot:spring-boot-starter-data-jpa',
             'org.springframework.boot:spring-boot-starter-validation',
-            'org.springframework.boot:spring-boot-starter-test',
             'org.springframework.boot:spring-boot-starter-security',
-            project(':domain'),
-            project(':repository'),
-
+            'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.9.8'
     )
     implementation(
-            "org.mapstruct:mapstruct:$mapstructVersion",
-            'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.9.8'
+            project(':repository'),
+            'org.springframework.boot:spring-boot-starter-test',
+            "org.mapstruct:mapstruct:$mapstructVersion"
     )
     compileOnly "org.projectlombok:lombok:$lombokVersion"
     annotationProcessor(

@@ -1,11 +1,8 @@
 package com.epam.esm.entity;
 
-import com.epam.esm.entity.GiftCertificate;
-import com.epam.esm.entity.Tag;
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import javax.annotation.Generated;
+import javax.annotation.processing.Generated;
 import javax.persistence.metamodel.SetAttribute;
 import javax.persistence.metamodel.SingularAttribute;
 import javax.persistence.metamodel.StaticMetamodel;

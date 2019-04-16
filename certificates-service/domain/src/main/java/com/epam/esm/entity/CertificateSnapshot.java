@@ -44,6 +44,9 @@ public class CertificateSnapshot implements Serializable {
             inverseJoinColumns = @JoinColumn(name = "tag_id"))
     private Set<Tag> tags = new HashSet<>();
 
+    @NonNull
+    private Long userId;
+
     public CertificateSnapshot(GiftCertificate certificate){
         this.id = certificate.getId();
         this.name = certificate.getName();

@@ -1,9 +1,10 @@
 package com.epam.esm.controller;
 
+import com.epam.esm.service.dto.PaginationDto;
 import com.epam.esm.service.tag.CreateTagService;
 import com.epam.esm.service.tag.DeleteTagService;
 import com.epam.esm.service.dto.TagDto;
-import com.epam.esm.service.tag.FindTagService;
+import com.epam.esm.service.tag.TagSearchService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -21,7 +22,7 @@ import java.util.Set;
 @RestController
 @RequestMapping(value = "/tags", produces = MediaType.APPLICATION_JSON_VALUE)
 public class TagController {
-    private final FindTagService searchTagService;
+    private final TagSearchService searchTagService;
     private final CreateTagService createTagService;
     private final DeleteTagService deleteTagService;
 
@@ -39,8 +40,8 @@ public class TagController {
 
     @PreAuthorize("hasAuthority('USER')")
     @GetMapping
-    public Set<TagDto> findAll(@Positive @RequestParam(required = false, defaultValue = "1") Integer page,
-                               @Positive @RequestParam(required = false, defaultValue = "5") Integer limit){
+    public PaginationDto<TagDto> findAll(@Positive @RequestParam(required = false, defaultValue = "1") Integer page,
+                                         @Positive @RequestParam(required = false, defaultValue = "5") Integer limit){
         return searchTagService.findAll(page, limit);
     }
 

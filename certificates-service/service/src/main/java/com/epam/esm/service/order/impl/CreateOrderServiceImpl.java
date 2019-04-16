@@ -9,8 +9,7 @@ import com.epam.esm.service.dto.OrderDto;
 import com.epam.esm.service.dto.mapper.OrderMapper;
 import com.epam.esm.service.exception.EntityNotFoundException;
 import com.epam.esm.service.exception.NotEnoughMoneyException;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,27 +18,23 @@ import java.util.List;
 
 import static java.util.stream.Collectors.toList;
 
-@RequiredArgsConstructor
+@AllArgsConstructor
 @Service
 public class CreateOrderServiceImpl implements CreateOrderService {
-    @NonNull
     private UserRepository userRepository;
-    @NonNull
     private CertificatesRepository certificateRepository;
-    @NonNull
     private SnapshotRepository snapshotRepository;
-    @NonNull
     private OrderRepository orderRepository;
 
     @Transactional
     @Override
     public OrderDto orderCertificatesByUser(String username, List<Long> certificatesIds) {
-        User user = userRepository.findUserByLogin(username)
-                .orElseThrow(() -> new EntityNotFoundException("user.not.exists"));
+        User user = userRepository.findUserByLogin(username);
         List<CertificateSnapshot> snapshots = certificatesIds.stream()
                 .map(id -> certificateRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("certificate.not.found")))
                 .map(CertificateSnapshot::new)
                 .collect(toList());
+        snapshots.forEach(snapshot -> snapshot.setUserId(user.getId()));
         BigDecimal sum = snapshots.stream()
                                             .map(CertificateSnapshot::getPrice)
                                             .reduce(BigDecimal::add)

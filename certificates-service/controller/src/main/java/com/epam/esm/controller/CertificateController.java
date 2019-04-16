@@ -1,11 +1,12 @@
 package com.epam.esm.controller;
 
-import com.epam.esm.service.certificate.FindCertificateService;
+import com.epam.esm.service.certificate.CertificateSearchService;
 import com.epam.esm.service.certificate.impl.SearchCertificateRequest;
 import com.epam.esm.service.certificate.CreateCertificateService;
 import com.epam.esm.service.certificate.DeleteCertificateService;
 import com.epam.esm.service.dto.CertificateDto;
 import com.epam.esm.service.certificate.UpdateCertificateService;
+import com.epam.esm.service.dto.PaginationDto;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -26,13 +27,13 @@ import static com.epam.esm.service.validation.ValidationScopes.*;
 @RestController
 @RequestMapping(value = "/certificates", produces = MediaType.APPLICATION_JSON_VALUE)
 public class CertificateController {
-    private final FindCertificateService searchCertificatesService;
+    private final CertificateSearchService searchCertificatesService;
     private final UpdateCertificateService updateCertificatesService;
     private final CreateCertificateService createCertificatesService;
     private final DeleteCertificateService deleteCertificatesService;
 
     @GetMapping
-    public List<CertificateDto> findCertificates(@Valid SearchCertificateRequest request){
+    public PaginationDto<CertificateDto> findCertificates(@Valid SearchCertificateRequest request){
         return searchCertificatesService.searchByClause(request);
     }
 

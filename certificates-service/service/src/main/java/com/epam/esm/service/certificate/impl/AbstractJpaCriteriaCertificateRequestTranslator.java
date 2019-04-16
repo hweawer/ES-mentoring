@@ -5,31 +5,19 @@ import com.epam.esm.entity.GiftCertificate_;
 import com.epam.esm.entity.Tag;
 import com.epam.esm.entity.Tag_;
 import com.epam.esm.repository.CrudRepository;
-import com.epam.esm.service.certificate.SearchCertificateRequestTranslator;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.criteria.*;
 import java.util.List;
 
-@RequiredArgsConstructor
-@Component
-public class JpaCriteriaSearchCertificateRequestTranslator implements SearchCertificateRequestTranslator<CriteriaQuery<GiftCertificate>> {
-    @NonNull
-    public CrudRepository<GiftCertificate> certificateRepository;
-
-    @Override
-    public CriteriaQuery<GiftCertificate> translate(SearchCertificateRequest searchRequest) {
+public abstract class AbstractJpaCriteriaCertificateRequestTranslator {
+    protected void formSubquery(SearchCertificateRequest searchRequest, Root<GiftCertificate> from,
+                    CriteriaQuery query, CriteriaBuilder builder){
         String filterValue = searchRequest.getValue();
         String filterAttribute = searchRequest.getColumn();
         String orderAttribute = searchRequest.getSort();
         List<String> tags = searchRequest.getTag();
-
-        CriteriaBuilder builder = certificateRepository.getEntityManager().getCriteriaBuilder();
-        CriteriaQuery<GiftCertificate> query = builder.createQuery(GiftCertificate.class);
-        Root<GiftCertificate> from = query.from(GiftCertificate.class);
-        query.select(from);
         Predicate predicate = null;
 
         if (!tags.isEmpty()) {
@@ -61,6 +49,5 @@ public class JpaCriteriaSearchCertificateRequestTranslator implements SearchCert
                 query.orderBy(builder.asc(from.get(orderAttribute)));
             }
         }
-        return query;
     }
 }

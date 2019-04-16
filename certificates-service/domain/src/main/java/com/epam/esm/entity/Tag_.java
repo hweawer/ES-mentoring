@@ -1,8 +1,6 @@
 package com.epam.esm.entity;
 
-import com.epam.esm.entity.Tag;
-
-import javax.annotation.Generated;
+import javax.annotation.processing.Generated;
 import javax.persistence.metamodel.SingularAttribute;
 import javax.persistence.metamodel.StaticMetamodel;
 

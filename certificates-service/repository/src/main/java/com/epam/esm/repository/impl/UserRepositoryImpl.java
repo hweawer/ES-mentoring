@@ -14,9 +14,9 @@ public class UserRepositoryImpl extends AbstractRepository<User> implements User
     }
 
     @Override
-    public Optional<User> findUserByLogin(String login) {
-        final String USER_BY_LOGIN = "select u from User u where u.login=:login";
-        return entityManager.createQuery(USER_BY_LOGIN, User.class).setParameter("login", login).getResultStream()
-                .findFirst();
+    public User findUserByLogin(String login) {
+        final String USER_BY_LOGIN = "select u from User as u where u.login=:login";
+        return entityManager.createQuery(USER_BY_LOGIN, User.class).setParameter("login", login).getSingleResult();
+
     }
 }

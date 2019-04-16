@@ -24,6 +24,8 @@ public class SnapshotDto {
 
     private Short duration;
 
+    private Long userId;
+
     @Valid
     private Set<TagDto> tags;
 }

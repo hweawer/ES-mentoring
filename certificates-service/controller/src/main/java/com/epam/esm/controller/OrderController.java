@@ -1,10 +1,11 @@
 package com.epam.esm.controller;
 
+import com.epam.esm.service.dto.PaginationDto;
 import com.epam.esm.service.order.CreateOrderService;
 import com.epam.esm.service.dto.OrderDto;
 import com.epam.esm.service.dto.SnapshotDto;
-import com.epam.esm.service.order.FindOrderService;
-import com.epam.esm.service.snapshot.FindSnapshotService;
+import com.epam.esm.service.order.OrderSearchService;
+import com.epam.esm.service.snapshot.SearchSnapshotService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -21,13 +22,13 @@ import java.util.List;
 @RestController
 @RequestMapping(value = "/orders", produces = MediaType.APPLICATION_JSON_VALUE)
 public class OrderController {
-    private final FindOrderService searchOrderService;
-    private final FindSnapshotService searchSnapshotService;
+    private final OrderSearchService searchOrderService;
+    private final SearchSnapshotService searchSnapshotService;
     private final CreateOrderService createOrderService;
 
     @PreAuthorize("hasAuthority('USER')")
     @GetMapping
-    public List<OrderDto> ordersByUser(@Positive @RequestParam(required = false, defaultValue = "1") Integer page,
+    public PaginationDto<OrderDto> ordersByUser(@Positive @RequestParam(required = false, defaultValue = "1") Integer page,
                                        @Positive @RequestParam(required = false, defaultValue = "5") Integer limit,
                                         Authentication authentication){
         return searchOrderService.userOrders(page, limit, authentication.getName());
@@ -35,9 +36,9 @@ public class OrderController {
 
     @PreAuthorize("hasAuthority('USER')")
     @GetMapping("/certificates")
-    public List<SnapshotDto> snapshotsByUser(@Positive @RequestParam(required = false, defaultValue = "1") Integer page,
-                                          @Positive @RequestParam(required = false, defaultValue = "5") Integer limit,
-                                          Authentication authentication){
+    public PaginationDto<SnapshotDto> snapshotsByUser(@Positive @RequestParam(required = false, defaultValue = "1") Integer page,
+                                                      @Positive @RequestParam(required = false, defaultValue = "5") Integer limit,
+                                                      Authentication authentication){
         return searchSnapshotService.findUserCertificates(page, limit, authentication.getName());
     }
 

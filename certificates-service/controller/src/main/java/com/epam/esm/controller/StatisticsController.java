@@ -1,7 +1,7 @@
 package com.epam.esm.controller;
 
 import com.epam.esm.service.dto.TagDto;
-import com.epam.esm.service.tag.FindTagService;
+import com.epam.esm.service.tag.TagSearchService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
@@ -13,10 +13,10 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping(value = "/statistics", produces = MediaType.APPLICATION_JSON_VALUE)
 public class StatisticsController {
-    private FindTagService findTagService;
+    private TagSearchService findTagService;
 
     @GetMapping("/tags/top")
-    public TagDto findMostPopularTag(Authentication authentication){
-        return findTagService.mostPopularUserTag(authentication.getName());
+    public TagDto findMostPopularTag(){
+        return findTagService.mostPopularUserTag();
     }
 }

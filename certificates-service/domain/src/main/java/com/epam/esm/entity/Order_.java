@@ -1,11 +1,7 @@
 package com.epam.esm.entity;
 
-import com.epam.esm.entity.CertificateSnapshot;
-import com.epam.esm.entity.Order;
-import com.epam.esm.entity.User;
-
 import java.sql.Timestamp;
-import javax.annotation.Generated;
+import javax.annotation.processing.Generated;
 import javax.persistence.metamodel.ListAttribute;
 import javax.persistence.metamodel.SingularAttribute;
 import javax.persistence.metamodel.StaticMetamodel;

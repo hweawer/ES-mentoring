@@ -16,4 +16,5 @@ public interface CrudRepository<T> {
     Optional<T> findById(Long id);
     EntityManager getEntityManager();
     Long count();
+    Long count(CriteriaQuery<Long> query);
 }

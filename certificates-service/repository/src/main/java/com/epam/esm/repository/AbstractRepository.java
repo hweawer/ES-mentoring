@@ -32,6 +32,12 @@ public abstract class AbstractRepository<T> implements CrudRepository<T> {
     }
 
     @Override
+    public T update(T t) {
+        return entityManager.merge(t);
+    }
+
+
+    @Override
     public void delete(T t) {
         entityManager.remove(t);
     }
@@ -58,11 +64,6 @@ public abstract class AbstractRepository<T> implements CrudRepository<T> {
     }
 
     @Override
-    public T update(T t) {
-        return entityManager.merge(t);
-    }
-
-    @Override
     public EntityManager getEntityManager() {
         return entityManager;
     }
@@ -72,5 +73,10 @@ public abstract class AbstractRepository<T> implements CrudRepository<T> {
         CriteriaQuery<Long> cq = builder.createQuery(Long.class);
         cq.select(builder.count(cq.from(entity)));
         return entityManager.createQuery(cq).getSingleResult();
+    }
+
+    @Override
+    public Long count(CriteriaQuery<Long> query) {
+        return entityManager.createQuery(query).getSingleResult();
     }
 }

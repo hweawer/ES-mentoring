@@ -1,6 +1,5 @@
 package com.epam.esm.service.dto;
 
-import com.epam.esm.entity.User;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -12,7 +11,6 @@ import java.util.List;
 @NoArgsConstructor
 public class OrderDto {
     private Long id;
-    private User user;
     private LocalDateTime timestamp;
     @Valid
     private List<SnapshotDto> certificates;
