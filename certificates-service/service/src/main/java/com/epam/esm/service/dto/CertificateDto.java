@@ -1,6 +1,5 @@
 package com.epam.esm.service.dto;
 
-import com.epam.esm.service.validation.ValidationScopes;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -11,7 +10,8 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Set;
 
-import static com.epam.esm.service.validation.ValidationScopes.*;
+import static com.epam.esm.service.validation.ValidationScopes.onCreate;
+import static com.epam.esm.service.validation.ValidationScopes.onPatch;
 
 @Data
 @NoArgsConstructor
@@ -29,7 +29,7 @@ public class CertificateDto {
 
     @NotNull(groups = onCreate.class, message = "certificate.price.null")
     @PositiveOrZero(groups = {onCreate.class, onPatch.class}, message = "certificate.price.positive.or.zero")
-    @Digits(integer=11, fraction=2, groups = {onCreate.class, onPatch.class}, message = "certificate.price.digits")
+    @Digits(integer = 11, fraction = 2, groups = {onCreate.class, onPatch.class}, message = "certificate.price.digits")
     private BigDecimal price;
 
     @Past(message = "date.creation.past")

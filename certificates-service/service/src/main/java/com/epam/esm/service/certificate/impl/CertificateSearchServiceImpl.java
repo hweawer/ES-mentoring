@@ -6,7 +6,7 @@ import com.epam.esm.service.certificate.CertificateRequestTranslator;
 import com.epam.esm.service.certificate.CertificateSearchService;
 import com.epam.esm.service.dto.CertificateDto;
 import com.epam.esm.service.dto.PaginationDto;
-import com.epam.esm.service.dto.mapper.CertificateMapper;
+import com.epam.esm.service.dto.mapper.CertificateFullUpdateMapper;
 import com.epam.esm.service.exception.EntityNotFoundException;
 import com.epam.esm.service.exception.IncorrectPaginationValues;
 import lombok.AllArgsConstructor;
@@ -29,7 +29,7 @@ public class CertificateSearchServiceImpl implements CertificateSearchService {
     @Transactional(readOnly = true)
     @Override
     public CertificateDto findById(Long id) {
-        return CertificateMapper.INSTANCE.toDto(certificateRepository.findById(id)
+        return CertificateFullUpdateMapper.INSTANCE.toDto(certificateRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("certificate.not.found")));
     }
 
@@ -43,12 +43,12 @@ public class CertificateSearchServiceImpl implements CertificateSearchService {
         CriteriaQuery<Long> queryForCount = countCriteriaTranslator.translate(searchRequest);
         Double certificateCount = certificateRepository.count(queryForCount).doubleValue();
         Integer pageCount = Double.valueOf(Math.ceil(certificateCount / limit)).intValue();
-        if (page > pageCount) {
+        if (page > pageCount && pageCount != 0) {
             throw new IncorrectPaginationValues("incorrect.pagination");
         }
 
         List<CertificateDto> certificates = certificateRepository.findAll(queryForCertificates, page, limit)
-                .map(CertificateMapper.INSTANCE::toDto)
+                .map(CertificateFullUpdateMapper.INSTANCE::toDto)
                 .collect(toList());
         PaginationDto<CertificateDto> paginationDto = new PaginationDto<>();
         paginationDto.setCollection(certificates);
@@ -68,9 +68,9 @@ public class CertificateSearchServiceImpl implements CertificateSearchService {
             }
         }
         paginationDto.setFirst(path + "page=1&limit=" + limit);
-        paginationDto.setLast(path + "page=" + pageCount + "&limit=" + limit);
+        paginationDto.setLast(path + "page=" + (pageCount == 0 ? 1 : pageCount) + "&limit=" + limit);
         String previous = page == 1 ? null : "/certificates?page=" + (page - 1) + "&limit=" + limit;
-        String next = page.equals(pageCount) ? null : "/certificates?page=" + (page + 1) + "&limit=" + limit;
+        String next = page.equals(pageCount == 0 ? 1 : pageCount) ? null : "/certificates?page=" + (page + 1) + "&limit=" + limit;
         paginationDto.setPrevious(previous);
         paginationDto.setNext(next);
 

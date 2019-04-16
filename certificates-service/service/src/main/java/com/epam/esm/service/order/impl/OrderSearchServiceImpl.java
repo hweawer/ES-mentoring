@@ -43,7 +43,7 @@ public class OrderSearchServiceImpl implements OrderSearchService {
         User user = userRepository.findUserByLogin(username);
         Double orderCount = orderRepository.countOrdersByUser(user).doubleValue();
         Integer pageCount = Double.valueOf(Math.ceil(orderCount / limit)).intValue();
-        if (page > pageCount){
+        if (page > pageCount && pageCount != 0){
             throw new IncorrectPaginationValues("incorrect.pagination");
         }
         Set<String> roles = user.getRoles().stream()
@@ -57,9 +57,9 @@ public class OrderSearchServiceImpl implements OrderSearchService {
                 .map(OrderMapper.INSTANCE::toDto)
                 .collect(toList()));
         paginationDto.setFirst("/orders?page=1&limit=" + limit);
-        paginationDto.setLast("/orders?page=" + pageCount + "&limit=" + limit);
+        paginationDto.setLast("/orders?page=" + (pageCount == 0 ? 1 : pageCount) + "&limit=" + limit);
         String previous = page == 1 ? null : "/orders?page=" + (page - 1) + "&limit=" + limit;
-        String next = page.equals(pageCount) ? null : "/orders?page=" + (page + 1) + "&limit=" + limit;
+        String next = page.equals(pageCount == 0 ? 1 : pageCount) ? null : "/orders?page=" + (page + 1) + "&limit=" + limit;
         paginationDto.setPrevious(previous);
         paginationDto.setNext(next);
         return paginationDto;

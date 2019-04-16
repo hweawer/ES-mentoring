@@ -31,8 +31,10 @@ dependencies {
     )
     implementation(
             project(':repository'),
-            'org.springframework.boot:spring-boot-starter-test',
             "org.mapstruct:mapstruct:$mapstructVersion"
+    )
+    testImplementation(
+            'org.springframework.boot:spring-boot-starter-test'
     )
     compileOnly "org.projectlombok:lombok:$lombokVersion"
     annotationProcessor(

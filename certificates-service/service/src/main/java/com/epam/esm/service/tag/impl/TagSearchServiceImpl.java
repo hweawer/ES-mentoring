@@ -24,14 +24,13 @@ import static java.util.stream.Collectors.toSet;
 public class TagSearchServiceImpl implements TagSearchService {
     private TagRepository tagRepository;
     private OrderRepository orderRepository;
-    private UserRepository userRepository;
 
     @Transactional(readOnly = true)
     @Override
     public PaginationDto<TagDto> findAll(Integer page, Integer limit) {
         Double count = Double.valueOf(tagRepository.count());
         Integer pageCount = Double.valueOf(Math.ceil(count / limit)).intValue();
-        if (page > pageCount){
+        if (page > pageCount && pageCount != 0){
             throw new IncorrectPaginationValues("incorrect.pagination");
         }
         PaginationDto<TagDto> paginationDto = new PaginationDto<>();
@@ -39,9 +38,9 @@ public class TagSearchServiceImpl implements TagSearchService {
                 .map(TagMapper.INSTANCE::toDto)
                 .collect(toSet()));
         paginationDto.setFirst("/tags?page=1&limit=" + limit);
-        paginationDto.setLast("/tags?page=" + pageCount + "&limit=" + limit);
+        paginationDto.setLast("/tags?page=" + (pageCount == 0 ? 1 : pageCount) + "&limit=" + limit);
         String previous = page == 1 ? null : "/tags?page=" + (page - 1) + "&limit=" + limit;
-        String next = page.equals(pageCount) ? null : "/tags?page=" + (page + 1) + "&limit=" + limit;
+        String next = page.equals(pageCount == 0 ? 1 : pageCount) ? null : "/tags?page=" + (page + 1) + "&limit=" + limit;
         paginationDto.setPrevious(previous);
         paginationDto.setNext(next);
         return paginationDto;

@@ -7,6 +7,8 @@ import com.epam.esm.service.certificate.DeleteCertificateService;
 import com.epam.esm.service.dto.CertificateDto;
 import com.epam.esm.service.certificate.UpdateCertificateService;
 import com.epam.esm.service.dto.PaginationDto;
+import com.epam.esm.service.dto.mapper.CertificateFullUpdateMapper;
+import com.epam.esm.service.dto.mapper.CertificatePartionalUpdateMapper;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -19,7 +21,6 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import javax.validation.Valid;
 import javax.validation.constraints.Positive;
 import java.net.URI;
-import java.util.List;
 
 import static com.epam.esm.service.validation.ValidationScopes.*;
 
@@ -59,7 +60,7 @@ public class CertificateController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void update(@Validated(onCreate.class) @RequestBody CertificateDto certificateDto,
                        @Positive @PathVariable("id") Long id){
-        updateCertificatesService.update(id, certificateDto);
+        updateCertificatesService.update(id, certificateDto, CertificateFullUpdateMapper.INSTANCE);
     }
 
     @PreAuthorize("hasAuthority('ADMIN')")
@@ -74,7 +75,7 @@ public class CertificateController {
     @ResponseStatus(HttpStatus.OK)
     public CertificateDto updateProperty(@Validated(onPatch.class)@RequestBody CertificateDto certificateDto,
                                          @Positive @PathVariable("id") Long id){
-        return updateCertificatesService.merge(id, certificateDto);
+        return updateCertificatesService.update(id, certificateDto, CertificatePartionalUpdateMapper.INSTANCE);
     }
 
 }

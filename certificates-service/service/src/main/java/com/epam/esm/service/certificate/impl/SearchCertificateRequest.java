@@ -24,6 +24,6 @@ public class SearchCertificateRequest {
 
     private String value;
 
-    @Pattern(regexp = "date|name", message = "unknown.sort.attribute")
+    @Pattern(regexp = "creationDate|name|-name|-creationDate", message = "unknown.sort.attribute")
     private String sort;
 }

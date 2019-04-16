@@ -1,5 +1,6 @@
 package com.epam.esm.controller.exception;
 
+import com.epam.esm.service.exception.InstanceExistsException;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpHeaders;

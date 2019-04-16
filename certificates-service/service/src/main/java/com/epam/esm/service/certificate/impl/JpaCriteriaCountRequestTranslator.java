@@ -20,8 +20,13 @@ public class JpaCriteriaCountRequestTranslator extends AbstractJpaCriteriaCertif
         CriteriaBuilder builder = certificateRepository.getEntityManager().getCriteriaBuilder();
         CriteriaQuery<Long> query = builder.createQuery(Long.class);
         Root<GiftCertificate> from = query.from(GiftCertificate.class);
+        SearchCertificateRequest copy = new SearchCertificateRequest();
+        copy.setColumn(searchRequest.getColumn());
+        copy.setSort(null);
+        copy.setTag(searchRequest.getTag());
+        copy.setValue(searchRequest.getValue());
         query.select(builder.count(from));
-        formSubquery(searchRequest, from, query, builder);
+        formSubquery(copy, from, query, builder);
         return query;
     }
 }
