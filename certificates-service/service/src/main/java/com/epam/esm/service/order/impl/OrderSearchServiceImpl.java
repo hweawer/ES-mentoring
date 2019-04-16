@@ -5,9 +5,7 @@ import com.epam.esm.entity.Role;
 import com.epam.esm.entity.User;
 import com.epam.esm.repository.OrderRepository;
 import com.epam.esm.repository.UserRepository;
-import com.epam.esm.service.dto.OrderDto;
-import com.epam.esm.service.dto.PaginationDto;
-import com.epam.esm.service.dto.TagDto;
+import com.epam.esm.service.dto.*;
 import com.epam.esm.service.dto.mapper.OrderMapper;
 import com.epam.esm.service.exception.EntityNotFoundException;
 import com.epam.esm.service.exception.IncorrectPaginationValues;
@@ -39,7 +37,7 @@ public class OrderSearchServiceImpl implements OrderSearchService {
 
     @Transactional(readOnly = true)
     @Override
-    public PaginationDto<OrderDto> userOrders(Integer page, Integer limit, String username) {
+    public PaginationInfoDto<OrderDto> userOrders(Integer page, Integer limit, String username) {
         User user = userRepository.findUserByLogin(username);
         Double orderCount = orderRepository.countOrdersByUser(user).doubleValue();
         Integer pageCount = Double.valueOf(Math.ceil(orderCount / limit)).intValue();
@@ -52,16 +50,12 @@ public class OrderSearchServiceImpl implements OrderSearchService {
         List<Order> orders = roles.contains(Role.ADMIN_ROLE) ?
                 orderRepository.findAll(page, limit).collect(toList()) :
                 orderRepository.findByUser(page, limit, user).collect(toList());
-        PaginationDto<OrderDto> paginationDto = new PaginationDto<>();
-        paginationDto.setCollection(orders.stream()
+        PaginationInfoDto<OrderDto> paginationInfoDto = new PaginationInfoDto<>();
+        paginationInfoDto.setCollection(orders.stream()
                 .map(OrderMapper.INSTANCE::toDto)
                 .collect(toList()));
-        paginationDto.setFirst("/orders?page=1&limit=" + limit);
-        paginationDto.setLast("/orders?page=" + (pageCount == 0 ? 1 : pageCount) + "&limit=" + limit);
-        String previous = page == 1 ? null : "/orders?page=" + (page - 1) + "&limit=" + limit;
-        String next = page.equals(pageCount == 0 ? 1 : pageCount) ? null : "/orders?page=" + (page + 1) + "&limit=" + limit;
-        paginationDto.setPrevious(previous);
-        paginationDto.setNext(next);
-        return paginationDto;
+        PageInfo pageInfo = new PageInfo(pageCount);
+        paginationInfoDto.setPageInfo(pageInfo);
+        return paginationInfoDto;
     }
 }

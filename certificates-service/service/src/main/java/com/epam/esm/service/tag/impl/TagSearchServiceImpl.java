@@ -5,7 +5,9 @@ import com.epam.esm.entity.User;
 import com.epam.esm.repository.OrderRepository;
 import com.epam.esm.repository.TagRepository;
 import com.epam.esm.repository.UserRepository;
+import com.epam.esm.service.dto.PageInfo;
 import com.epam.esm.service.dto.PaginationDto;
+import com.epam.esm.service.dto.PaginationInfoDto;
 import com.epam.esm.service.dto.TagDto;
 import com.epam.esm.service.dto.mapper.TagMapper;
 import com.epam.esm.service.exception.EntityNotFoundException;
@@ -27,23 +29,18 @@ public class TagSearchServiceImpl implements TagSearchService {
 
     @Transactional(readOnly = true)
     @Override
-    public PaginationDto<TagDto> findAll(Integer page, Integer limit) {
+    public PaginationInfoDto<TagDto> findAll(Integer page, Integer limit) {
         Double count = Double.valueOf(tagRepository.count());
         Integer pageCount = Double.valueOf(Math.ceil(count / limit)).intValue();
         if (page > pageCount && pageCount != 0){
             throw new IncorrectPaginationValues("incorrect.pagination");
         }
-        PaginationDto<TagDto> paginationDto = new PaginationDto<>();
-        paginationDto.setCollection(tagRepository.findAll(page, limit)
+        PaginationInfoDto<TagDto> paginationInfoDto = new PaginationInfoDto<>();
+        paginationInfoDto.setCollection(tagRepository.findAll(page, limit)
                 .map(TagMapper.INSTANCE::toDto)
                 .collect(toSet()));
-        paginationDto.setFirst("/tags?page=1&limit=" + limit);
-        paginationDto.setLast("/tags?page=" + (pageCount == 0 ? 1 : pageCount) + "&limit=" + limit);
-        String previous = page == 1 ? null : "/tags?page=" + (page - 1) + "&limit=" + limit;
-        String next = page.equals(pageCount == 0 ? 1 : pageCount) ? null : "/tags?page=" + (page + 1) + "&limit=" + limit;
-        paginationDto.setPrevious(previous);
-        paginationDto.setNext(next);
-        return paginationDto;
+        paginationInfoDto.setPageInfo(new PageInfo(pageCount));
+        return paginationInfoDto;
     }
 
     @Transactional(readOnly = true)

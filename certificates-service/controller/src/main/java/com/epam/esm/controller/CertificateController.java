@@ -6,7 +6,9 @@ import com.epam.esm.service.certificate.CreateCertificateService;
 import com.epam.esm.service.certificate.DeleteCertificateService;
 import com.epam.esm.service.dto.CertificateDto;
 import com.epam.esm.service.certificate.UpdateCertificateService;
+import com.epam.esm.service.dto.Links;
 import com.epam.esm.service.dto.PaginationDto;
+import com.epam.esm.service.dto.PaginationInfoDto;
 import com.epam.esm.service.dto.mapper.CertificateFullUpdateMapper;
 import com.epam.esm.service.dto.mapper.CertificatePartionalUpdateMapper;
 import lombok.AllArgsConstructor;
@@ -21,6 +23,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import javax.validation.Valid;
 import javax.validation.constraints.Positive;
 import java.net.URI;
+import java.util.stream.Collectors;
 
 import static com.epam.esm.service.validation.ValidationScopes.*;
 
@@ -35,7 +38,34 @@ public class CertificateController {
 
     @GetMapping
     public PaginationDto<CertificateDto> findCertificates(@Valid SearchCertificateRequest request){
-        return searchCertificatesService.searchByClause(request);
+        PaginationInfoDto<CertificateDto> paginationInfoDto = searchCertificatesService.searchByClause(request);
+        Integer pageCount = paginationInfoDto.getPageInfo().getPageCount();
+        String path = "/certificates?";
+        if (!request.getTag().isEmpty() || request.getColumn() != null && request.getSort() != null) {
+            if (request.getColumn() != null) {
+                path += "column=" + request.getValue() + "&";
+            }
+            if (request.getSort() != null) {
+                path += "sort=" + request.getSort() + "&";
+            }
+            if (!request.getTag().isEmpty()) {
+                String tags = request.getTag().stream()
+                        .map(name -> "tag=" + name)
+                        .collect(Collectors.joining("&", "", "&"));
+                path += tags;
+            }
+        }
+        Integer limit = request.getLimit();
+        Integer page = request.getPage();
+        String previous = page == 1 ? null : "/certificates?page=" + (page - 1) + "&limit=" + limit;
+        String next = page.equals(pageCount == 0 ? 1 : pageCount) ? null : "/certificates?page=" + (page + 1) + "&limit=" + limit;
+        Links links = new Links(path + "page=1&limit=" + limit,
+                path + "page=" + (pageCount == 0 ? 1 : pageCount) + "&limit=" + limit,
+                next, previous);
+        PaginationDto<CertificateDto> paginationDto = new PaginationDto<>();
+        paginationDto.setCollection(paginationInfoDto.getCollection());
+        paginationDto.setLinks(links);
+        return paginationDto;
     }
 
     @GetMapping(value = "/{id}")

@@ -1,6 +1,8 @@
 package com.epam.esm.controller;
 
+import com.epam.esm.service.dto.Links;
 import com.epam.esm.service.dto.PaginationDto;
+import com.epam.esm.service.dto.PaginationInfoDto;
 import com.epam.esm.service.tag.CreateTagService;
 import com.epam.esm.service.tag.DeleteTagService;
 import com.epam.esm.service.dto.TagDto;
@@ -42,7 +44,19 @@ public class TagController {
     @GetMapping
     public PaginationDto<TagDto> findAll(@Positive @RequestParam(required = false, defaultValue = "1") Integer page,
                                          @Positive @RequestParam(required = false, defaultValue = "5") Integer limit){
-        return searchTagService.findAll(page, limit);
+        PaginationInfoDto<TagDto> paginationInfoDto = searchTagService.findAll(page, limit);
+        Integer pageCount = paginationInfoDto.getPageInfo().getPageCount();
+        String previous = page == 1 ? null : "/tags?page=" + (page - 1) + "&limit=" + limit;
+        String next = page.equals(pageCount == 0 ? 1 : pageCount) ? null : "/tags?page=" + (page + 1) + "&limit=" + limit;
+        PaginationDto<TagDto> paginationDto = new PaginationDto<>();
+        paginationDto.setCollection(paginationInfoDto.getCollection());
+
+        Links links = new Links("/tags?page=1&limit=" + limit,
+                "/tags?page=" + (pageCount == 0 ? 1 : pageCount) + "&limit=" + limit,
+                next, previous);
+
+        paginationDto.setLinks(links);
+        return paginationDto;
     }
 
     @PreAuthorize("hasAuthority('ADMIN')")

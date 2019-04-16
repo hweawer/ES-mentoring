@@ -5,7 +5,7 @@ import lombok.Data;
 import java.util.Collection;
 
 @Data
-public class PaginationDto<T> {
+public class PaginationInfoDto<T> {
     private Collection<T> collection;
-    private Links links;
+    private PageInfo pageInfo;
 }

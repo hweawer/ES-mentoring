@@ -5,7 +5,9 @@ import com.epam.esm.repository.CertificatesRepository;
 import com.epam.esm.service.certificate.CertificateRequestTranslator;
 import com.epam.esm.service.certificate.CertificateSearchService;
 import com.epam.esm.service.dto.CertificateDto;
+import com.epam.esm.service.dto.PageInfo;
 import com.epam.esm.service.dto.PaginationDto;
+import com.epam.esm.service.dto.PaginationInfoDto;
 import com.epam.esm.service.dto.mapper.CertificateFullUpdateMapper;
 import com.epam.esm.service.exception.EntityNotFoundException;
 import com.epam.esm.service.exception.IncorrectPaginationValues;
@@ -36,7 +38,7 @@ public class CertificateSearchServiceImpl implements CertificateSearchService {
 
     @Transactional(readOnly = true)
     @Override
-    public PaginationDto<CertificateDto> searchByClause(SearchCertificateRequest searchRequest) {
+    public PaginationInfoDto<CertificateDto> searchByClause(SearchCertificateRequest searchRequest) {
         Integer page = searchRequest.getPage();
         Integer limit = searchRequest.getLimit();
         CriteriaQuery<GiftCertificate> queryForCertificates = searchCriteriaTranslator.translate(searchRequest);
@@ -50,30 +52,10 @@ public class CertificateSearchServiceImpl implements CertificateSearchService {
         List<CertificateDto> certificates = certificateRepository.findAll(queryForCertificates, page, limit)
                 .map(CertificateFullUpdateMapper.INSTANCE::toDto)
                 .collect(toList());
-        PaginationDto<CertificateDto> paginationDto = new PaginationDto<>();
-        paginationDto.setCollection(certificates);
-        String path = "/certificates?";
-        if (!searchRequest.getTag().isEmpty() || searchRequest.getColumn() != null && searchRequest.getSort() != null) {
-            if (searchRequest.getColumn() != null) {
-                path += "column=" + searchRequest.getValue() + "&";
-            }
-            if (searchRequest.getSort() != null) {
-                path += "sort=" + searchRequest.getSort() + "&";
-            }
-            if (!searchRequest.getTag().isEmpty()) {
-                String tags = searchRequest.getTag().stream()
-                        .map(name -> "tag=" + name)
-                        .collect(Collectors.joining("&", "", "&"));
-                path += tags;
-            }
-        }
-        paginationDto.setFirst(path + "page=1&limit=" + limit);
-        paginationDto.setLast(path + "page=" + (pageCount == 0 ? 1 : pageCount) + "&limit=" + limit);
-        String previous = page == 1 ? null : "/certificates?page=" + (page - 1) + "&limit=" + limit;
-        String next = page.equals(pageCount == 0 ? 1 : pageCount) ? null : "/certificates?page=" + (page + 1) + "&limit=" + limit;
-        paginationDto.setPrevious(previous);
-        paginationDto.setNext(next);
-
-        return paginationDto;
+        PageInfo pageInfo = new PageInfo(pageCount);
+        PaginationInfoDto<CertificateDto> paginationInfoDto = new PaginationInfoDto<>();
+        paginationInfoDto.setCollection(certificates);
+        paginationInfoDto.setPageInfo(pageInfo);
+        return paginationInfoDto;
     }
 }

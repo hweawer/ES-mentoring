@@ -1,9 +1,7 @@
 package com.epam.esm.controller;
 
-import com.epam.esm.service.dto.PaginationDto;
+import com.epam.esm.service.dto.*;
 import com.epam.esm.service.order.CreateOrderService;
-import com.epam.esm.service.dto.OrderDto;
-import com.epam.esm.service.dto.SnapshotDto;
 import com.epam.esm.service.order.OrderSearchService;
 import com.epam.esm.service.snapshot.SearchSnapshotService;
 import lombok.AllArgsConstructor;
@@ -31,7 +29,18 @@ public class OrderController {
     public PaginationDto<OrderDto> ordersByUser(@Positive @RequestParam(required = false, defaultValue = "1") Integer page,
                                        @Positive @RequestParam(required = false, defaultValue = "5") Integer limit,
                                         Authentication authentication){
-        return searchOrderService.userOrders(page, limit, authentication.getName());
+        PaginationInfoDto<OrderDto> paginationInfoDto =
+                searchOrderService.userOrders(page, limit, authentication.getName());
+        Integer pageCount = paginationInfoDto.getPageInfo().getPageCount();
+        String previous = page == 1 ? null : "/orders?page=" + (page - 1) + "&limit=" + limit;
+        String next = page.equals(pageCount == 0 ? 1 : pageCount) ? null : "/orders?page=" + (page + 1) + "&limit=" + limit;
+        Links links = new Links("/orders?page=1&limit=" + limit,
+                "/orders?page=" + (pageCount == 0 ? 1 : pageCount) + "&limit=" + limit,
+                next, previous);
+        PaginationDto<OrderDto> paginationDto = new PaginationDto<>();
+        paginationDto.setLinks(links);
+        paginationDto.setCollection(paginationInfoDto.getCollection());
+        return paginationDto;
     }
 
     @PreAuthorize("hasAuthority('USER')")
@@ -39,7 +48,18 @@ public class OrderController {
     public PaginationDto<SnapshotDto> snapshotsByUser(@Positive @RequestParam(required = false, defaultValue = "1") Integer page,
                                                       @Positive @RequestParam(required = false, defaultValue = "5") Integer limit,
                                                       Authentication authentication){
-        return searchSnapshotService.findUserCertificates(page, limit, authentication.getName());
+        PaginationInfoDto<SnapshotDto> paginationInfoDto =
+                searchSnapshotService.findUserCertificates(page, limit, authentication.getName());
+        Integer pageCount = paginationInfoDto.getPageInfo().getPageCount();
+        String previous = page == 1 ? null : "/orders/certificates?page=" + (page - 1) + "&limit=" + limit;
+        String next = page.equals(pageCount == 0 ? 1 : pageCount) ? null : "/orders/certificates?page=" + (page + 1) + "&limit=" + limit;
+        Links links = new Links("/orders/certificates?page=1&limit=" + limit,
+                "/orders/certificates?page=" + (pageCount == 0 ? 1 : pageCount) + "&limit=" + limit,
+                next, previous);
+        PaginationDto<SnapshotDto> paginationDto = new PaginationDto<>();
+        paginationDto.setCollection(paginationInfoDto.getCollection());
+        paginationDto.setLinks(links);
+        return paginationDto;
     }
 
     @PreAuthorize("hasAuthority('USER')")

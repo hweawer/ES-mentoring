@@ -2,21 +2,15 @@ package com.epam.esm.service.certificate.impl;
 
 import com.epam.esm.entity.GiftCertificate;
 import com.epam.esm.repository.CertificatesRepository;
-import com.epam.esm.repository.TagRepository;
+import com.epam.esm.service.certificate.UpdateCertificateService;
 import com.epam.esm.service.certificate.update.property.*;
 import com.epam.esm.service.dto.CertificateDto;
 import com.epam.esm.service.dto.mapper.CertificateFullUpdateMapper;
 import com.epam.esm.service.dto.mapper.CertificateMapper;
-import com.epam.esm.service.dto.mapper.TagMapper;
 import com.epam.esm.service.exception.EntityNotFoundException;
-import com.epam.esm.service.certificate.UpdateCertificateService;
-import com.epam.esm.service.certificate.builder.UpdateCertificateBuilder;
 import lombok.AllArgsConstructor;
-import lombok.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import static java.util.stream.Collectors.toSet;
 
 @AllArgsConstructor
 @Service
@@ -29,7 +23,7 @@ public class UpdateCertificateServiceImpl implements UpdateCertificateService {
     private UpdateCertificateTags updateTags;
 
     @Transactional
-    public CertificateDto update(Long id, CertificateDto dto, CertificateMapper mapper){
+    public CertificateDto update(Long id, CertificateDto dto, CertificateMapper mapper) {
         GiftCertificate certificate = certificateRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("certificate.not.found"));
         GiftCertificate updated = new GiftCertificate();
