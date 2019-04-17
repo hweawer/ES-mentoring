@@ -4,6 +4,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -29,7 +31,8 @@ public class Order implements Serializable {
     @Column(name = "time")
     private LocalDateTime timestamp;
 
-    @OneToMany(fetch = FetchType.EAGER)
+    @Fetch(FetchMode.SUBSELECT)
+    @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id")
     private List<CertificateSnapshot> certificates = new ArrayList<>();
 }

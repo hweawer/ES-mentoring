@@ -18,7 +18,12 @@ import java.util.Set;
 @Table(name = "certificates_snapshots")
 public class CertificateSnapshot implements Serializable {
     @Id
+    @GeneratedValue
     private Long id;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "certificate_id", referencedColumnName = "id")
+    private GiftCertificate certificate;
 
     @NonNull
     private String name;
@@ -48,7 +53,7 @@ public class CertificateSnapshot implements Serializable {
     private Long userId;
 
     public CertificateSnapshot(GiftCertificate certificate){
-        this.id = certificate.getId();
+        this.certificate = certificate;
         this.name = certificate.getName();
         this.description = certificate.getDescription();
         this.price = certificate.getPrice();

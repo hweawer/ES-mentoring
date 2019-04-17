@@ -48,7 +48,7 @@ public class OrderRepositoryImpl extends AbstractRepository<Order> implements Or
         final String select = "select id, name from (select count(name) as count, name, tags.id as id from jes_dev.tags " +
                 "inner join jes_dev.certificates_tags on tags.id = certificates_tags.tag_id " +
                 "inner join " +
-                "(select jes_dev.certificates_snapshots.id from (" +
+                "(select jes_dev.certificates_snapshots.certificate_id from (" +
                 "        select jes_dev.orders.id from (" +
                 "              select MAX(sum), user_id from (" +
                 "                    select SUM(price) as sum, orders.user_id from jes_dev.users " +
@@ -56,8 +56,8 @@ public class OrderRepositoryImpl extends AbstractRepository<Order> implements Or
                 "                    inner join jes_dev.certificates_snapshots on orders.id = certificates_snapshots.order_id " +
                 "                    group by orders.user_id) as max" +
                 "              group by user_id) as i2" +
-                "              inner join jes_dev.orders on i2.user_id = orders.user_id) as i1\n" +
-                "  inner join jes_dev.certificates_snapshots on i1.id=certificates_snapshots.order_id) as i0 on i0.id=certificate_id " +
+                "  inner join jes_dev.orders on i2.user_id = orders.user_id) as i1 " +
+                "  inner join jes_dev.certificates_snapshots on i1.id=certificates_snapshots.order_id) as i0 on i0.certificate_id=certificates_tags.certificate_id " +
                 "group by (tags.id,name) " +
                 "ORDER BY count DESC " +
                 "LIMIT 1) as s";

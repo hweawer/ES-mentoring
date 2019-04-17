@@ -1,6 +1,8 @@
 package com.epam.esm.controller.exception;
 
+import com.epam.esm.service.exception.EntityNotFoundException;
 import com.epam.esm.service.exception.InstanceExistsException;
+import org.codehaus.jackson.map.JsonMappingException;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpHeaders;
@@ -13,6 +15,7 @@ import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
@@ -124,6 +127,24 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
                 LocaleContextHolder.getLocale()) + ex.getHttpMethod() + " " + ex.getRequestURL();
 
         ApiError apiError = new ApiError(ex.getLocalizedMessage(), error);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(apiError);
+    }
+
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<Object> handleEntityNotFound(EntityNotFoundException ex, WebRequest request) {
+        ApiError apiError = new ApiError(messageSource.getMessage(ex.getLocalizedMessage(),
+                null,
+                LocaleContextHolder.getLocale()),
+                "error occurred");
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(apiError);
+    }
+
+    @ExceptionHandler(JsonMappingException.class)
+    public ResponseEntity<Object> handleMappingException(JsonMappingException ex, WebRequest request) {
+        ApiError apiError = new ApiError(messageSource.getMessage("parse.request",
+                null,
+                LocaleContextHolder.getLocale()),
+                "error occurred");
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(apiError);
     }
 
