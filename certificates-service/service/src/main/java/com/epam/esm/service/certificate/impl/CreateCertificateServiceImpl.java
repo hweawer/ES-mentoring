@@ -7,6 +7,7 @@ import com.epam.esm.repository.TagRepository;
 import com.epam.esm.service.certificate.CreateCertificateService;
 import com.epam.esm.service.dto.CertificateDto;
 import com.epam.esm.service.dto.mapper.CertificateFullUpdateMapper;
+import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -17,13 +18,11 @@ import java.util.Set;
 
 import static java.util.stream.Collectors.toSet;
 
-@RequiredArgsConstructor
+@AllArgsConstructor
 @Service
 public class CreateCertificateServiceImpl implements CreateCertificateService {
-    @NonNull
-    private TagRepository tagRepository;
-    @NonNull
-    private CertificatesRepository certificateRepository;
+    private final TagRepository tagRepository;
+    private final CertificatesRepository certificateRepository;
 
     @Transactional
     @Override

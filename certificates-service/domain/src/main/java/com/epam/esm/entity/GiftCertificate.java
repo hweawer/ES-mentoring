@@ -13,6 +13,7 @@ import java.util.Set;
 
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "certificates")
 public class GiftCertificate implements Serializable {

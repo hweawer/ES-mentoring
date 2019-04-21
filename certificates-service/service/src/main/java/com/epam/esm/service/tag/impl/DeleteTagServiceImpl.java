@@ -1,23 +1,23 @@
 package com.epam.esm.service.tag.impl;
 
+import com.epam.esm.entity.Tag;
 import com.epam.esm.repository.TagRepository;
-import com.epam.esm.service.tag.DeleteTagService;
 import com.epam.esm.service.exception.EntityNotFoundException;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
+import com.epam.esm.service.tag.DeleteTagService;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-@RequiredArgsConstructor
+@AllArgsConstructor
 @Service
 public class DeleteTagServiceImpl implements DeleteTagService {
-    @NonNull
-    private TagRepository tagRepository;
+    private final TagRepository tagRepository;
 
     @Transactional
     @Override
     public void deleteTag(Long id) {
-        tagRepository.findById(id)
-                .ifPresentOrElse(tag -> tagRepository.delete(tag), () -> new EntityNotFoundException("tag.not.found"));
+        Tag tag = tagRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("tag.not.found"));
+        tagRepository.delete(tag);
     }
 }

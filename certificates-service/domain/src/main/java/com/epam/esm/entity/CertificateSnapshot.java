@@ -1,9 +1,6 @@
 package com.epam.esm.entity;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
+import lombok.*;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -14,6 +11,7 @@ import java.util.Set;
 
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "certificates_snapshots")
 public class CertificateSnapshot implements Serializable {
@@ -21,7 +19,7 @@ public class CertificateSnapshot implements Serializable {
     @GeneratedValue
     private Long id;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne
     @JoinColumn(name = "certificate_id", referencedColumnName = "id")
     private GiftCertificate certificate;
 

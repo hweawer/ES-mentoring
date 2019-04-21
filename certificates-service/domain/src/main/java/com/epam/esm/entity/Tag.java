@@ -7,6 +7,7 @@ import java.io.Serializable;
 
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "tags")
 public class Tag implements Serializable {
