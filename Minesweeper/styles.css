@@ -1,0 +1,49 @@
+body{
+    font-family: 'Inconsolata', monospace;
+    text-align: center;
+}
+
+#board{
+    border: 1px solid #333333;
+    display: inline-block;
+}
+
+.row{
+    font-size: 0;
+}
+
+.col{
+    display: inline-block;
+    width: 50px;
+    height: 50px;
+    background-color: #eeeeee;
+    border-right: 1px solid white;
+    border-bottom: 1px solid white;
+    vertical-align: top;
+    color: green;
+    font-size: 20px;
+    line-height: 50px;
+    transition: al 1.0s;
+}
+
+.col.hidden {
+    background-color: darkred;
+    cursor: pointer;
+}
+
+.col.flag{
+    background-color: goldenrod;
+    cursor: pointer;
+}
+
+.col.hidden:hover{
+    background-color: #eeeeee;
+}
+
+.row:last-child .col{
+    border-bottom: none;
+}
+
+.row .col:last-child {
+    border-right: none;
+}

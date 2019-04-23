@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Minesweeper</title>
+    <link rel="stylesheet" href="styles.css"/>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
+</head>
+<body oncontextmenu="return false;">
+    <header>
+        Stopwatch : <span id="seconds">0</span> <br>
+        Bombs: <span id="flags">10</span>
+    </header>
+    <h1>MINESWEEPER</h1>
+    <div id="board"></div>
+    <footer>
+        <form id="footerForm">
+            <input type="number" id="bombs" min="0" step="1" value="10">
+            <input type="submit" value="New game" id="game">
+        </form>
+    </footer>
+    <script src="script.js"></script>
+</body>
+</html>
