@@ -1,0 +1,11 @@
+nav{
+  display: inline-block;
+}
+
+.card{
+  display: inline-block;
+}
+
+li:after{
+  content: "\A";
+}

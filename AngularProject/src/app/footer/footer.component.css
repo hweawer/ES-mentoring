@@ -1,0 +1,17 @@
+#footer {
+  display: inline-block;
+  vertical-align: middle;
+  bottom: 0;
+  width: 100%;
+  height: 70px;
+}
+
+.footer-block {
+  margin: 20px 0;
+}
+
+footer {
+  text-align: center;
+  width: 100%;
+  background-color: #f5f5f5;
+}

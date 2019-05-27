@@ -1,0 +1,39 @@
+<div style="text-align:center">
+  <h1>
+    {{ siteName }}
+  </h1>
+</div>
+
+<div id="login-div">
+  <form [formGroup]="loginForm" name="form" (submit)="onSubmit()" novalidate>
+    <div class="form-group" style="width: 40%; margin: auto auto 10px;">
+      <label for="username">
+        Login
+        <input type="text" class="form-control" id="username" formControlName="username" autocomplete="off" placeholder="Enter login">
+      </label>
+      <div class="error" *ngIf="loginForm.controls['username'].hasError('required') && loginForm.controls['username'].touched">
+        Username is required
+      </div>
+    </div>
+    <div class="form-group" style="width: 40%; margin: auto auto 10px;">
+      <label for="password">
+        Password
+        <input type="password" class="form-control" id="password" formControlName="password" autocomplete="off" placeholder="Enter password">
+      </label>
+      <div class="error" *ngIf="loginForm.controls['password'].hasError('required') && loginForm.controls['password'].touched">
+        Password is required
+      </div>
+    </div>
+    <div class="form-group" style="width: 40%; margin: auto auto 10px;">
+      <button class="btn btn-success" [disabled]="loginForm.invalid">Login</button>
+      <a routerLink="/certificates" class="btn btn-primary floated">Cancel</a>
+      <div *ngIf="invalidLogin" class="error">
+        <div>Invalid credentials.</div>
+      </div>
+    </div>
+  </form>
+</div>
+
+<div class="photoBorder" id="welcome-img-div">
+  <img src="https://comp.utm.my/is/files/2017/09/Welcome-02-web-version.jpg" class="photoImage" alt="" id="myimage" />
+</div>
