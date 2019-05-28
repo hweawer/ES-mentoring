@@ -1,19 +1,27 @@
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
   <div id="navbarText">
     <div class="navbar-nav mr-auto" style="float: left;">
-      <a class="nav-link" *ngIf="router.url === '/login'" routerLink="certificates" i18n>Certificates</a>
-      <a class="nav-link" *ngIf="router.url === '/certificates' && isAdmin()" routerLink="#" i18n>Add new certificate</a>
+      <a class="nav-link" *ngIf="router.url !== '/certificates'" routerLink="certificates">
+        Certificates
+      </a>
+      <a class="nav-link" *ngIf="router.url === '/certificates' && isAdmin()" routerLink="add">
+        Add new certificate
+      </a>
     </div>
     <div class="navbar-nav mr-auto" style="display: inline-block; width: auto; margin-left: 700px;">
-      <a class="nav-link" href="#">{{ localizationSwitch }}</a>
+      <a class="nav-link" routerLink="#">
+        {{ localizationSwitch }}
+      </a>
     </div>
     <div class="navbar-nav mr-auto" style="display: inline-block; width: auto;">
-      <a class="nav-link" *ngIf="router.url === '/certificates' && isUser()" routerLink="#">{{ username }}</a>
+      <a class="nav-link" *ngIf="isUser()" routerLink="#">
+        {{ username }}
+      </a>
     </div>
     <div class="navbar-nav mr-auto" style="display: inline-block; width: auto;">
       <a class="nav-link" *ngIf="router.url === '/certificates' && !isUser(); else loggedIn" routerLink="/login">Login</a>
       <ng-template #loggedIn>
-        <a class="nav-link" (click)="logout()">Logout</a>
+        <a class="nav-link" style="cursor: pointer;" (click)="logout()">Logout</a>
       </ng-template>
     </div>
   </div>

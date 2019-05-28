@@ -1,0 +1,28 @@
+<h1 style="text-align: center;">Add/Edit certificate</h1>
+<form [formGroup]="form" novalidate style="display: block; width: 600px; margin: auto;">
+  <div class="form-group">
+    <label for="title">Title</label>
+    <input type="text" class="form-control" id="title" formControlName="name" placeholder="Enter title">
+    <div class="error" *ngIf="form.controls['name'].hasError('required') && form.controls['name'].touched">
+      Title is required
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="description">Description</label>
+    <input type="text" class="form-control" id="description" formControlName="description" autocomplete="off" placeholder="Enter description">
+    <div class="error" *ngIf="form.controls['description'].hasError('required') && form.controls['description'].touched">
+      Description is required
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="price">Price</label>
+    <input type="number" class="form-control" id="price" formControlName="price" autocomplete="off" placeholder="Enter price">
+    <div class="error" *ngIf="form.controls['price'].hasError('required') && form.controls['price'].touched">
+      Price is required
+    </div>
+  </div>
+  <tag-input formControlName="tags"></tag-input><br>
+  <button (click)="onAdd()" class="btn btn-success" *ngIf="router.url === '/add'">Add</button>
+  <button (click)="onEdit()" class="btn btn-success" *ngIf="router.url === '/edit'">Edit</button>
+  <button (click)="onDelete()" class="btn btn-danger" *ngIf="router.url === '/edit'">Delete</button>
+</form>

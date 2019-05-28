@@ -12,7 +12,6 @@ import {ApiService} from '../auth/api.service';
 export class LoginComponent implements OnInit {
   siteName = 'CertificatesProject';
   login = 'Login';
-  cancel = 'Cancel';
 
   loginForm: FormGroup;
   invalidLogin = false;
@@ -29,7 +28,6 @@ export class LoginComponent implements OnInit {
 
     this.apiService.login(body.toString()).subscribe(data => {
       window.sessionStorage.setItem('token', JSON.stringify(data));
-      console.log(window.sessionStorage.getItem('token'));
       this.router.navigate(['certificates']);
     }, error => {
       alert(error.error.error_description);

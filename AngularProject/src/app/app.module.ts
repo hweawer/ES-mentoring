@@ -12,6 +12,12 @@ import {httpInterceptorProviders} from './auth/auth-interceptor';
 import {HttpClientModule} from '@angular/common/http';
 import {ApiService} from './auth/api.service';
 import {CertificatesService} from './certificates/certificates.service';
+import { AddCertificateComponent } from './add-certificate/add-certificate.component';
+import {TagInputModule} from 'ngx-chips';
+import {CollapseModule} from 'ngx-bootstrap';
+import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import { CertificateComponent } from './certificate/certificate.component';
+import {ReservedService} from './reserved.service';
 
 @NgModule({
   declarations: [
@@ -19,16 +25,21 @@ import {CertificatesService} from './certificates/certificates.service';
     LoginComponent,
     NavigationComponent,
     FooterComponent,
-    CertificatesComponent
+    CertificatesComponent,
+    AddCertificateComponent,
+    CertificateComponent
   ],
   imports: [
-    BrowserModule.withServerTransition({ appId: 'serverApp' }),
+    BrowserModule.withServerTransition({appId: 'serverApp'}),
     FormsModule,
     RoutingModule,
     HttpClientModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    TagInputModule,
+    CollapseModule,
+    BrowserAnimationsModule
   ],
-  providers: [ httpInterceptorProviders, ApiService, CertificatesService ],
+  providers: [ httpInterceptorProviders, ApiService, CertificatesService, ReservedService],
   bootstrap: [RootComponent]
 })
 export class AppModule { }

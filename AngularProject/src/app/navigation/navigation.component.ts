@@ -8,13 +8,9 @@ import {NavigationEnd, Router} from '@angular/router';
   styleUrls: ['./navigation.component.css']
 })
 export class NavigationComponent implements OnInit {
-  localizationSwitch = 'EN/RU';
-  username: string;
+  private localizationSwitch = 'EN/RU';
+  private username: string;
   roles: Array<string>;
-  languageList = [
-    { code: 'en', label: 'English' },
-    { code: 'ru', label: 'Russian' }
-  ];
 
   constructor(@Inject(LOCALE_ID) protected localeId: string, private router: Router) { }
 
@@ -45,8 +41,6 @@ export class NavigationComponent implements OnInit {
     } else {
       this.roles = ['GUEST'];
     }
-    console.log('username : ' + this.username);
-    console.log('roles : ' + this.roles);
   }
 
   logout() {
