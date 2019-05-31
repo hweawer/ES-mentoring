@@ -1,8 +1,8 @@
-import { NgModule } from '@angular/core';
-import { ServerModule } from '@angular/platform-server';
+import {NgModule} from '@angular/core';
+import {ServerModule} from '@angular/platform-server';
 
-import { AppModule } from './app.module';
-import { ModuleMapLoaderModule } from '@nguniversal/module-map-ngfactory-loader';
+import {AppModule} from './app.module';
+import {ModuleMapLoaderModule} from '@nguniversal/module-map-ngfactory-loader';
 import {RootComponent} from './root/root.component';
 
 @NgModule({
@@ -13,4 +13,5 @@ import {RootComponent} from './root/root.component';
   ],
   bootstrap: [RootComponent],
 })
-export class AppServerModule {}
+export class AppServerModule {
+}

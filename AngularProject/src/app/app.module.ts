@@ -1,23 +1,23 @@
-import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
+import {BrowserModule} from '@angular/platform-browser';
+import {NgModule} from '@angular/core';
 
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
-import { NavigationComponent } from './navigation/navigation.component';
-import { FooterComponent } from './footer/footer.component';
-import { RoutingModule } from './routing.module';
-import { LoginComponent } from './login/login.component';
-import { CertificatesComponent } from './certificates/certificates.component';
-import { RootComponent } from './root/root.component';
+import {NavigationComponent} from './navigation/navigation.component';
+import {FooterComponent} from './footer/footer.component';
+import {RoutingModule} from './routing.module';
+import {LoginComponent} from './login/login.component';
+import {CertificatesComponent} from './certificates/certificates.component';
+import {RootComponent} from './root/root.component';
 import {httpInterceptorProviders} from './auth/auth-interceptor';
 import {HttpClientModule} from '@angular/common/http';
 import {ApiService} from './auth/api.service';
 import {CertificatesService} from './certificates/certificates.service';
-import { AddCertificateComponent } from './add-certificate/add-certificate.component';
+import {AddCertificateComponent} from './add-certificate/add-certificate.component';
 import {TagInputModule} from 'ngx-chips';
 import {CollapseModule} from 'ngx-bootstrap';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import { CertificateComponent } from './certificate/certificate.component';
-import {ReservedService} from './reserved.service';
+import {CertificateComponent} from './certificate/certificate.component';
+import {DataService} from './providers/data.service';
 
 @NgModule({
   declarations: [
@@ -39,7 +39,8 @@ import {ReservedService} from './reserved.service';
     CollapseModule,
     BrowserAnimationsModule
   ],
-  providers: [ httpInterceptorProviders, ApiService, CertificatesService, ReservedService],
+  providers: [httpInterceptorProviders, ApiService, CertificatesService, DataService],
   bootstrap: [RootComponent]
 })
-export class AppModule { }
+export class AppModule {
+}

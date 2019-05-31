@@ -21,7 +21,9 @@
       Price is required
     </div>
   </div>
-  <tag-input formControlName="tags"></tag-input><br>
+  <tag-input [identifyBy]="'id'" [displayBy]="'name'" formControlName="tags">
+    <tag-input-dropdown [autocompleteItems]="tags"></tag-input-dropdown>
+  </tag-input><br>
   <button (click)="onAdd()" class="btn btn-success" *ngIf="router.url === '/add'">Add</button>
   <button (click)="onEdit()" class="btn btn-success" *ngIf="router.url === '/edit'">Edit</button>
   <button (click)="onDelete()" class="btn btn-danger" *ngIf="router.url === '/edit'">Delete</button>

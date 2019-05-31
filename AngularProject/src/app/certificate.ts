@@ -4,7 +4,6 @@ export class Certificate {
   id: number;
   name: string;
   description: string;
-  date: string;
   price: number;
   creationDate: string;
   modificationDate: string;

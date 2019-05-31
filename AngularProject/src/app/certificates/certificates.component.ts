@@ -4,7 +4,7 @@ import {TokenStorageService} from '../auth/token-storage.service';
 import {NavigationEnd, Router} from '@angular/router';
 import * as jwt_decode from 'jwt-decode';
 import {Certificate} from '../certificate';
-import {ReservedService} from '../reserved.service';
+import {DataService} from '../providers/data.service';
 
 @Component({
   selector: 'app-certificates',
@@ -24,7 +24,7 @@ export class CertificatesComponent implements OnInit {
   constructor(private service: CertificatesService,
               private storage: TokenStorageService,
               private router: Router,
-              private reservation: ReservedService) { }
+              private dataService: DataService) { }
 
   ngOnInit() {
     this.getCertificates();
@@ -40,7 +40,6 @@ export class CertificatesComponent implements OnInit {
   getCertificates() {
     this.service.getCertificates(this.page, this.limit).subscribe(
       data => {
-        // console.log(data);
         this.certificates = data['collection'];
       },
       // tslint:disable-next-line:no-shadowed-variable
@@ -69,7 +68,12 @@ export class CertificatesComponent implements OnInit {
   }
 
   onEdit(cert: Certificate) {
-    this.reservation.certificate = JSON.stringify(cert);
+    this.dataService.changeCertificate(cert);
+    this.router.navigate(['edit']);
+  }
+
+  onDelete(cert: Certificate) {
+    this.dataService.changeCertificate(cert);
     this.router.navigate(['edit']);
   }
 }
