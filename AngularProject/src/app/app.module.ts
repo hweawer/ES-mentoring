@@ -10,7 +10,7 @@ import {CertificatesComponent} from './certificates/certificates.component';
 import {RootComponent} from './root/root.component';
 import {httpInterceptorProviders} from './auth/auth-interceptor';
 import {HttpClientModule} from '@angular/common/http';
-import {ApiService} from './auth/api.service';
+import {LoginService} from './login/login.service';
 import {CertificatesService} from './certificates/certificates.service';
 import {AddCertificateComponent} from './add-certificate/add-certificate.component';
 import {TagInputModule} from 'ngx-chips';
@@ -18,6 +18,9 @@ import {CollapseModule} from 'ngx-bootstrap';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {CertificateComponent} from './certificate/certificate.component';
 import {DataService} from './providers/data.service';
+import { ConformationDialogComponent } from './conformation-dialog/conformation-dialog.component';
+import {NgbModal, NgbModule} from '@ng-bootstrap/ng-bootstrap';
+import {ConfirmationDialogService} from './conformation-dialog/conformation-dialog.service';
 
 @NgModule({
   declarations: [
@@ -27,7 +30,8 @@ import {DataService} from './providers/data.service';
     FooterComponent,
     CertificatesComponent,
     AddCertificateComponent,
-    CertificateComponent
+    CertificateComponent,
+    ConformationDialogComponent
   ],
   imports: [
     BrowserModule.withServerTransition({appId: 'serverApp'}),
@@ -37,10 +41,18 @@ import {DataService} from './providers/data.service';
     ReactiveFormsModule,
     TagInputModule,
     CollapseModule,
-    BrowserAnimationsModule
+    BrowserAnimationsModule,
+    NgbModule
   ],
-  providers: [httpInterceptorProviders, ApiService, CertificatesService, DataService],
-  bootstrap: [RootComponent]
+  providers: [
+    httpInterceptorProviders,
+    LoginService,
+    CertificatesService,
+    DataService,
+    ConfirmationDialogService
+  ],
+  bootstrap: [RootComponent],
+  entryComponents: [ConformationDialogComponent],
 })
 export class AppModule {
 }

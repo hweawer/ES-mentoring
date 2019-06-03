@@ -3,28 +3,55 @@
   <div class="form-group">
     <label for="title">Title</label>
     <input type="text" class="form-control" id="title" formControlName="name" placeholder="Enter title">
-    <div class="error" *ngIf="form.controls['name'].hasError('required') && form.controls['name'].touched">
-      Title is required
+    <div *ngIf="name.invalid && (name.dirty || name.touched)"
+         class="alert alert-danger">
+      <div *ngIf="name.errors.required">
+        Title is required.
+      </div>
+      <div *ngIf="name.errors.minlength">
+        Title must be at least 3 characters long.
+      </div>
+      <div *ngIf="name.errors.maxlength">
+        Title must be maximum 12 characters long.
+      </div>
+      <div *ngIf="name.errors.forbiddenName">
+        Title cannot be Bob.
+      </div>
     </div>
   </div>
   <div class="form-group">
     <label for="description">Description</label>
     <input type="text" class="form-control" id="description" formControlName="description" autocomplete="off" placeholder="Enter description">
-    <div class="error" *ngIf="form.controls['description'].hasError('required') && form.controls['description'].touched">
-      Description is required
+    <div *ngIf="description.invalid && (description.dirty || description.touched)"
+         class="alert alert-danger">
+      <div *ngIf="description.errors.required">
+        Description is required.
+      </div>
+      <div *ngIf="description.errors.minlength">
+        Description must be at least 3 characters long.
+      </div>
+      <div *ngIf="description.errors.maxlength">
+        Description must be maximum 1000 characters long.
+      </div>
     </div>
   </div>
   <div class="form-group">
     <label for="price">Price</label>
     <input type="number" class="form-control" id="price" formControlName="price" autocomplete="off" placeholder="Enter price">
-    <div class="error" *ngIf="form.controls['price'].hasError('required') && form.controls['price'].touched">
-      Price is required
+    <div *ngIf="price.invalid && (price.dirty || price.touched)"
+         class="alert alert-danger">
+      <div *ngIf="price.errors.required">
+        Price is required.
+      </div>
+      <div *ngIf="price.errors.min">
+        Price must be greater than 0.
+      </div>
     </div>
   </div>
-  <tag-input [identifyBy]="'id'" [displayBy]="'name'" formControlName="tags">
-    <tag-input-dropdown [autocompleteItems]="tags"></tag-input-dropdown>
+  <tag-input [identifyBy]="'id'" [displayBy]="'name'" [validators]="tagValidator()" formControlName="tags">
+    <tag-input-dropdown></tag-input-dropdown>
   </tag-input><br>
-  <button (click)="onAdd()" class="btn btn-success" *ngIf="router.url === '/add'">Add</button>
-  <button (click)="onEdit()" class="btn btn-success" *ngIf="router.url === '/edit'">Edit</button>
-  <button (click)="onDelete()" class="btn btn-danger" *ngIf="router.url === '/edit'">Delete</button>
+  <button (click)="onAdd()" class="btn btn-success" *ngIf="router.url === '/add'" [disabled]="!form.valid">Add</button>
+  <button (click)="onEdit()" class="btn btn-success" *ngIf="router.url === '/edit'" [disabled]="!form.valid">Edit</button>
+  <button (click)="openConfirmationDialog()" class="btn btn-danger" *ngIf="router.url === '/edit'">Delete</button>
 </form>

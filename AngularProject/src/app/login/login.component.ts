@@ -1,8 +1,14 @@
 import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {Router} from '@angular/router';
+import {NavigationEnd, Router} from '@angular/router';
 import {HttpParams} from '@angular/common/http';
-import {ApiService} from '../auth/api.service';
+import {LoginService} from './login.service';
+import {TOKEN_KEY, TokenStorageService} from '../auth/token-storage.service';
+import * as jwt_decode from 'jwt-decode';
+
+const USERNAME_PARAM = 'username';
+const PASSWORD_PARAM = 'password';
+const GRANT_TYPE_PARAM = 'grant_type';
 
 @Component({
   selector: 'app-root',
@@ -10,35 +16,47 @@ import {ApiService} from '../auth/api.service';
   styleUrls: ['./login.component.css']
 })
 export class LoginComponent implements OnInit {
-  siteName = 'CertificatesProject';
-  login = 'Login';
-
   loginForm: FormGroup;
   invalidLogin = false;
-  constructor(private formBuilder: FormBuilder, private router: Router, private apiService: ApiService) { }
+
+  constructor(private formBuilder: FormBuilder,
+              private router: Router,
+              private loginService: LoginService,
+              private tokenStorage: TokenStorageService) {
+  }
+
+  ngOnInit() {
+    this.loginService.logout();
+    this.loginForm = this.formBuilder.group({
+      username: ['', Validators.compose([Validators.required])],
+      password: ['', Validators.required]
+    });
+  }
 
   onSubmit() {
     if (this.loginForm.invalid) {
       return;
     }
-    const body = new HttpParams()
-      .set('username', this.loginForm.controls.username.value)
-      .set('password', this.loginForm.controls.password.value)
-      .set('grant_type', 'password');
 
-    this.apiService.login(body.toString()).subscribe(data => {
-      window.sessionStorage.setItem('token', JSON.stringify(data));
+    const body = new HttpParams()
+      .set(USERNAME_PARAM, this.loginForm.controls.username.value)
+      .set(PASSWORD_PARAM, this.loginForm.controls.password.value)
+      .set(GRANT_TYPE_PARAM, 'password');
+
+    this.loginService.login(body.toString()).subscribe(data => {
+      const tokenString = (data as { access_token: string }).access_token;
+      this.initStorageWithToken(tokenString);
+
       this.router.navigate(['certificates']);
     }, error => {
       alert(error.error.error_description);
     });
   }
 
-  ngOnInit() {
-    window.sessionStorage.removeItem('token');
-    this.loginForm = this.formBuilder.group({
-      username: ['', Validators.compose([Validators.required])],
-      password: ['', Validators.required]
-    });
+  initStorageWithToken(data: string) {
+    this.tokenStorage.saveToken(data);
+    const object = jwt_decode(data);
+    this.tokenStorage.saveUsername(object.user_name);
+    this.tokenStorage.saveAuthorities(object.authorities);
   }
 }

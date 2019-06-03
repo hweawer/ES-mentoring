@@ -4,25 +4,28 @@
       <a class="nav-link" *ngIf="router.url !== '/certificates'" routerLink="certificates">
         Certificates
       </a>
-      <a class="nav-link" *ngIf="router.url === '/certificates' && isAdmin()" routerLink="add">
+      <a class="nav-link" *ngIf="router.url === '/certificates' && this.tokenStorage.isAdmin()" routerLink="add">
         Add new certificate
       </a>
     </div>
     <div class="navbar-nav mr-auto" style="display: inline-block; width: auto; margin-left: 700px;">
       <a class="nav-link" routerLink="#">
-        {{ localizationSwitch }}
+        RU/EN
       </a>
     </div>
     <div class="navbar-nav mr-auto" style="display: inline-block; width: auto;">
-      <a class="nav-link" *ngIf="isUser()" routerLink="#">
+      <a class="nav-link" *ngIf="this.tokenStorage.isUser()" routerLink="#">
         {{ username }}
       </a>
     </div>
     <div class="navbar-nav mr-auto" style="display: inline-block; width: auto;">
-      <a class="nav-link" *ngIf="router.url === '/certificates' && !isUser(); else loggedIn" routerLink="/login">Login</a>
-      <ng-template #loggedIn>
-        <a class="nav-link" style="cursor: pointer;" (click)="logout()">Logout</a>
-      </ng-template>
+      <div *ngIf="router.url !== '/login'">
+        <a class="nav-link" *ngIf="router.url === '/certificates' && !this.tokenStorage.isUser(); else loggedIn"
+           routerLink="/login">Login</a>
+        <ng-template #loggedIn>
+          <a class="nav-link" style="cursor: pointer;" (click)="logout()">Logout</a>
+        </ng-template>
+      </div>
     </div>
   </div>
 </nav>

@@ -1,3 +1,6 @@
-<p>
-  certificate works!
-</p>
+<div *ngIf="certificate">
+  <h1>{{certificate.id}}</h1>
+  <h1>{{certificate.name}}</h1>
+  <h1>{{certificate.description}}</h1>
+  <h1>{{certificate.duration}}</h1>
+</div>

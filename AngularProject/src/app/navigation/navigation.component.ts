@@ -1,6 +1,7 @@
-import {Component, Inject, LOCALE_ID, OnInit} from '@angular/core';
-import * as jwt_decode from 'jwt-decode';
+import {Component, OnInit} from '@angular/core';
 import {NavigationEnd, Router} from '@angular/router';
+import {TokenStorageService} from '../auth/token-storage.service';
+import {LoginService} from '../login/login.service';
 
 @Component({
   selector: 'app-navigation',
@@ -8,43 +9,26 @@ import {NavigationEnd, Router} from '@angular/router';
   styleUrls: ['./navigation.component.css']
 })
 export class NavigationComponent implements OnInit {
-  private localizationSwitch = 'EN/RU';
   private username: string;
-  roles: Array<string>;
 
-  constructor(@Inject(LOCALE_ID) protected localeId: string, private router: Router) { }
+  constructor(private router: Router,
+              private tokenStorage: TokenStorageService,
+              private loginService: LoginService) {
+  }
 
   ngOnInit() {
     this.router.events.subscribe(
       (event) => {
         if (event instanceof NavigationEnd) {
-          this.initToken();
+          if (this.tokenStorage.getToken()) {
+            this.username = this.tokenStorage.getUsername();
+          }
         }
       });
-    this.initToken();
-  }
-
-  isAdmin() {
-    return this.roles.indexOf('ADMIN') !== -1;
-  }
-
-  isUser() {
-    return this.roles.indexOf('USER') !== -1;
-  }
-
-  initToken() {
-    const token = window.sessionStorage.getItem('token');
-    if (token) {
-      const decodedToken = jwt_decode(window.sessionStorage.getItem('token'));
-      this.username = decodedToken.user_name;
-      this.roles = decodedToken.authorities;
-    } else {
-      this.roles = ['GUEST'];
-    }
   }
 
   logout() {
-    window.sessionStorage.removeItem('token');
-    window.location.reload();
+    this.loginService.logout();
+    this.router.navigate(['certificates']);
   }
 }

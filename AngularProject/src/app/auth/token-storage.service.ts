@@ -1,27 +1,26 @@
 import { Injectable } from '@angular/core';
 
-const TOKEN_KEY = 'AuthToken';
-const USERNAME_KEY = 'AuthUsername';
-const AUTHORITIES_KEY = 'AuthAuthorities';
+export const TOKEN_KEY = 'AuthToken';
+export const USERNAME_KEY = 'AuthUsername';
+export const AUTHORITIES_KEY = 'AuthAuthorities';
 
 @Injectable({
   providedIn: 'root'
 })
 export class TokenStorageService {
-  private roles: Array<string> = [];
   constructor() { }
 
-  signOut() {
+  public signOut() {
     window.sessionStorage.clear();
   }
 
   public saveToken(token: string) {
     window.sessionStorage.removeItem(TOKEN_KEY);
-    window.sessionStorage.setItem(TOKEN_KEY,  token);
+    window.sessionStorage.setItem(TOKEN_KEY, token);
   }
 
   public getToken(): string {
-    return sessionStorage.getItem(TOKEN_KEY);
+    return window.sessionStorage.getItem(TOKEN_KEY);
   }
 
   public saveUsername(username: string) {
@@ -30,7 +29,7 @@ export class TokenStorageService {
   }
 
   public getUsername(): string {
-    return sessionStorage.getItem(USERNAME_KEY);
+    return window.sessionStorage.getItem(USERNAME_KEY);
   }
 
   public saveAuthorities(authorities: string[]) {
@@ -39,13 +38,14 @@ export class TokenStorageService {
   }
 
   public getAuthorities(): string[] {
-    this.roles = [];
+    return JSON.parse(window.sessionStorage.getItem(AUTHORITIES_KEY));
+  }
 
-    if (sessionStorage.getItem(TOKEN_KEY)) {
-      JSON.parse(sessionStorage.getItem(AUTHORITIES_KEY)).forEach(authority => {
-        this.roles.push(authority.authority);
-      });
-    }
-    return this.roles;
+  public isAdmin() {
+    return this.getAuthorities() ? this.getAuthorities().indexOf('ADMIN') !== -1 : false;
+  }
+
+  public isUser() {
+    return this.getAuthorities() ? this.getAuthorities().indexOf('USER') !== -1 : false;
   }
 }

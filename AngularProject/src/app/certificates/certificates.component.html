@@ -17,15 +17,17 @@
     <ul>
       <li *ngFor="let c of certificates;" class="card" style="vertical-align: middle; width: 22rem; text-align: justify;">
         <div class="card-body">
-          <a routerLink="#"><h5 class="card-title">{{c.name}}</h5></a>
+          <a [routerLink]="['/certificates', c.id]">
+            <h5 class="card-title">{{c.name}}</h5>
+          </a>
           <h6>{{ c.creationDate | date }}</h6>
           <span *ngFor="let tag of c.tags" class="btn btn-success" style="font-size: 12px">
             {{ tag.name }}
           </span>
           <p class="card-text">{{ c.description | slice:0:250 }}</p>
-          <a (click)="onEdit(c)" *ngIf="isAdmin()" class="btn btn-danger" style="display: inline-block; margin-left: 5px; font-size: 12px;">Edit</a>
-          <a (click)="onDelete(c)" *ngIf="isAdmin()" class="btn btn-danger" style="display: inline-block; margin-left: 5px; font-size: 12px;">Delete</a>
-          <a (click)="onBuy(c)" *ngIf="isUser()" class="btn btn-danger" style="display: inline-block; margin-left: 5px; font-size: 12px;">Buy</a>
+          <a (click)="onEdit(c)" *ngIf="this.tokenStorage.isAdmin()" class="btn btn-danger" style="display: inline-block; margin-left: 5px; font-size: 12px;">Edit</a>
+          <a (click)="onDelete(c)" *ngIf="this.tokenStorage.isAdmin()" class="btn btn-danger" style="display: inline-block; margin-left: 5px; font-size: 12px;">Delete</a>
+          <a (click)="onBuy(c)" *ngIf="this.tokenStorage.isUser()" class="btn btn-danger" style="display: inline-block; margin-left: 5px; font-size: 12px;">Buy</a>
           <div style="display: inline-block; margin-left: 5px;">
             {{ c.price }} BYN
           </div>
